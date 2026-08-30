@@ -74,10 +74,10 @@ def render_sts1_energy(description):
 def render_description(card):
     description = card["description"]
 
-    if card["game"] == "sts1":
+    if card.get("game") == "sts1":
         description = render_sts1_energy(description)
 
-    elif card["game"] == "sts2":
+    elif card.get("game") == "sts2":
         energy = card["vars"].get("energy")
 
         if energy is not None:

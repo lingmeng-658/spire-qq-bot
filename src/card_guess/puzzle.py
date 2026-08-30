@@ -167,6 +167,7 @@ def build_puzzle(
     card,
     revealed_positions=None,
     revealed_name_positions=None,
+    rarity_revealed=False,
 ):
     description = render_description(card)
 
@@ -180,11 +181,13 @@ def build_puzzle(
         revealed_name_positions,
     )
 
-    return {
+    result = {
         "masked_name": masked_name,
         "pool": format_pool(card),
         "type": format_type(card),
         "cost": format_cost(card),
         "star_cost": format_star_cost(card),
         "masked_description": masked_description,
+        "rarity": format_rarity(card) if rarity_revealed else None,
     }
+    return result

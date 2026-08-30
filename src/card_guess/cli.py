@@ -19,9 +19,18 @@ def show_puzzle(puzzle):
     if puzzle["star_cost"] is not None:
         print(f"辉星费用：{puzzle['star_cost']}")
 
+    if puzzle.get("rarity") is not None:
+        print(f"稀有度：{puzzle['rarity']}")
+
     print("描述：")
     print(puzzle["masked_description"])
     print()
+
+
+def show_status(game):
+    wrong_text = "暂无" if not game.wrong_guesses else "、".join(game.wrong_guesses)
+    print(f"已猜错：{wrong_text}")
+    print(f"累计猜测：{game.total_guess_count} 次")
 
 
 def main():
@@ -49,10 +58,12 @@ def main():
         card,
         revealed_positions=game.revealed_positions,
         revealed_name_positions=game.revealed_name_positions,
+        rarity_revealed=game.rarity_revealed,
     )
 
     # 这里才真正把谜面显示出来
     show_puzzle(puzzle)
+    show_status(game)
 
     # 这里才真正开始不断猜
     while not game.ended:
@@ -70,6 +81,10 @@ def main():
             break
 
         if result.status == "revealed":
+            if game.ended and result.reveal_target == "name":
+                print(f"牌名已全部揭开，本轮结束，正确答案是：{card['name']}")
+                break
+
             if result.reveal_target == "name":
                 print(f"🎯 牌名命中！揭开 {result.revealed_count} 个新字符！")
             else:
@@ -79,8 +94,10 @@ def main():
                 card,
                 revealed_positions=game.revealed_positions,
                 revealed_name_positions=game.revealed_name_positions,
+                rarity_revealed=game.rarity_revealed,
             )
             show_puzzle(puzzle)
+            show_status(game)
             continue
 
         if result.status == "already_revealed":
@@ -94,8 +111,25 @@ def main():
         if result.status == "wrong":
             print(f"猜错了，当前错误次数：{game.wrong_count}")
 
-            if game.wrong_count == 4:
+            if result.hint_type == "rarity":
                 print(f"提示：稀有度为 {format_rarity(card)}")
+            elif result.hint_type == "description":
+                print("提示：揭开了新的描述内容。")
+            elif result.hint_type == "name":
+                print("提示：揭开了一个牌名字符。")
+
+            if game.ended:
+                print(f"提示耗尽，本轮结束，正确答案是：{card['name']}")
+                break
+
+            puzzle = build_puzzle(
+                card,
+                revealed_positions=game.revealed_positions,
+                revealed_name_positions=game.revealed_name_positions,
+                rarity_revealed=game.rarity_revealed,
+            )
+            show_puzzle(puzzle)
+            show_status(game)
 
 
 if __name__ == "__main__":
