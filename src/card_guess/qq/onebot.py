@@ -1,5 +1,9 @@
+import asyncio
 import json
+import logging
 from pathlib import Path
+
+logger = logging.getLogger("card_guess.qq.onebot")
 
 
 def extract_mentioned_text(event: dict) -> str | None:
@@ -64,4 +68,12 @@ def build_group_add_request_action(flag: str, approve: bool = True):
 
 
 async def send_action(websocket, action: dict):
-    await websocket.send(json.dumps(action))
+    from card_guess.qq import runtime
+
+    payload = json.dumps(action)
+    timeout = getattr(runtime, "WS_SEND_TIMEOUT_SECONDS", 10.0)
+    try:
+        await asyncio.wait_for(websocket.send(payload), timeout=timeout)
+    except asyncio.TimeoutError:
+        logger.warning("OneBot action send timeout: %.1f seconds", timeout)
+        raise

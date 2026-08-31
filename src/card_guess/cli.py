@@ -22,6 +22,10 @@ def show_puzzle(puzzle):
     if puzzle.get("rarity") is not None:
         print(f"稀有度：{puzzle['rarity']}")
 
+    trait_line = puzzle.get("trait_line")
+    if trait_line:
+        print(trait_line)
+
     print("描述：")
     print(puzzle["masked_description"])
     print()

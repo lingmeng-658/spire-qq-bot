@@ -1,4 +1,7 @@
+import asyncio
 import json
+import logging
+import re
 
 from card_guess.cards import find_cards_by_exact_name, load_cards
 from card_guess.puzzle import format_rarity
@@ -18,6 +21,8 @@ from card_guess.qq.renderer import (
     render_terminal_reply,
     render_wrong_card_guess_reply,
 )
+
+logger = logging.getLogger("card_guess.qq.bot")
 
 START_WORDS = {"猜词", "猜谜", "开始", "开局", "开始游戏"}
 START_SUFFIX_MODES = {"": "mixed", "1": "sts1", "2": "sts2"}
@@ -138,6 +143,52 @@ def _parse_start_request(text):
     return None, None
 
 
+def _parse_generation_selector(text):
+    command = (text or "").strip()
+    if not command:
+        return None, None
+
+    match = re.fullmatch(r"(.+?)(?:\s*([12]))", command)
+    if match is None:
+        return command, None
+
+    name, suffix = match.groups()
+    if not name:
+        return command, None
+    return name, int(suffix)
+
+
+def _find_cards_by_name(name, generation=None):
+    matches = [
+        card
+        for card in _load_query_cards()
+        if isinstance(card, dict) and card.get("name") == name
+    ]
+    if generation is None:
+        return matches
+    return [
+        card for card in matches
+        if str(card.get("game", "")).strip() == f"sts{generation}"
+    ]
+
+
+def _select_wrong_guess_cards(name, game, explicit_generation=None):
+    all_matches = _find_cards_by_name(name)
+    if explicit_generation is not None:
+        return _find_cards_by_name(name, explicit_generation)
+
+    if game is not None and getattr(game, "card", None):
+        current_generation = str(game.card.get("game", "")).strip()
+        if current_generation:
+            current_matches = _find_cards_by_name(name, int(current_generation[-1])) if current_generation.startswith("sts") else []
+            if current_matches:
+                return current_matches
+
+    if len(all_matches) == 1:
+        return all_matches
+    return []
+
+
 def route_group_command(group_id, text):
     command = (text or "").strip()
     if command in HELP_COMMANDS or command.lower() == "help":
@@ -176,8 +227,31 @@ def route_group_command(group_id, text):
 
     game = sessions.get(group_id)
     if game is None:
+        parsed_name, generation = _parse_generation_selector(command)
+        if parsed_name is not None:
+            all_matches = _find_cards_by_name(parsed_name)
+            if generation is not None:
+                matches = _find_cards_by_name(parsed_name, generation)
+                if not matches:
+                    return RenderedReply("当前没有进行中的游戏")
+                return render_card_query_reply(matches)
+
+            if len(all_matches) > 1:
+                return RenderedReply(
+                    f"“{parsed_name}”在杀戮尖塔 1 和 2 中都有对应卡牌。\n"
+                    f"请发送：\n{parsed_name}1 —— 查看一代版本\n{parsed_name}2 —— 查看二代版本"
+                )
+            if all_matches:
+                return render_card_query_reply(all_matches)
+            return RenderedReply("当前没有进行中的游戏")
+
         matches = _find_exact_card_matches(command)
         if matches:
+            if len(matches) > 1:
+                return RenderedReply(
+                    f"“{command}”在杀戮尖塔 1 和 2 中都有对应卡牌。\n"
+                    f"请发送：\n{command}1 —— 查看一代版本\n{command}2 —— 查看二代版本"
+                )
             return render_card_query_reply(matches)
         return RenderedReply("当前没有进行中的游戏")
 
@@ -193,14 +267,21 @@ def route_group_command(group_id, text):
         return RenderedReply(reply_text)
 
     if result.status == "wrong":
-        matches = _find_exact_card_matches(command)
-        if matches:
-            return render_wrong_card_guess_reply(game, reply_text, matches)
+        guessed_name, explicit_generation = _parse_generation_selector(command)
+        if guessed_name:
+            matches = _select_wrong_guess_cards(guessed_name, game, explicit_generation)
+            if matches:
+                return render_wrong_card_guess_reply(game, reply_text, matches)
+            all_matches = _find_cards_by_name(guessed_name)
+            if len(all_matches) == 1:
+                return render_wrong_card_guess_reply(game, reply_text, all_matches)
 
     return render_in_progress_reply(game, reply_text)
 
 
 async def send_group_message(websocket, group_id: int, payload):
+    from card_guess.qq import runtime
+
     request = {
         "action": "send_group_msg",
         "params": {
@@ -210,7 +291,12 @@ async def send_group_message(websocket, group_id: int, payload):
         "echo": "ping-reply",
     }
 
-    await websocket.send(json.dumps(request))
+    timeout = getattr(runtime, "WS_SEND_TIMEOUT_SECONDS", 10.0)
+    try:
+        await asyncio.wait_for(websocket.send(json.dumps(request)), timeout=timeout)
+    except asyncio.TimeoutError:
+        logger.warning("group message send timeout: %.1f seconds", timeout)
+        raise
 
 
 async def _send_group_reply(websocket, group_id: int, reply):

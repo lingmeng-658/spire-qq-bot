@@ -260,7 +260,7 @@ def test_non_card_name_without_game_keeps_unknown_input_reply(monkeypatch):
     assert reply == "当前没有进行中的游戏"
 
 
-def test_duplicate_exact_card_name_returns_candidates_without_choosing_one(monkeypatch):
+def test_duplicate_exact_card_name_without_suffix_requires_generation_hint(monkeypatch):
     sts1_card = make_card(name="白噪声", card_id="WHITE_NOISE")
     sts2_card = {
         **make_card(name="白噪声", card_id="WHITE_NOISE_2"),
@@ -276,10 +276,36 @@ def test_duplicate_exact_card_name_returns_candidates_without_choosing_one(monke
 
     reply = bot.route_group_command(101, "白噪声")
 
-    assert "找到 2 张同名卡牌" in reply
-    assert "杀戮尖塔 1｜铁甲战士｜攻击牌｜普通" in reply
-    assert "杀戮尖塔 2｜故障机器人｜攻击牌｜普通" in reply
+    assert "白噪声" in reply
+    assert "白噪声1" in reply
+    assert "白噪声2" in reply
+    assert "请发送" in reply
     assert reply.image_path is None
+
+
+def test_duplicate_exact_card_name_with_suffix_selects_generation(monkeypatch):
+    sts1_card = make_card(name="白噪声", card_id="WHITE_NOISE")
+    sts2_card = {
+        **make_card(name="白噪声", card_id="WHITE_NOISE_2"),
+        "game": "sts2",
+        "pool": "defect",
+    }
+    monkeypatch.setattr(
+        bot,
+        "_load_query_cards",
+        lambda: [sts1_card, sts2_card],
+        raising=False,
+    )
+    monkeypatch.setattr(
+        "card_guess.qq.renderer.resolve_local_card_image",
+        lambda queried_card: Path("/tmp/WHITE_NOISE.png") if queried_card["game"] == "sts1" else Path("/tmp/WHITE_NOISE_2.png"),
+    )
+
+    reply = bot.route_group_command(101, "白噪声2")
+
+    assert "=== 卡牌资料 ===" in reply
+    assert "代际：杀戮尖塔 2" in reply
+    assert reply.image_path == Path("/tmp/WHITE_NOISE_2.png")
 
 
 def test_wrong_exact_card_name_in_game_keeps_game_result_and_adds_card(monkeypatch):
@@ -321,3 +347,19 @@ def test_exact_card_name_that_hits_description_uses_game_result(monkeypatch):
     assert "❌ 不是这张" not in reply
     assert "你猜的是：伤害" not in reply
     assert reply.image_path is None
+
+
+def test_game_wrong_guess_uses_current_generation_for_crossgen_name(monkeypatch):
+    answer = make_card(name="机械降神", description="造成伤害。")
+    sts1_card = make_card(name="白噪声", card_id="WHITE_NOISE")
+    sts2_card = {**make_card(name="白噪声", card_id="WHITE_NOISE_2"), "game": "sts2", "pool": "defect"}
+    start_game(monkeypatch, answer)
+    monkeypatch.setattr(bot, "_load_query_cards", lambda: [sts1_card, sts2_card], raising=False)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_card_image", lambda card: Path("/tmp/WHITE_NOISE_2.png"))
+
+    reply = bot.route_group_command(101, "白噪声")
+
+    assert "❌ 不是这张" in reply
+    assert "代际：杀戮尖塔 1" in reply or "代际：杀戮尖塔 2" in reply
+    assert "你猜的是：白噪声" in reply
+    assert "猜错了" in reply

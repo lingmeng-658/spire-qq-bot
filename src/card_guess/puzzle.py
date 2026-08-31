@@ -1,6 +1,7 @@
 from card_guess.cards import (
     format_cost,
     format_star_cost,
+    get_visible_traits,
     render_description,
 )
 import unicodedata
@@ -174,6 +175,7 @@ def build_puzzle(
     revealed_positions=None,
     revealed_name_positions=None,
     rarity_revealed=False,
+    revealed_traits=None,
 ):
     description = render_description(card)
 
@@ -187,6 +189,17 @@ def build_puzzle(
         revealed_name_positions,
     )
 
+    visible_traits = get_visible_traits(
+        card,
+        upgraded=bool(card.get("upgraded", False)),
+    )
+    active_traits = []
+    for trait in dict.fromkeys(visible_traits):
+        if not any(trait in part for part in (card.get("description", ""), description)):
+            active_traits.append(trait)
+
+    revealed_traits = set(revealed_traits or [])
+
     result = {
         "masked_name": masked_name,
         "pool": format_pool(card),
@@ -195,5 +208,8 @@ def build_puzzle(
         "star_cost": format_star_cost(card),
         "masked_description": masked_description,
         "rarity": format_rarity(card) if rarity_revealed else None,
+        "traits": active_traits,
+        "revealed_traits": sorted(revealed_traits),
+        "trait_line": None,
     }
     return result

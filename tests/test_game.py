@@ -1,5 +1,6 @@
 import random
 
+from card_guess.cards import build_display_description, get_visible_traits, render_description
 from card_guess.game import GameState, get_hint_type
 
 
@@ -37,6 +38,86 @@ def test_wrong_card_name_counts_as_wrong():
 
     assert result.status == "wrong"
     assert game.wrong_count == 1
+
+
+def test_build_display_description_merges_trait_lines_for_sts1():
+    card = {
+        "game": "sts1",
+        "name": "测试卡",
+        "description": "造成8点伤害。",
+        "innate": True,
+        "exhaust": True,
+    }
+
+    result = build_display_description(card)
+
+    assert "固有。" in result
+    assert "造成8点伤害。" in result
+    assert "消耗。" in result
+    assert result.index("固有。") < result.index("造成8点伤害。") < result.index("消耗。")
+
+
+def test_trait_name_is_matched_as_description_text():
+    card = {
+        "game": "sts1",
+        "name": "测试卡",
+        "description": "造成8点伤害。",
+        "exhaust": True,
+    }
+    game = GameState(card)
+
+    result = game.handle_input("消耗")
+
+    assert result.status == "revealed"
+    assert result.reveal_target == "description"
+
+
+def test_energy_token_replacements_are_idempotent_in_mixed_text():
+    card = {"game": "sts2", "vars": {}, "description": "[E][E]"}
+
+    assert render_description({**card, "description": "[E]"}) == "⚡"
+    assert render_description({**card, "description": "[E][E]"}) == "⚡⚡"
+    assert render_description({**card, "description": "⚡[E]"}) == "⚡⚡"
+    assert render_description({**card, "description": "⚡"}) == "⚡"
+    assert render_description({**card, "description": "获得⚡，然后获得[E]"}) == "获得⚡，然后获得⚡"
+
+
+def test_display_description_orders_sts1_traits_before_and_after_text():
+    card = {
+        "game": "sts1",
+        "id": "test_trait_card",
+        "name": "测试卡",
+        "description": "造成8点伤害。",
+        "innate": True,
+        "exhaust": True,
+    }
+
+    display = build_display_description(card)
+
+    assert "固有。" in display
+    assert "造成8点伤害。" in display
+    assert "消耗。" in display
+    assert display.index("固有。") < display.index("造成8点伤害。") < display.index("消耗。")
+
+
+def test_display_description_respects_upgraded_trait_special_cases():
+    after_image = {
+        "game": "sts1",
+        "id": "AFTER_IMAGE",
+        "description": "造成8点伤害。",
+        "upgrade": {"description": "固有。"},
+    }
+    worship = {
+        "game": "sts1",
+        "id": "WORSHIP",
+        "description": "造成8点伤害。",
+        "upgrade": {"description": "保留。"},
+    }
+
+    assert "固有。" not in build_display_description(after_image, upgraded=False)
+    assert "固有。" in build_display_description(after_image, upgraded=True)
+    assert "保留。" not in build_display_description(worship, upgraded=False)
+    assert "保留。" in build_display_description(worship, upgraded=True)
 
 
 def test_get_hint_type_schedule():
@@ -418,11 +499,109 @@ def test_total_guess_count_counts_valid_player_inputs_only():
     game.handle_input("获得")
     assert game.total_guess_count == 2
 
+
+def test_get_visible_traits_sts1_base_and_upgrade():
+    card = {
+        "game": "sts1",
+        "description": "获得 [G] 。\n消耗 。",
+        "exhaust": True,
+        "ethereal": False,
+        "innate": False,
+        "retain": False,
+        "self_retain": False,
+        "upgrade": {"description": "固有 。\n获得 [G] 。\n消耗 。"},
+    }
+
+    assert get_visible_traits(card, upgraded=False) == ["消耗"]
+    assert get_visible_traits(card, upgraded=True) == ["固有", "消耗"]
+
+
+def test_get_visible_traits_sts1_special_cases():
+    after_image = {
+        "id": "AFTER_IMAGE",
+        "game": "sts1",
+        "description": "你每打出一张牌，都获得1点 格挡 。",
+        "innate": True,
+        "upgrade": {"description": "固有 。\n你每打出一张牌，都获得1点 格挡 。"},
+    }
+    assert get_visible_traits(after_image, upgraded=False) == []
+    assert get_visible_traits(after_image, upgraded=True) == ["固有"]
+
+    worship = {
+        "id": "WORSHIP",
+        "game": "sts1",
+        "description": "每回合开始时获得 5 点 格挡 。",
+        "self_retain": True,
+        "upgrade": {"description": "保留 。\n每回合开始时获得 5 点 格挡 。"},
+    }
+    assert get_visible_traits(worship, upgraded=False) == []
+    assert get_visible_traits(worship, upgraded=True) == ["保留"]
+
+    blasphemy = {
+        "id": "BLASPHEMY",
+        "game": "sts1",
+        "description": "获得 1 点 力量 。",
+        "self_retain": True,
+        "upgrade": {"description": "保留 。\n获得 1 点 力量 。"},
+    }
+    assert get_visible_traits(blasphemy, upgraded=False) == ["保留"]
+
+    adrenaline = {
+        "id": "ADRENALINE",
+        "game": "sts1",
+        "description": "获得 [G] 。\n抽2张牌。\n消耗 。",
+        "exhaust": True,
+    }
+    assert get_visible_traits(adrenaline, upgraded=False) == ["消耗"]
+
+
+def test_get_visible_traits_sts2_keywords():
+    card = {
+        "game": "sts2",
+        "keywords": ["Exhaust"],
+        "upgrade": {"add_keywords": ["Innate"], "remove_keywords": ["Exhaust"]},
+    }
+
+    assert get_visible_traits(card, upgraded=False) == ["消耗"]
+    assert get_visible_traits(card, upgraded=True) == ["固有"]
+
+
+def test_trait_guess_reveals_trait_without_wrong_count():
+    card = {
+        "game": "sts1",
+        "name": "测试卡",
+        "description": "造成 5 点伤害。",
+        "exhaust": True,
+    }
+    game = GameState(card)
+
+    result = game.handle_input("消耗")
+
+    assert result.status == "revealed"
+    assert result.reveal_target == "description"
+    assert game.wrong_count == 0
+
+
+def test_description_takes_priority_over_trait_match():
+    card = {
+        "game": "sts1",
+        "name": "测试卡",
+        "description": "保留 。",
+        "self_retain": True,
+    }
+    game = GameState(card)
+
+    result = game.handle_input("保留")
+
+    assert result.status == "revealed"
+    assert result.reveal_target == "description"
+    assert game.wrong_count == 0
+
     game.handle_input("ZZZ")
-    assert game.total_guess_count == 3
+    assert game.total_guess_count == 2
 
     game.handle_input("18")
-    assert game.total_guess_count == 3
+    assert game.total_guess_count == 2
 
 
 def test_total_guess_count_increments_only_once_per_handle_input():

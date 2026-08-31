@@ -12,6 +12,9 @@ from card_guess.qq.bot import handle_event
 DEFAULT_WS_URL = "ws://127.0.0.1:3001"
 BACKOFF_BASE_SECONDS = 2.0
 BACKOFF_MAX_SECONDS = 30.0
+EVENT_HANDLER_TIMEOUT_SECONDS = 10.0
+WS_SEND_TIMEOUT_SECONDS = 10.0
+WS_CONNECT_TIMEOUT_SECONDS = 10.0
 LOG_DIR = Path(__file__).resolve().parents[3] / "logs"
 LOG_FILE_NAME = "bot.log"
 LOG_MAX_BYTES = 5 * 1024 * 1024
@@ -42,9 +45,12 @@ def backoff_delay(attempt):
 
 
 async def connect_napcat(config):
-    return await websockets.connect(
-        config["ws_url"],
-        additional_headers=auth_headers(config),
+    return await asyncio.wait_for(
+        websockets.connect(
+            config["ws_url"],
+            additional_headers=auth_headers(config),
+        ),
+        timeout=WS_CONNECT_TIMEOUT_SECONDS,
     )
 
 
@@ -59,7 +65,16 @@ async def _receive_loop(websocket, handle):
             continue
 
         try:
-            await handle(websocket, event)
+            await asyncio.wait_for(
+                handle(websocket, event),
+                timeout=EVENT_HANDLER_TIMEOUT_SECONDS,
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                "事件处理超时，当前连接将关闭并重连，超时秒数=%.1f",
+                EVENT_HANDLER_TIMEOUT_SECONDS,
+            )
+            raise
         except Exception:
             logger.exception("处理事件时发生未预期异常")
 

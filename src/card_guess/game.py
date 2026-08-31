@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import jieba
 
-from card_guess.cards import render_description
+from card_guess.cards import get_visible_traits, render_description
 from card_guess.puzzle import (
     build_puzzle,
     count_effective_chars,
@@ -47,6 +47,7 @@ class GameState:
         self.rarity_revealed = False
         self.revealed_positions = set()
         self.revealed_name_positions = set()
+        self.revealed_traits = set()
 
     def guess_name_phrase(self, phrase):
         if self.ended:
@@ -107,9 +108,40 @@ class GameState:
             self._record_player_input(text, name_result.status)
             return name_result
 
+        description_match = self._find_description_match(text)
+        if description_match is not None:
+            new_positions = description_match - self.revealed_positions
+            if not new_positions:
+                result = GuessResult(status="already_revealed", reveal_target="description")
+            else:
+                self.reveal_positions(new_positions)
+                hint_type = self._on_successful_description_reveal()
+                result = GuessResult(
+                    status="revealed",
+                    revealed_count=len(new_positions),
+                    reveal_target="description",
+                    hint_type=hint_type,
+                )
+            self._record_player_input(text, result.status)
+            return result
+
         result = self.guess_description_phrase(text)
         self._record_player_input(text, result.status)
         return result
+
+    def _find_description_match(self, phrase):
+        if count_effective_chars(phrase) == 0:
+            return None
+
+        if self.card.get("description") is None:
+            return None
+
+        description = render_description(self.card)
+        matched_positions = find_phrase_positions(
+            description,
+            phrase,
+        )
+        return matched_positions or None
 
     def guess_description_phrase(self, phrase):
         if self.ended:
@@ -156,6 +188,39 @@ class GameState:
             revealed_count=len(new_positions),
             reveal_target="description",
             hint_type=hint_type,
+        )
+
+    def guess_trait_phrase(self, phrase):
+        if self.ended:
+            return GuessResult(status="ended")
+
+        if count_effective_chars(phrase) == 0:
+            return GuessResult(status="invalid")
+
+        traits = get_visible_traits(
+            self.card,
+            upgraded=bool(self.card.get("upgraded", False)),
+        )
+        if not traits:
+            return None
+
+        matched_trait = None
+        for trait in traits:
+            if find_phrase_positions(trait, phrase):
+                matched_trait = trait
+                break
+
+        if matched_trait is None:
+            return None
+
+        if matched_trait in self.revealed_traits:
+            return GuessResult(status="already_revealed", reveal_target="trait")
+
+        self.revealed_traits.add(matched_trait)
+        return GuessResult(
+            status="revealed",
+            revealed_count=1,
+            reveal_target="trait",
         )
 
     def _record_player_input(self, text, status):

@@ -186,6 +186,150 @@ def test_received_event_is_forwarded_to_handle():
     assert seen == [{"post_type": "message", "group_id": 1}]
 
 
+def test_event_handler_timeout_reconnects(monkeypatch):
+    monkeypatch.setattr(runtime, "EVENT_HANDLER_TIMEOUT_SECONDS", 0.01, raising=False)
+    reconnect_started = {"value": False}
+
+    async def fake_handle(websocket, event):
+        await asyncio.sleep(999)
+
+    async def fake_connect(config):
+        return FakeWebSocket([json.dumps({"post_type": "message", "group_id": 1})], disconnect=False)
+
+    async def fake_sleep(seconds):
+        reconnect_started["value"] = True
+        raise asyncio.CancelledError()
+
+    async def runner():
+        await runtime.run_forever(make_config(), handle=fake_handle, connect=fake_connect, sleep=fake_sleep)
+
+    with pytest.raises(asyncio.CancelledError):
+        asyncio.run(asyncio.wait_for(runner(), timeout=1.0))
+
+    assert reconnect_started["value"] is True
+
+
+def test_websocket_send_timeout_reconnects(monkeypatch):
+    monkeypatch.setattr(runtime, "WS_SEND_TIMEOUT_SECONDS", 0.01, raising=False)
+    reconnect_started = {"value": False}
+
+    class SlowSendWebSocket(FakeWebSocket):
+        async def send(self, payload):
+            await asyncio.sleep(999)
+
+    async def fake_handle(websocket, event):
+        from card_guess.qq.bot import handle_event
+
+        await handle_event(websocket, {
+            "post_type": "message",
+            "message_type": "group",
+            "self_id": 123,
+            "group_id": 456,
+            "message": [
+                {"type": "at", "data": {"qq": "123"}},
+                {"type": "text", "data": {"text": " ping"}},
+            ],
+        })
+
+    async def fake_connect(config):
+        return SlowSendWebSocket([
+            json.dumps({
+                "post_type": "message",
+                "message_type": "group",
+                "self_id": 123,
+                "group_id": 456,
+                "message": [
+                    {"type": "at", "data": {"qq": "123"}},
+                    {"type": "text", "data": {"text": " ping"}},
+                ],
+            })
+        ], disconnect=False)
+
+    async def fake_sleep(seconds):
+        reconnect_started["value"] = True
+        raise asyncio.CancelledError()
+
+    async def runner():
+        await runtime.run_forever(make_config(), handle=fake_handle, connect=fake_connect, sleep=fake_sleep)
+
+    with pytest.raises(asyncio.CancelledError):
+        asyncio.run(asyncio.wait_for(runner(), timeout=1.0))
+
+    assert reconnect_started["value"] is True
+
+
+def test_normal_handler_keeps_serial_order(monkeypatch):
+    seen = []
+
+    async def fake_handle(websocket, event):
+        seen.append(event["id"])
+        await asyncio.sleep(0)
+
+    async def fake_connect(config):
+        return FakeWebSocket([
+            json.dumps({"id": 1}),
+            json.dumps({"id": 2}),
+        ], disconnect=False)
+
+    async def fake_sleep(seconds):
+        raise asyncio.CancelledError()
+
+    with pytest.raises(asyncio.CancelledError):
+        asyncio.run(runtime.run_forever(
+            make_config(),
+            handle=fake_handle,
+            connect=fake_connect,
+            sleep=fake_sleep,
+        ))
+
+    assert seen == [1, 2]
+
+
+def test_handler_exception_does_not_kill_runtime(monkeypatch):
+    seen = []
+
+    async def fake_handle(websocket, event):
+        if event["id"] == 1:
+            raise ValueError("boom")
+        seen.append(event["id"])
+
+    async def fake_connect(config):
+        return FakeWebSocket([
+            json.dumps({"id": 1}),
+            json.dumps({"id": 2}),
+        ], disconnect=False)
+
+    async def fake_sleep(seconds):
+        raise asyncio.CancelledError()
+
+    with pytest.raises(asyncio.CancelledError):
+        asyncio.run(runtime.run_forever(
+            make_config(),
+            handle=fake_handle,
+            connect=fake_connect,
+            sleep=fake_sleep,
+        ))
+
+    assert seen == [2]
+
+
+def test_main_configures_logging_in_stable_dir(monkeypatch, tmp_path):
+    monkeypatch.setattr(runtime, "LOG_DIR", tmp_path / "stable-logs", raising=False)
+    monkeypatch.setattr(runtime, "_logging_configured", False)
+    monkeypatch.setattr(runtime, "load_config", lambda env=None: {"token": "test-token", "ws_url": "ws://127.0.0.1:3001"})
+
+    async def fake_run_forever(config):
+        return None
+
+    monkeypatch.setattr(runtime, "run_forever", fake_run_forever)
+
+    runtime.main()
+
+    log_path = tmp_path / "stable-logs" / "bot.log"
+    assert log_path.exists()
+    assert "test-token" not in log_path.read_text(encoding="utf-8", errors="replace")
+
+
 def test_runtime_defaults_to_existing_bot_handle_event():
     from card_guess.qq.bot import handle_event
 
