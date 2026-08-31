@@ -14,6 +14,46 @@ STANDARD_POOLS = {
     "curse",
     "status",
     "event",
+    "quest",
+    "token",
+}
+
+# 默认随机池（开始1 / 开始2）的排除规则。显式专项入口与查卡不受影响。
+DEFAULT_EXCLUDED_POOLS = {"curse", "status"}
+
+# 默认池显式排除的卡牌（按 CARD_ID，按代际区分）。
+DEFAULT_EXCLUDED_CARD_IDS = {
+    "sts1": {
+        # 基础打击 / 防御
+        "STRIKE_R", "STRIKE_G", "STRIKE_B", "STRIKE_P",
+        "DEFEND_R", "DEFEND_G", "DEFEND_B", "DEFEND_P",
+        # 无色 blacklist（此前确定，STS1 保持）
+        "FINESSE", "FLASH_OF_STEEL", "MASTER_OF_STRATEGY",
+        "PURITY", "SECRET_TECHNIQUE", "SECRET_WEAPON", "THINKING_AHEAD",
+        # 普通负面状态（STS1 中位于无色池）
+        "BURN", "DAZED", "SLIMED", "VOID", "WOUND",
+    },
+    "sts2": {
+        # 基础打击 / 防御
+        "STRIKE_IRONCLAD", "STRIKE_SILENT", "STRIKE_DEFECT",
+        "STRIKE_NECROBINDER", "STRIKE_REGENT",
+        "DEFEND_IRONCLAD", "DEFEND_SILENT", "DEFEND_DEFECT",
+        "DEFEND_NECROBINDER", "DEFEND_REGENT",
+        # 探寻打击（不进入默认池）
+        "SEEKER_STRIKE",
+    },
+}
+
+# 覆盖 Curse/Status 排除的“恶心名牌”特殊保留（按代际区分）。
+INCLUDED_SPECIAL_CARD_IDS = {
+    "sts1": {
+        "NORMALITY",  # 凡庸
+        "PAIN",  # 疼痛
+        "DECAY",  # 腐朽
+    },
+    "sts2": {
+        "BAD_LUCK",  # 霉运
+    },
 }
 
 def load_raw_cards(game):
@@ -50,7 +90,7 @@ TRAIT_PRIORITY = [
     "消耗",
     "保留",
     "虚无",
-    "潜行",
+    "奇巧",
     "永恒",
     "不能被打出",
 ]
@@ -61,7 +101,7 @@ TRAIT_MAP = {
     "innate": "固有",
     "retain": "保留",
     "self_retain": "保留",
-    "Sly": "潜行",
+    "Sly": "奇巧",
     "Eternal": "永恒",
     "Unplayable": "不能被打出",
     "Exhaust": "消耗",
@@ -193,12 +233,15 @@ def get_visible_traits(card, upgraded=False):
     if not isinstance(card, dict):
         return []
 
+    if card.get("game") == "sts2":
+        return _sts2_visible_traits(card, upgraded=upgraded)
+
     if card.get("game") == "sts1" or card.get("id") in STS1_OVERRIDE or any(
         key in card for key in ("exhaust", "ethereal", "innate", "retain", "self_retain")
     ):
         return _sts1_visible_traits(card, upgraded=upgraded)
 
-    if card.get("game") == "sts2" or "keywords" in card or (
+    if "keywords" in card or (
         isinstance(card.get("upgrade"), dict)
         and (
             "add_keywords" in card.get("upgrade", {})
@@ -302,7 +345,7 @@ def build_display_description(card, upgraded=False):
         suffix_order = ["消耗"]
     elif card.get("game") == "sts2":
         prefix_order = ["固有", "保留", "虚无", "不能被打出"]
-        suffix_order = ["消耗", "潜行", "永恒"]
+        suffix_order = ["消耗", "奇巧", "永恒"]
     else:
         prefix_order = []
         suffix_order = []
@@ -332,7 +375,8 @@ def load_standard_cards(game):
     cards = load_cards(game)
     return [card for card in cards if is_standard_card(card)]
 
-def load_game_cards(mode):
+
+def load_all_standard_cards(mode):
     if mode == "sts1":
         return load_standard_cards("sts1")
 
@@ -346,6 +390,25 @@ def load_game_cards(mode):
         )
 
     raise ValueError(f"未知模式: {mode}")
+
+
+def is_default_card(card):
+    game = card.get("game")
+    if card["id"] in DEFAULT_EXCLUDED_CARD_IDS.get(game, ()):
+        return False
+
+    if card["pool"] in DEFAULT_EXCLUDED_POOLS:
+        return card["id"] in INCLUDED_SPECIAL_CARD_IDS.get(game, ())
+
+    return True
+
+
+def load_game_cards(mode):
+    return [
+        card
+        for card in load_all_standard_cards(mode)
+        if is_default_card(card)
+    ]
 
 
 if __name__ == "__main__":

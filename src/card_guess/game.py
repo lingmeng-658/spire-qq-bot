@@ -12,16 +12,16 @@ from card_guess.puzzle import (
 
 
 def get_hint_type(wrong_count):
-    if wrong_count == 3:
+    if wrong_count == 2:
         return "rarity"
 
-    if wrong_count in {6, 9}:
+    if wrong_count == 4:
         return "description"
 
-    if wrong_count == 10:
+    if wrong_count == 6:
         return "name"
 
-    if wrong_count >= 12 and wrong_count % 2 == 0:
+    if wrong_count >= 8 and wrong_count % 2 == 0:
         return "description" if wrong_count % 4 == 0 else "name"
 
     return None
@@ -42,6 +42,8 @@ class GameState:
         self.wrong_count = 0
         self.total_guess_count = 0
         self.description_reveal_count = 0
+        self.successful_reveal_count = 0
+        self.early_name_hint_triggered = False
         self.wrong_guesses = []
         self.ended = False
         self.rarity_revealed = False
@@ -75,6 +77,7 @@ class GameState:
             )
 
         self.revealed_name_positions.update(new_positions)
+        self._record_successful_reveal()
 
         if len(self.revealed_name_positions) >= len(name):
             self.ended = True
@@ -230,20 +233,29 @@ class GameState:
         if status == "wrong" and text not in self.wrong_guesses:
             self.wrong_guesses.append(text)
 
+    def _record_successful_reveal(self):
+        self.successful_reveal_count += 1
+
+        if self.early_name_hint_triggered or self.successful_reveal_count < 3:
+            return None
+
+        self.early_name_hint_triggered = True
+        unknown_positions = [
+            index
+            for index in range(len(self.card["name"]))
+            if index not in self.revealed_name_positions
+        ]
+        if len(unknown_positions) <= 1:
+            return None
+
+        hint = self.name_hint()
+        if hint is not None:
+            return "name"
+        return None
+
     def _on_successful_description_reveal(self):
         self.description_reveal_count += 1
-
-        if self.description_reveal_count >= 4 and (self.description_reveal_count - 4) % 3 == 0:
-            unknown_positions = [
-                index
-                for index in range(len(self.card["name"]))
-                if index not in self.revealed_name_positions
-            ]
-            if len(unknown_positions) > 1:
-                hint = self.name_hint()
-                if hint is not None:
-                    return "name"
-        return None
+        return self._record_successful_reveal()
 
     def should_hint(self):
         return get_hint_type(self.wrong_count) is not None

@@ -1,6 +1,6 @@
 import random
 
-from card_guess.cards import load_game_cards, render_description
+from card_guess.cards import load_all_standard_cards, load_game_cards, render_description
 from card_guess.game import GameState
 from card_guess.puzzle import find_opening_reveal_positions
 
@@ -22,10 +22,16 @@ CHARACTER_ALIASES = {
     "骨妹": "necrobinder",
     "摄政王": "regent",
     "储君": "regent",
+    "无色牌": "colorless",
     "无色": "colorless",
     "诅咒": "curse",
     "状态": "status",
+    "事件牌": "event",
     "事件": "event",
+    "任务牌": "quest",
+    "任务": "quest",
+    "衍生牌": "token",
+    "衍生": "token",
 }
 CHARACTER_DISPLAY = {value: key for key, value in CHARACTER_ALIASES.items()}
 SESSIONS = {}
@@ -76,11 +82,16 @@ def start(group_id, mode, character=None):
     if character is not None:
         resolved_character = resolve_character(character)
 
-    cards = load_game_cards(mode)
     if resolved_character is not None:
-        cards = [card for card in cards if card.get("pool") == resolved_character]
+        cards = [
+            card
+            for card in load_all_standard_cards(mode)
+            if card.get("pool") == resolved_character
+        ]
         if not cards:
-            raise ValueError(f"角色 '{resolved_character}' 在模式 {mode} 中没有可用卡牌")
+            raise ValueError("当前版本没有可用的该类题库")
+    else:
+        cards = load_game_cards(mode)
 
     game = _create_game_state_for_mode(mode, cards=cards)
     SESSIONS[group_id] = game

@@ -121,6 +121,9 @@ def _parse_start_request(text):
         if command == word:
             return START_SUFFIX_MODES[""], None
 
+        if not command.startswith(word):
+            continue
+
         if command.startswith(word + " "):
             remainder = command[len(word):].strip()
             return START_SUFFIX_MODES[""], remainder or None

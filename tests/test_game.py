@@ -1,6 +1,11 @@
 import random
 
-from card_guess.cards import build_display_description, get_visible_traits, render_description
+from card_guess.cards import (
+    build_display_description,
+    get_visible_traits,
+    load_cards,
+    render_description,
+)
 from card_guess.game import GameState, get_hint_type
 
 
@@ -121,23 +126,38 @@ def test_display_description_respects_upgraded_trait_special_cases():
 
 
 def test_get_hint_type_schedule():
-    assert get_hint_type(3) == "rarity"
-    assert get_hint_type(4) is None
-    assert get_hint_type(6) == "description"
-    assert get_hint_type(9) == "description"
+    assert get_hint_type(2) == "rarity"
+    assert get_hint_type(3) is None
+    assert get_hint_type(4) == "description"
+    assert get_hint_type(5) is None
+    assert get_hint_type(6) == "name"
+    assert get_hint_type(7) is None
+    assert get_hint_type(8) == "description"
+    assert get_hint_type(9) is None
     assert get_hint_type(10) == "name"
-    assert get_hint_type(11) is None
     assert get_hint_type(12) == "description"
     assert get_hint_type(14) == "name"
     assert get_hint_type(16) == "description"
-    assert get_hint_type(18) == "name"
-    assert get_hint_type(20) == "description"
 
 
-def test_hint_schedule_has_no_four_step_rule():
+def test_successful_reveal_count_triggers_early_name_hint(monkeypatch):
+    card = {"game": "sts1", "name": "ABCD", "description": "A B C D"}
+    game = GameState(card)
+    game.revealed_name_positions = {0}
+    game.successful_reveal_count = 2
+    monkeypatch.setattr(random, "choice", lambda seq: seq[0])
+
+    result = game._on_successful_description_reveal()
+
+    assert result == "name"
+    assert len(game.revealed_name_positions) == 2
+    assert 1 in game.revealed_name_positions
+
+
+def test_hint_schedule_starts_at_two_wrongs_and_uses_alt_pattern():
     game = GameState({"name": "杂技"})
 
-    for _ in range(3):
+    for _ in range(2):
         game.handle_input("A")
     assert game.should_hint() is True
     assert game.rarity_revealed is True
@@ -145,7 +165,13 @@ def test_hint_schedule_has_no_four_step_rule():
     game = GameState({"name": "杂技"})
     for _ in range(4):
         game.handle_input("A")
-    assert game.should_hint() is False
+    assert game.should_hint() is True
+    assert game.rarity_revealed is True
+
+    game = GameState({"name": "杂技"})
+    for _ in range(6):
+        game.handle_input("A")
+    assert game.should_hint() is True
 
 
 def test_end_game_returns_answer():
@@ -457,12 +483,13 @@ def test_description_reveal_count_only_counts_player_description_reveals():
 def test_success_description_line_triggers_name_hint_on_schedule(monkeypatch):
     monkeypatch.setattr("random.choice", lambda seq: seq[0])
 
-    for expected in [4, 7, 10, 13]:
+    for count in [3, 6, 9, 12]:
         game = GameState({"name": "ABCD", "description": "A B C D E F G H I J K L"})
-        game.description_reveal_count = expected - 1
+        game.successful_reveal_count = count - 1
+        game.revealed_name_positions = {0}
         result = game._on_successful_description_reveal()
         assert result == "name"
-        assert len(game.revealed_name_positions) == 1
+        assert len(game.revealed_name_positions) == 2
 
 
 def test_success_description_line_does_not_trigger_when_name_has_too_few_unknown_chars():
@@ -564,6 +591,101 @@ def test_get_visible_traits_sts2_keywords():
 
     assert get_visible_traits(card, upgraded=False) == ["消耗"]
     assert get_visible_traits(card, upgraded=True) == ["固有"]
+
+
+def test_sts2_normalized_card_uses_sts2_keyword_traits():
+    card = {
+        "game": "sts2",
+        "id": "TEST",
+        "name": "测试",
+        "description": "获得6点格挡。",
+        "keywords": ["Sly"],
+        "upgrade": {},
+        "exhaust": False,
+        "ethereal": False,
+        "innate": False,
+        "retain": False,
+        "self_retain": False,
+    }
+
+    assert get_visible_traits(card) == ["奇巧"]
+
+
+def test_sts2_all_seven_keywords_display_from_keywords():
+    cases = [
+        ("Eternal", "永恒"),
+        ("Ethereal", "虚无"),
+        ("Exhaust", "消耗"),
+        ("Innate", "固有"),
+        ("Retain", "保留"),
+        ("Sly", "奇巧"),
+        ("Unplayable", "不能被打出"),
+    ]
+    for keyword, zh_name in cases:
+        card = {
+            "game": "sts2",
+            "id": "TEST",
+            "name": "测试",
+            "description": "获得6点格挡。",
+            "keywords": [keyword],
+            "upgrade": {},
+            "exhaust": False,
+            "ethereal": False,
+            "innate": False,
+            "retain": False,
+            "self_retain": False,
+        }
+        assert get_visible_traits(card) == [zh_name], keyword
+        assert f"{zh_name}。" in build_display_description(card), keyword
+
+
+def test_sts2_untouchable_shows_sly_trait():
+    card = next(c for c in load_cards("sts2") if c["id"] == "UNTOUCHABLE")
+
+    assert get_visible_traits(card) == ["奇巧"]
+    assert "奇巧。" in build_display_description(card)
+
+
+def test_sts2_sly_guess_hits_description():
+    card = next(c for c in load_cards("sts2") if c["id"] == "UNTOUCHABLE")
+    game = GameState(card)
+
+    result = game.handle_input("奇巧")
+
+    assert result.status == "revealed"
+    assert result.reveal_target == "description"
+    assert game.wrong_count == 0
+
+
+def test_sts2_upgrade_add_remove_keywords_display():
+    card = {
+        "game": "sts2",
+        "id": "TEST",
+        "name": "测试",
+        "description": "获得6点格挡。",
+        "keywords": ["Exhaust"],
+        "upgrade": {"add_keywords": ["Innate"], "remove_keywords": ["Exhaust"]},
+        "exhaust": False,
+        "ethereal": False,
+        "innate": False,
+        "retain": False,
+        "self_retain": False,
+    }
+
+    base_display = build_display_description(card, upgraded=False)
+    upgraded_display = build_display_description(card, upgraded=True)
+
+    assert "消耗。" in base_display
+    assert "固有。" not in base_display
+    assert "固有。" in upgraded_display
+    assert "消耗。" not in upgraded_display
+
+
+def test_sts2_chill_upgrade_removes_exhaust():
+    card = next(c for c in load_cards("sts2") if c["id"] == "CHILL")
+
+    assert get_visible_traits(card, upgraded=False) == ["消耗"]
+    assert get_visible_traits(card, upgraded=True) == []
 
 
 def test_trait_guess_reveals_trait_without_wrong_count():

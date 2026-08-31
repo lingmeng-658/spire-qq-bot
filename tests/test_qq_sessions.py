@@ -109,7 +109,7 @@ def test_start_filters_cards_for_character(monkeypatch):
         {"name": "Silent Card", "pool": "silent", "game": "sts1", "description": "Gain 5 block.", "vars": {}, "type": "Skill", "cost": 1, "star_cost": None, "rarity": "Common"},
     ]
 
-    monkeypatch.setattr(sessions, "load_game_cards", lambda mode: cards)
+    monkeypatch.setattr(sessions, "load_all_standard_cards", lambda mode: cards)
     monkeypatch.setattr(sessions.random, "choice", lambda items: items[0])
     monkeypatch.setattr(sessions, "find_opening_reveal_positions", lambda description: {1})
 
@@ -544,3 +544,27 @@ def test_handle_event_ignores_malformed_request_event():
     asyncio.run(run())
 
     assert websocket.sent == []
+
+
+def test_resolve_character_accepts_special_pool_aliases():
+    assert sessions.resolve_character("任务") == "quest"
+    assert sessions.resolve_character("任务牌") == "quest"
+    assert sessions.resolve_character("衍生") == "token"
+    assert sessions.resolve_character("衍生牌") == "token"
+    assert sessions.resolve_character("无色牌") == "colorless"
+    assert sessions.resolve_character("事件牌") == "event"
+    assert sessions.resolve_character("无色") == "colorless"
+    assert sessions.resolve_character("事件") == "event"
+
+
+def test_start_with_empty_pool_raises_no_fallback_message(monkeypatch):
+    cards = [
+        {"name": "Ironclad Card", "pool": "ironclad", "game": "sts1", "description": "Deal 3 damage.", "vars": {}, "type": "Attack", "cost": 1, "star_cost": None, "rarity": "Common"},
+    ]
+
+    monkeypatch.setattr(sessions, "load_all_standard_cards", lambda mode: cards)
+
+    with pytest.raises(ValueError, match="当前版本没有可用的该类题库"):
+        sessions.start(23, "sts1", "任务")
+
+    assert sessions.get(23) is None

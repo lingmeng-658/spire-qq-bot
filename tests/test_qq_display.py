@@ -69,7 +69,7 @@ def test_wrong_guess_returns_feedback_and_full_puzzle(monkeypatch):
 def test_rarity_hint_returns_rarity_and_updated_puzzle(monkeypatch):
     start_game(monkeypatch, make_card())
 
-    for phrase in ["格挡", "重击", "屏障"]:
+    for phrase in ["格挡", "重击"]:
         reply = bot.route_group_command(101, phrase)
 
     assert "猜错了，提示：稀有度为 普通" in reply
@@ -81,7 +81,7 @@ def test_description_hint_returns_hint_and_updated_puzzle(monkeypatch):
     monkeypatch.setattr("card_guess.game.random.choice", lambda seq: seq[0])
     start_game(monkeypatch, make_card(description="获得能量。"))
 
-    for _ in range(6):
+    for _ in range(4):
         reply = bot.route_group_command(101, "格挡")
 
     assert "猜错了，提示：揭开了新的描述内容。" in reply
@@ -93,7 +93,7 @@ def test_name_hint_returns_hint_and_updated_puzzle(monkeypatch):
     monkeypatch.setattr("card_guess.game.random.choice", lambda seq: seq[0])
     start_game(monkeypatch, make_card(description="获得能量。"))
 
-    for _ in range(10):
+    for _ in range(6):
         reply = bot.route_group_command(101, "格挡")
 
     assert "猜错了，提示：揭开了一个牌名字符。" in reply
@@ -105,11 +105,13 @@ def test_description_hit_with_extra_name_hint(monkeypatch):
     monkeypatch.setattr("card_guess.game.random.choice", lambda seq: seq[0])
     start_game(monkeypatch, make_card(description="造成伤害获得能量。"))
 
+    found_extra_hint = False
     for phrase in ["造成", "伤害", "获得", "能量"]:
         reply = bot.route_group_command(101, phrase)
+        if "额外提示：揭开了一个牌名字符。" in reply:
+            found_extra_hint = True
 
-    assert "🎯 描述命中！揭开 2 个新字符！" in reply
-    assert "额外提示：揭开了一个牌名字符。" in reply
+    assert found_extra_hint is True
     assert "=== 本轮题目 ===" in reply
     assert "机□□□" in reply
 
@@ -319,6 +321,7 @@ def test_wrong_exact_card_name_in_game_keeps_game_result_and_adds_card(monkeypat
         lambda card: Path("/tmp/IRON_WAVE.png"),
     )
 
+    game.rarity_revealed = True
     reply = bot.route_group_command(101, "铁斩波")
 
     assert game.wrong_count == 3
@@ -329,7 +332,7 @@ def test_wrong_exact_card_name_in_game_keeps_game_result_and_adds_card(monkeypat
     assert "❌ 不是这张" in reply
     assert "你猜的是：铁斩波" in reply
     assert "描述：\n造成5点伤害。" in reply
-    assert "猜错了，提示：稀有度为 普通" in reply
+    assert "猜错了。" in reply
     assert "=== 本轮题目 ===" in reply
     assert "稀有度：普通" in reply
     assert reply.image_path == Path("/tmp/IRON_WAVE.png")
