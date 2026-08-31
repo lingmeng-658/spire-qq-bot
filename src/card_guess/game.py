@@ -33,6 +33,7 @@ class GuessResult:
     revealed_count: int = 0
     reveal_target: str | None = None
     hint_type: str | None = None
+    terminal_reason: str | None = None
 
 
 class GameState:
@@ -120,7 +121,11 @@ class GameState:
         if self.card.get("description") is None:
             self.wrong_count += 1
             hint_type = self._apply_automatic_hint_for_count(self.wrong_count)
-            return GuessResult(status="wrong", hint_type=hint_type)
+            return GuessResult(
+                status="wrong",
+                hint_type=hint_type,
+                terminal_reason="hint_exhausted" if self.ended else None,
+            )
 
         description = render_description(self.card)
 
@@ -132,7 +137,11 @@ class GameState:
         if not matched_positions:
             self.wrong_count += 1
             hint_type = self._apply_automatic_hint_for_count(self.wrong_count)
-            return GuessResult(status="wrong", hint_type=hint_type)
+            return GuessResult(
+                status="wrong",
+                hint_type=hint_type,
+                terminal_reason="hint_exhausted" if self.ended else None,
+            )
 
         new_positions = matched_positions - self.revealed_positions
 

@@ -41,6 +41,14 @@ def load_cards(game):
     return [normalize_card(card, game) for card in raw_cards]
 
 
+def find_cards_by_exact_name(cards, name):
+    return [
+        card
+        for card in cards
+        if isinstance(card, dict) and card.get("name") == name
+    ]
+
+
 def format_cost(card):
     if card["cost"] == -1:
         return "X"

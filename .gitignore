@@ -10,8 +10,14 @@ venv/
 # Raw downloaded card data
 data/raw/
 
+# Downloaded card images
+data/images/
+
 # Generated analysis reports
 data/*.md
+
+# Runtime logs
+logs/
 
 # IDE
 .vscode/
@@ -20,3 +26,5 @@ data/*.md
 # OS
 .DS_Store
 Thumbs.db
+
+node_modules/

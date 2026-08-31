@@ -36,7 +36,13 @@ RARITY_NAMES = {
     "Common": "普通",
     "Uncommon": "罕见",
     "Rare": "稀有",
+    "Curse": "诅咒",
+    "Special": "特殊",
     "Ancient": "先古",
+    "Event": "事件",
+    "Quest": "任务",
+    "Status": "状态",
+    "Token": "衍生",
 }
 
 OPENING_REVEAL_TOKENS = {
