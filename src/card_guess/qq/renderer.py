@@ -1,22 +1,32 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from card_guess.cards import format_cost, format_star_cost, render_description
 from card_guess.puzzle import format_pool, format_rarity, format_type
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+STS2_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts2_card_stats.json"
 GAME_NAMES = {
     "sts1": "杀戮尖塔 1",
     "sts2": "杀戮尖塔 2",
 }
 
+_sts2_card_stats_cache = None
+
 
 class RenderedReply(str):
-    def __new__(cls, text: str, image_path: Path | None = None):
+    def __new__(cls, text: str, image_path: Path | None = None, image_paths=None):
         obj = str.__new__(cls, text)
         obj.text = text
         obj.image_path = image_path
+        if image_paths is not None:
+            obj.image_paths = tuple(image_paths)
+        elif image_path is not None:
+            obj.image_paths = (image_path,)
+        else:
+            obj.image_paths = ()
         return obj
 
 
@@ -35,6 +45,107 @@ def resolve_local_card_image(card):
         return image_path
 
     return None
+
+
+def resolve_local_upgraded_card_image(card):
+    if not isinstance(card, dict):
+        return None
+
+    game = str(card.get("game") or "").strip()
+    card_id = str(card.get("id") or "").strip()
+
+    if not game or not card_id:
+        return None
+
+    image_path = REPO_ROOT / "data" / "images" / game / "upgraded" / f"{card_id}.png"
+    if image_path.exists():
+        return image_path
+
+    return None
+
+
+def load_sts2_card_stats():
+    global _sts2_card_stats_cache
+    if _sts2_card_stats_cache is None:
+        try:
+            with open(STS2_STATS_SNAPSHOT, encoding="utf-8") as f:
+                _sts2_card_stats_cache = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            _sts2_card_stats_cache = {}
+    return _sts2_card_stats_cache
+
+
+_ACTS = ("act_1", "act_2", "act_3")
+
+
+def _metric_value(act_data, key):
+    if not isinstance(act_data, dict):
+        return None
+    metric = act_data.get(key)
+    if not isinstance(metric, dict):
+        return None
+    value = metric.get("value")
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return None
+    return value
+
+
+def _format_metric_row(acts, key, formatter):
+    if not isinstance(acts, dict):
+        return None
+    values = [_metric_value(acts.get(act), key) for act in _ACTS]
+    if not any(value is not None for value in values):
+        return None
+    return " / ".join(formatter(value) if value is not None else "-" for value in values)
+
+
+def render_sts2_stats(card, snapshot):
+    if not isinstance(snapshot, dict):
+        return ""
+    card_stats = snapshot.get("cards")
+    if not isinstance(card_stats, dict):
+        return ""
+    entry = card_stats.get(str(card.get("id") or ""))
+    if not isinstance(entry, dict):
+        return ""
+
+    untapped = entry.get("untapped")
+    reward = untapped.get("card_reward") if isinstance(untapped, dict) else None
+    shop = untapped.get("shop") if isinstance(untapped, dict) else None
+    smith = untapped.get("smith") if isinstance(untapped, dict) else None
+
+    sections = []
+
+    pick_row = _format_metric_row(reward, "pick_rate", lambda v: f"{v:.0f}%")
+    if pick_row is not None:
+        sections.append(("第一/二/三幕抓取率", pick_row))
+
+    purchase_row = _format_metric_row(shop, "purchase_rate", lambda v: f"{v:.0f}%")
+    if purchase_row is not None:
+        sections.append(("第一/二/三幕商店购买率", purchase_row))
+
+    upgrade_row = _format_metric_row(smith, "upgrade_rate", lambda v: f"{v:.0f}%")
+    if upgrade_row is not None:
+        sections.append(("第一/二/三幕升级率", upgrade_row))
+
+    delta_row = _format_metric_row(reward, "run_win_rate_impact", lambda v: f"{v:+.1f}")
+    if delta_row is not None:
+        sections.append(("第一/二/三幕胜率差", f"{delta_row} 个百分点"))
+
+    spire_codex = entry.get("spire_codex")
+    presence_line = None
+    if isinstance(spire_codex, dict):
+        presence = _metric_value(spire_codex, "final_deck_presence_rate")
+        if presence is not None:
+            presence_line = f"终局卡组出现率：{presence:.2f}%"
+
+    if not sections and presence_line is None:
+        return ""
+    parts = [f"{label}\n{line}" for label, line in sections]
+    if presence_line is not None:
+        parts.append(presence_line)
+    body = "\n\n".join(parts)
+    return f"=== 二代统计 ===\n{body}"
 
 
 def _format_game(card):
@@ -76,10 +187,17 @@ def render_card_candidates(name, cards):
 def render_card_query_reply(cards):
     if len(cards) == 1:
         card = cards[0]
-        return RenderedReply(
-            f"=== 卡牌资料 ===\n{render_card_details(card)}",
-            image_path=resolve_local_card_image(card),
-        )
+        text = f"=== 卡牌资料 ===\n{render_card_details(card)}"
+        image_path = resolve_local_card_image(card)
+        image_paths = None
+        if card.get("game") == "sts2":
+            stats_text = render_sts2_stats(card, load_sts2_card_stats())
+            if stats_text:
+                text = f"{text}\n\n{stats_text}"
+            upgraded_path = resolve_local_upgraded_card_image(card)
+            if upgraded_path is not None:
+                image_paths = tuple(p for p in (image_path, upgraded_path) if p is not None)
+        return RenderedReply(text, image_path=image_path, image_paths=image_paths)
 
     return RenderedReply(
         render_card_candidates(cards[0].get("name", ""), cards),

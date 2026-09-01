@@ -1,0 +1,40 @@
+{
+  "entity_type": "cards",
+  "bracket": "all",
+  "total_runs": 1000,
+  "rows": [
+    {
+      "id": "EMBER_LANCE",
+      "upgraded": false,
+      "picks": 250,
+      "wins": 140,
+      "losses": 110,
+      "offered": 900,
+      "picked": 360,
+      "pick_rate": 40.0,
+      "pick_rate_by_act": [45.0, 35.0, 20.0]
+    },
+    {
+      "id": "EMBER_LANCE",
+      "upgraded": true,
+      "picks": 100,
+      "wins": 70,
+      "losses": 30,
+      "offered": 0,
+      "picked": 0,
+      "pick_rate": null,
+      "pick_rate_by_act": [null, null, null]
+    },
+    {
+      "id": "SOURCE_ONLY",
+      "upgraded": false,
+      "picks": 10,
+      "wins": 5,
+      "losses": 5,
+      "offered": 20,
+      "picked": 4,
+      "pick_rate": 20.0,
+      "pick_rate_by_act": [20.0, null, null]
+    }
+  ]
+}

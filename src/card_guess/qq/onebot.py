@@ -34,11 +34,18 @@ def extract_mentioned_text(event: dict) -> str | None:
     return "".join(text_parts).strip()
 
 
-def build_message_segments(text: str, image_path=None):
+def build_message_segments(text: str, image_path=None, image_paths=None):
     segments = [{"type": "text", "data": {"text": text}}]
 
-    if image_path is not None:
-        file_value = Path(image_path).as_posix()
+    if image_paths is not None:
+        paths = list(image_paths)
+    elif image_path is not None:
+        paths = [image_path]
+    else:
+        paths = []
+
+    for path in paths:
+        file_value = Path(path).as_posix()
         segments.append({
             "type": "image",
             "data": {"file": file_value},

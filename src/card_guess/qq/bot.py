@@ -303,9 +303,18 @@ async def send_group_message(websocket, group_id: int, payload):
 
 
 async def _send_group_reply(websocket, group_id: int, reply):
-    if isinstance(reply, RenderedReply) and reply.image_path is not None:
-        await send_group_message(websocket, group_id, build_message_segments(reply.text, reply.image_path))
-        return
+    if isinstance(reply, RenderedReply):
+        image_paths = getattr(reply, "image_paths", None)
+        if image_paths:
+            await send_group_message(
+                websocket,
+                group_id,
+                build_message_segments(reply.text, image_paths=image_paths),
+            )
+            return
+        if reply.image_path is not None:
+            await send_group_message(websocket, group_id, build_message_segments(reply.text, reply.image_path))
+            return
     await send_group_message(websocket, group_id, str(reply))
 
 
