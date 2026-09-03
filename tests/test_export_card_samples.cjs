@@ -3,11 +3,16 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
+const { chromium } = require('playwright');
 
 const {
   buildExportPlan,
+  browserLaunchOptions,
+  cardHasUpgrade,
   checkRendererAvailability,
+  clickUpgradeToggle,
   collectCardsForExport,
+  launchBrowser,
   parseArgs,
   portraitFilename,
   readPngDimensions,
@@ -16,6 +21,7 @@ const {
   skipReason,
   summarizeExportResults,
   validateCaptureState,
+  waitForUpgradedState,
 } = require('../scripts/export_card_samples.cjs');
 
 function writeFixtureRawData(root) {
@@ -63,6 +69,22 @@ test('buildExportPlan selects only the four approved samples and writes PNG path
       path.join('data', 'images', 'sts2', 'ALIGNMENT.png'),
     ],
   );
+});
+
+test('buildExportPlan upgraded mode writes to the upgraded output directory', () => {
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'card-export-plan-upg-'));
+  writeFixtureRawData(projectRoot);
+
+  const plan = buildExportPlan(projectRoot, path.join(projectRoot, 'data', 'images'), { upgraded: true });
+
+  assert.ok(plan.length > 0);
+  for (const item of plan) {
+    assert.equal(item.upgraded, true);
+    assert.ok(
+      path.dirname(item.outputPath).endsWith(path.join('data', 'images', item.game, 'upgraded')),
+      item.outputPath,
+    );
+  }
 });
 
 test('portraitFilename handles the STS1 bell curse alias', () => {
@@ -186,6 +208,31 @@ test('collectCardsForExport skips existing image files', () => {
   assert.equal(result[0].reason, 'already_exists');
 });
 
+test('collectCardsForExport upgraded mode uses separate directory and skips cards without upgrade', () => {
+  const cards = [
+    { id: 'A', type: 'Attack', description: 'A', color: 'ironclad', upgrade: { damage: 2 } },
+    { id: 'B', type: 'Skill', description: 'B', color: 'ironclad' },
+  ];
+
+  const plan = collectCardsForExport('sts1', cards, new Set(), { upgraded: true });
+
+  assert.equal(plan[0].outputPath, path.join('data', 'images', 'sts1', 'upgraded', 'A.png'));
+  assert.equal(plan[0].upgraded, true);
+  assert.equal(plan[0].status, 'pending');
+  assert.equal(plan[1].outputPath, path.join('data', 'images', 'sts1', 'upgraded', 'B.png'));
+  assert.equal(plan[1].status, 'skipped');
+  assert.equal(plan[1].reason, 'no_upgrade');
+});
+
+test('collectCardsForExport default mode keeps the base output path', () => {
+  const cards = [{ id: 'A', type: 'Attack', description: 'A', color: 'ironclad', upgrade: { damage: 2 } }];
+
+  const plan = collectCardsForExport('sts1', cards, new Set());
+
+  assert.equal(plan[0].outputPath, path.join('data', 'images', 'sts1', 'A.png'));
+  assert.equal(plan[0].upgraded, false);
+});
+
 test('single export error keeps processing the batch', async () => {
   const plan = [
     { game: 'sts1', card: { id: 'A' }, cardId: 'A', outputPath: 'data/images/sts1/A.png', selector: '.cr1' },
@@ -204,6 +251,104 @@ test('single export error keeps processing the batch', async () => {
   assert.deepEqual(calls, ['A', 'B']);
   assert.equal(results[0].status, 'failed');
   assert.equal(results[1].status, 'success');
+});
+
+test('upgraded batch keeps processing after a single card failure', async () => {
+  const plan = [
+    { upgraded: true, game: 'sts1', card: { id: 'A' }, cardId: 'A', outputPath: 'data/images/sts1/upgraded/A.png' },
+    { upgraded: true, game: 'sts1', card: { id: 'B' }, cardId: 'B', outputPath: 'data/images/sts1/upgraded/B.png' },
+  ];
+
+  const results = await runExportBatch(plan, async (spec) => {
+    if (spec.cardId === 'A') throw new Error('boom');
+    return { ok: true };
+  });
+
+  assert.equal(results[0].status, 'failed');
+  assert.equal(results[1].status, 'success');
+});
+
+test('summary counts upgraded batch results', () => {
+  const summary = summarizeExportResults([
+    { cardId: 'A', status: 'success' },
+    { cardId: 'B', status: 'skipped' },
+    { cardId: 'C', status: 'failed', reason: 'boom' },
+  ]);
+
+  assert.equal(summary.total, 3);
+  assert.equal(summary.exported, 1);
+  assert.equal(summary.skipped, 1);
+  assert.equal(summary.failed, 1);
+  assert.deepEqual(summary.failedIds, ['C']);
+  assert.equal(summary.failedReasons.C, 'boom');
+});
+
+test('parseArgs accepts --upgraded', () => {
+  assert.deepEqual(parseArgs(['--all', '--upgraded']), { all: true, upgraded: true });
+});
+
+test('browserLaunchOptions forwards --browser-executable into launch options', () => {
+  const options = parseArgs([
+    '--browser-executable',
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+  ]);
+
+  const launchOptions = browserLaunchOptions(options);
+
+  assert.equal(launchOptions.headless, true);
+  assert.equal(
+    launchOptions.executablePath,
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+  );
+});
+
+test('browserLaunchOptions keeps the Playwright default browser when no executable is given', (t) => {
+  t.mock.method(fs, 'existsSync', () => false);
+  assert.deepEqual(browserLaunchOptions({ 'base-url': 'http://127.0.0.1:4324' }), { headless: true });
+});
+
+test('browserLaunchOptions falls back to an existing system browser by default', () => {
+  const launchOptions = browserLaunchOptions({});
+  assert.equal(launchOptions.headless, true);
+  if ('executablePath' in launchOptions) {
+    assert.equal(fs.existsSync(launchOptions.executablePath), true);
+  }
+});
+
+test('launchBrowser passes executablePath through to chromium.launch', async () => {
+  let receivedOptions = null;
+  const fakeChromium = {
+    launch: async (launchOptions) => {
+      receivedOptions = launchOptions;
+      return { fakeBrowser: true };
+    },
+  };
+
+  const browser = await launchBrowser(fakeChromium, {
+    'browser-executable': 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+  });
+
+  assert.equal(receivedOptions.headless, true);
+  assert.equal(
+    receivedOptions.executablePath,
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+  );
+  assert.equal(browser.fakeBrowser, true);
+});
+
+test('launchBrowser stays headless-only by default', async (t) => {
+  t.mock.method(fs, 'existsSync', () => false);
+  let receivedOptions = null;
+  const fakeChromium = {
+    launch: async (launchOptions) => {
+      receivedOptions = launchOptions;
+      return {};
+    },
+  };
+
+  await launchBrowser(fakeChromium, {});
+
+  assert.deepEqual(receivedOptions, { headless: true });
 });
 
 test('summary contains totals and failed ids', () => {
@@ -243,4 +388,87 @@ test('readPngDimensions reads width and height from the PNG IHDR header', () => 
 
   assert.deepEqual(readPngDimensions(pngHeader), { width: 816, height: 1061 });
   assert.throws(() => readPngDimensions(Buffer.alloc(23)), /invalid PNG/);
+});
+
+function findSystemBrowser() {
+  const candidates = process.platform === 'win32'
+    ? [
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+      ]
+    : ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'];
+  return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
+}
+
+test('upgraded mode clicks the page upgrade toggle and waits for the upgraded marker', async () => {
+  const executablePath = findSystemBrowser();
+  const browser = await chromium.launch({ headless: true, ...(executablePath ? { executablePath } : {}) });
+  try {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    page.setDefaultTimeout(10000);
+
+    await page.setContent(`<!doctype html><html><head><style>
+      .cr-title { color: white; } .cr-title.cr-green { color: green; }
+      .cr1-title { color: white; } .cr1-title.cr1-title-upgraded { color: green; }
+    </style></head><body>
+      <div class="flex flex-col items-center gap-3 shrink-0 max-w-sm">
+        <div class="cr">
+          <div class="cr-title">Strike</div>
+          <div class="cr-desc"><div class="cr-desc-inner">Deal 6 damage.</div></div>
+        </div>
+        <div><button>基础</button><button>升级</button></div>
+      </div>
+      <script>
+        (() => {
+          const buttons = [...document.querySelectorAll('.flex button')];
+          const title = document.querySelector('.cr .cr-title');
+          buttons[0].addEventListener('click', () => {
+            title.classList.remove('cr-green');
+            title.textContent = 'Strike';
+          });
+          buttons[1].addEventListener('click', () => {
+            title.classList.add('cr-green');
+            title.textContent = 'Strike+';
+          });
+        })();
+      </script>
+    </body></html>`);
+
+    await clickUpgradeToggle(page, '.cr');
+    await waitForUpgradedState(page, '.cr', 'sts2');
+
+    const sts2State = await page.evaluate(() => {
+      const title = document.querySelector('.cr .cr-title');
+      return { className: title.className, text: title.textContent };
+    });
+    assert.equal(sts2State.className.includes('cr-green'), true);
+    assert.equal(sts2State.text, 'Strike+');
+
+    await page.setContent(`<!doctype html><html><body>
+      <div class="flex flex-col items-center gap-3 shrink-0 max-w-sm">
+        <div class="cr1">
+          <div class="cr1-title">Defend</div>
+          <div class="cr1-desc"><div class="cr1-desc-inner">Gain 5 Block.</div></div>
+        </div>
+        <div><button>基础</button><button>升级</button></div>
+      </div>
+      <script>
+        (() => {
+          const buttons = [...document.querySelectorAll('.flex button')];
+          const title = document.querySelector('.cr1 .cr1-title');
+          buttons[1].addEventListener('click', () => title.classList.add('cr1-title-upgraded'));
+        })();
+      </script>
+    </body></html>`);
+
+    await clickUpgradeToggle(page, '.cr1');
+    await waitForUpgradedState(page, '.cr1', 'sts1');
+    const sts1Upgraded = await page.evaluate(
+      () => document.querySelector('.cr1 .cr1-title').classList.contains('cr1-title-upgraded'),
+    );
+    assert.equal(sts1Upgraded, true);
+  } finally {
+    await browser.close();
+  }
 });

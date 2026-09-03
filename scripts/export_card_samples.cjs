@@ -51,7 +51,8 @@ function loadCards(projectRoot, game) {
   return JSON.parse(fs.readFileSync(rawPath, 'utf8'));
 }
 
-function buildExportPlan(projectRoot, outputRoot) {
+function buildExportPlan(projectRoot, outputRoot, options = {}) {
+  const upgraded = Boolean(options && options.upgraded);
   const cardsByGame = new Map();
   for (const game of ['sts1', 'sts2']) {
     cardsByGame.set(game, new Map(loadCards(projectRoot, game).map((card) => [card.id, card])));
@@ -60,15 +61,28 @@ function buildExportPlan(projectRoot, outputRoot) {
   return SAMPLE_SPECS.map((spec) => {
     const card = cardsByGame.get(spec.game).get(spec.id);
     if (!card) throw new Error(`sample card missing from data/raw: ${spec.game}:${spec.id}`);
-    return {
+    const item = {
       ...card,
       ...spec,
       selector: selectorForGame(spec.game),
       portraitFile: portraitFilename(spec.game, spec.id),
       typeZh: TYPE_ZH[card.type] ?? card.type,
-      outputPath: path.join(outputRoot, spec.game, `${spec.id}.png`),
+      upgraded,
+      outputPath: path.join(outputRoot, spec.game, upgraded ? 'upgraded' : '', `${spec.id}.png`),
     };
+    if (upgraded && !cardHasUpgrade(card)) {
+      item.status = 'skipped';
+      item.reason = 'no_upgrade';
+      item.detail = `Card has no upgrade data: ${spec.id}`;
+    } else {
+      item.status = 'pending';
+    }
+    return item;
   });
+}
+
+function cardHasUpgrade(card) {
+  return Boolean(card && card.upgrade && Object.keys(card.upgrade).length > 0);
 }
 
 function compactText(value) {
@@ -81,7 +95,7 @@ function validateCaptureState(sample, state) {
   if (!state.descriptionFits) throw new Error(`${sample.game}:${sample.id} description is clipped`);
   if (!state.isolated) throw new Error(`${sample.game}:${sample.id} card element is not isolated from page chrome`);
 
-  if (sample.game === 'sts1' && sample.id === 'REBOUND') {
+  if (!sample.upgraded && sample.game === 'sts1' && sample.id === 'REBOUND') {
     const expected = compactText(sample.description);
     const actual = compactText(state.descriptionText);
     if (!expected || !actual.includes(expected)) {
@@ -108,8 +122,8 @@ function parseArgs(argv) {
     const arg = argv[index];
     if (!arg.startsWith('--')) throw new Error(`unexpected argument: ${arg}`);
     const key = arg.slice(2);
-    if (key === 'all') {
-      options.all = true;
+    if (key === 'all' || key === 'upgraded') {
+      options[key] = true;
       continue;
     }
     const value = argv[index + 1];
@@ -139,6 +153,15 @@ function defaultBrowserExecutable(explicitPath) {
   return candidates.find((candidate) => fs.existsSync(candidate));
 }
 
+function browserLaunchOptions(options = {}) {
+  const executablePath = defaultBrowserExecutable(options['browser-executable']);
+  return { headless: true, ...(executablePath ? { executablePath } : {}) };
+}
+
+async function launchBrowser(chromium, options) {
+  return chromium.launch(browserLaunchOptions(options));
+}
+
 async function waitForFontsAndCardImages(page, selector) {
   await page.evaluate(async ({ selector: cardSelector }) => {
     await document.fonts.ready;
@@ -164,6 +187,41 @@ async function waitForFontsAndCardImages(page, selector) {
       });
     }));
   }, { selector });
+}
+
+async function clickUpgradeToggle(page, selector) {
+  return page.evaluate(({ cardSelector }) => {
+    const card = document.querySelector(cardSelector);
+    if (!card) throw new Error(`renderer element not found: ${cardSelector}`);
+    const container = card.parentElement;
+    if (!container) throw new Error('upgrade toggle container not found');
+    const buttons = Array.from(container.querySelectorAll('button'));
+    if (buttons.length < 2) throw new Error('upgrade toggle button not found');
+    const upgradeButton = buttons[buttons.length - 1];
+    upgradeButton.click();
+    return true;
+  }, { cardSelector: selector });
+}
+
+async function waitForUpgradedState(page, selector, game, timeoutMs = 15000) {
+  await page.waitForFunction(
+    ({ cardSelector, cardGame }) => {
+      const card = document.querySelector(cardSelector);
+      if (!card) return false;
+      if (cardGame === 'sts1') {
+        const title = card.querySelector('.cr1-title');
+        return Boolean(title && title.classList.contains('cr1-title-upgraded'));
+      }
+      const title = card.querySelector('.cr-title');
+      return Boolean(
+        title
+        && title.classList.contains('cr-green')
+        && String(title.textContent || '').trim().endsWith('+')
+      );
+    },
+    { cardSelector: selector, cardGame: game },
+    { timeout: timeoutMs },
+  );
 }
 
 async function patchSts1Renderer(page, sample) {
@@ -274,10 +332,9 @@ async function exportSamples(options) {
   const outputRoot = path.resolve(options['output-root'] ?? path.join(projectRoot, 'data', 'images'));
   const baseUrl = String(options['base-url'] ?? 'http://127.0.0.1:4324').replace(/\/$/, '');
   const spireRoot = options['spire-root'] ? path.resolve(options['spire-root']) : null;
-  const plan = buildExportPlan(projectRoot, outputRoot);
+  const plan = buildExportPlan(projectRoot, outputRoot, { upgraded: options.upgraded });
   const { chromium } = loadPlaywright(spireRoot);
-  const executablePath = defaultBrowserExecutable(options['browser-executable']);
-  const browser = await chromium.launch({ headless: true, ...(executablePath ? { executablePath } : {}) });
+  const browser = await launchBrowser(chromium, options);
   const context = await browser.newContext({
     deviceScaleFactor: 2,
     viewport: { width: 1440, height: 1200 },
@@ -286,6 +343,17 @@ async function exportSamples(options) {
 
   try {
     for (const sample of plan) {
+      if (sample.status === 'skipped') {
+        results.push({
+          game: sample.game,
+          id: sample.id,
+          path: null,
+          status: 'skipped',
+          reason: sample.reason,
+        });
+        continue;
+      }
+
       const page = await context.newPage();
       page.setDefaultTimeout(30000);
       try {
@@ -295,12 +363,16 @@ async function exportSamples(options) {
         await card.waitFor({ state: 'visible' });
 
         await page.evaluate(() => document.fonts.ready);
+        if (sample.upgraded) {
+          await clickUpgradeToggle(page, sample.selector);
+          await waitForUpgradedState(page, sample.selector, sample.game);
+        }
         if (sample.game === 'sts1') await patchSts1Renderer(page, sample);
         await waitForFontsAndCardImages(page, sample.selector);
         await isolateCardElement(page, sample);
 
         const state = await captureState(page, sample);
-        validateCaptureState(sample, state);
+        validateCaptureState({ ...sample, upgraded: sample.upgraded }, state);
 
         fs.mkdirSync(path.dirname(sample.outputPath), { recursive: true });
         await card.screenshot({
@@ -360,11 +432,12 @@ async function exportAllCards(options = {}) {
   const outputRoot = path.resolve(options['output-root'] ?? path.join(projectRoot, 'data', 'images'));
   const baseUrl = String(options['base-url'] ?? 'http://127.0.0.1:4324').replace(/\/$/, '');
   const spireRoot = options['spire-root'] ? path.resolve(options['spire-root']) : null;
+  const upgraded = Boolean(options.upgraded);
 
   await checkRendererAvailability(baseUrl);
 
   const { chromium } = loadPlaywright(spireRoot);
-  const browser = await chromium.launch({ headless: true });
+  const browser = await launchBrowser(chromium, options);
   const context = await browser.newContext({
     deviceScaleFactor: 2,
     viewport: { width: 1440, height: 1200 },
@@ -392,7 +465,7 @@ async function exportAllCards(options = {}) {
         collect(targetDir);
       }
 
-      const plan = collectCardsForExport(game, cards, existing);
+      const plan = collectCardsForExport(game, cards, existing, { upgraded });
       results[game].total = plan.length;
 
       for (const item of plan) {
@@ -409,6 +482,10 @@ async function exportAllCards(options = {}) {
           const card = page.locator(item.selector);
           await card.waitFor({ state: 'visible' });
           await page.evaluate(() => document.fonts.ready);
+          if (item.upgraded) {
+            await clickUpgradeToggle(page, item.selector);
+            await waitForUpgradedState(page, item.selector, game);
+          }
           if (game === 'sts1') {
             await patchSts1Renderer(page, {
               game,
@@ -421,7 +498,10 @@ async function exportAllCards(options = {}) {
           await waitForFontsAndCardImages(page, item.selector);
           await isolateCardElement(page, { selector: item.selector });
           const state = await captureState(page, { selector: item.selector, game });
-          validateCaptureState({ game, id: item.cardId, description: item.card.description }, state);
+          validateCaptureState(
+            { game, id: item.cardId, description: item.card.description, upgraded: item.upgraded },
+            state,
+          );
           fs.mkdirSync(path.dirname(path.join(projectRoot, item.outputPath)), { recursive: true });
           await card.screenshot({
             path: path.join(projectRoot, item.outputPath),
@@ -475,8 +555,9 @@ async function main() {
   process.stdout.write(`${JSON.stringify(results, null, 2)}\n`);
 }
 
-function collectCardsForExport(game, cards, existingFiles = new Set()) {
+function collectCardsForExport(game, cards, existingFiles = new Set(), options = {}) {
   const normalizedGame = String(game || '').trim().toLowerCase();
+  const upgraded = Boolean(options && options.upgraded);
   const safeExisting = new Set(Array.from(existingFiles || []).map((value) => String(value).replace(/\\/g, '/')));
   const plan = [];
 
@@ -486,7 +567,7 @@ function collectCardsForExport(game, cards, existingFiles = new Set()) {
     }
 
     const cardId = String(card.id).trim();
-    const outputPath = path.join('data', 'images', normalizedGame, `${cardId}.png`);
+    const outputPath = path.join('data', 'images', normalizedGame, upgraded ? 'upgraded' : '', `${cardId}.png`);
     const normalizedOutputPath = outputPath.replace(/\\/g, '/');
     const mappedPortrait = normalizedGame === 'sts1' && cardId === 'CURSEOFTHEBELL'
       ? portraitFilename(normalizedGame, cardId)
@@ -502,9 +583,26 @@ function collectCardsForExport(game, cards, existingFiles = new Set()) {
         selector: selectorForGame(normalizedGame),
         outputPath,
         mappedPortrait,
+        upgraded,
         status: 'skipped',
         reason: 'explicit_skip',
         detail: `IMPULSE is explicitly skipped because it is intentionally excluded from the export list.`,
+      });
+      continue;
+    }
+
+    if (upgraded && !cardHasUpgrade(card)) {
+      plan.push({
+        game: normalizedGame,
+        cardId,
+        card,
+        selector: selectorForGame(normalizedGame),
+        outputPath,
+        mappedPortrait,
+        upgraded,
+        status: 'skipped',
+        reason: 'no_upgrade',
+        detail: `Card has no upgrade data: ${cardId}`,
       });
       continue;
     }
@@ -517,6 +615,7 @@ function collectCardsForExport(game, cards, existingFiles = new Set()) {
         selector: selectorForGame(normalizedGame),
         outputPath,
         mappedPortrait,
+        upgraded,
         status: 'skipped',
         reason: 'already_exists',
         detail: `Output already exists: ${outputPath}`,
@@ -531,6 +630,7 @@ function collectCardsForExport(game, cards, existingFiles = new Set()) {
       selector: selectorForGame(normalizedGame),
       outputPath,
       mappedPortrait,
+      upgraded,
       status: 'pending',
       reason: null,
       detail: null,
@@ -614,10 +714,14 @@ async function runExportBatch(plan, exporter) {
 module.exports = {
   SAMPLE_SPECS,
   buildExportPlan,
+  browserLaunchOptions,
+  cardHasUpgrade,
   checkRendererAvailability,
+  clickUpgradeToggle,
   collectCardsForExport,
   exportAllCards,
   exportSamples,
+  launchBrowser,
   parseArgs,
   portraitFilename,
   readPngDimensions,
@@ -626,6 +730,7 @@ module.exports = {
   skipReason,
   summarizeExportResults,
   validateCaptureState,
+  waitForUpgradedState,
 };
 
 if (require.main === module) {
