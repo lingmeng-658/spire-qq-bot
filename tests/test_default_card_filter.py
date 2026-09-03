@@ -123,5 +123,6 @@ def test_card_query_still_finds_default_blocked_cards():
 
     reply = bot.route_group_command(101, "疼痛")
 
-    assert "卡牌资料" in str(reply)
     assert "疼痛" in str(reply)
+    assert "STS1" in str(reply)
+    assert "卡牌资料" not in str(reply)

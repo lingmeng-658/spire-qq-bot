@@ -4,15 +4,19 @@ from pathlib import Path
 
 from card_guess.qq import bot
 from card_guess.qq.onebot import build_message_segments
-from card_guess.qq.renderer import RenderedReply, render_card_query_reply
+from card_guess.qq.renderer import (
+    RenderedReply,
+    STS1_ASC7PLUS_SOURCE_ID,
+    render_card_query_reply,
+)
 
 
-def make_card(name="磨蚀", card_id="ABRASIVE", game="sts2"):
+def make_card(name="磨蚀", card_id="ABRASIVE", game="sts2", pool="silent"):
     return {
         "name": name,
         "game": game,
         "id": card_id,
-        "pool": "silent",
+        "pool": pool,
         "type": "Power",
         "cost": 3,
         "star_cost": None,
@@ -24,6 +28,18 @@ def make_card(name="磨蚀", card_id="ABRASIVE", game="sts2"):
 
 def metric(value, unit="percent"):
     return {"value": value, "unit": unit, "sample_size": 100}
+
+
+def win_metric(value, denominator, comparison_denominator):
+    return {
+        "value": value,
+        "unit": "percentage_points",
+        "numerator": max(0, int(denominator / 2)),
+        "denominator": denominator,
+        "comparison_numerator": 0,
+        "comparison_denominator": comparison_denominator,
+        "sample_size": denominator + comparison_denominator,
+    }
 
 
 def make_full_snapshot(card_id="ABRASIVE"):
@@ -65,6 +81,156 @@ def make_full_snapshot(card_id="ABRASIVE"):
     }
 
 
+def make_sts1_snapshot(card_id="BASH"):
+    source = {
+        "act_pick_rate": {
+            "act_1": metric(52.1),
+            "act_2": metric(60.0),
+            "act_3": metric(55.0),
+        },
+        "act_win_delta": {
+            "act_1": win_metric(2.5, 30, 30),
+            "act_2": win_metric(1.0, 30, 30),
+            "act_3": win_metric(-2.0, 30, 30),
+        },
+        "first_pick_floor_mean": metric(8.7, "floor"),
+        "repick_rate": metric(19.1),
+        "final_deck_presence_rate": metric(2.9),
+        "final_deck_copy_mean": metric(1.33, "copies"),
+        "final_upgrade_rate": metric(42.8),
+    }
+    return {
+        "cards": {
+            card_id: {
+                "metrics": {
+                    STS1_ASC7PLUS_SOURCE_ID: source,
+                }
+            }
+        }
+    }
+
+
+def test_sts1_single_card_query_includes_identity_and_stats(monkeypatch):
+    card = make_card(name="残杀", card_id="CARNAGE", game="sts1", pool="ironclad")
+    monkeypatch.setattr(
+        "card_guess.qq.renderer.load_sts1_card_stats",
+        lambda: make_sts1_snapshot("CARNAGE"),
+    )
+    monkeypatch.setattr(
+        "card_guess.qq.renderer.resolve_local_card_image",
+        lambda queried_card: Path("/tmp/CARNAGE.png"),
+    )
+    monkeypatch.setattr(
+        "card_guess.qq.renderer.resolve_local_upgraded_card_image",
+        lambda queried_card: None,
+    )
+
+    reply = render_card_query_reply([card])
+
+    assert "=== 残杀 · STS1 · 铁甲战士 ===" in reply
+    assert "=== 一代统计 ===" not in reply
+    assert "第一/二/三幕抓取率\n52.1% / 60.0% / 55.0%" in reply
+    assert "第一/二/三幕胜率差\n+2.5 / +1.0 / -2.0 个百分点" in reply
+    assert "第一次拿到：平均第 8.7 层" in reply
+    assert "再次选择率：19.1%" in reply
+    assert "对局结束时持有率：2.90%" in reply
+    assert "结束时平均持有：1.33 张" in reply
+    assert "结束时升级比例：42.8%" in reply
+    assert "=== 二代统计 ===" not in reply
+    assert "=== 卡牌资料 ===" not in reply
+    assert "描述：" not in reply
+    assert "费用：" not in reply
+    assert "类型：" not in reply
+    assert "稀有度：" not in reply
+    assert "二代统计" not in reply
+    assert reply.image_path == Path("/tmp/CARNAGE.png")
+
+
+def test_sts1_missing_act_and_metric_show_dash_never_zero(monkeypatch):
+    source = {
+        "act_pick_rate": {
+            "act_1": metric(52.1),
+            "act_3": metric(55.0),
+        },
+        "act_win_delta": {
+            "act_1": win_metric(2.5, 30, 30),
+        },
+        "final_deck_presence_rate": metric(3.2),
+    }
+    snapshot = {"cards": {"CARNAGE": {"metrics": {STS1_ASC7PLUS_SOURCE_ID: source}}}}
+    monkeypatch.setattr("card_guess.qq.renderer.load_sts1_card_stats", lambda: snapshot)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_card_image", lambda c: None)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", lambda c: None)
+
+    reply = render_card_query_reply(
+        [make_card(name="残杀", card_id="CARNAGE", game="sts1", pool="ironclad")]
+    )
+
+    assert "第一/二/三幕抓取率\n52.1% / - / 55.0%" in reply
+    assert "第一/二/三幕胜率差\n+2.5 / - / - 个百分点" in reply
+    assert "第一次拿到：-" in reply
+    assert "再次选择率：-" in reply
+    assert "对局结束时持有率：3.20%" in reply
+    assert "结束时平均持有：-" in reply
+    assert "结束时升级比例：-" in reply
+    assert "0% / 0% / 0%" not in reply
+    assert "0.0 / 0.0 / 0.0" not in reply
+
+
+def test_sts1_win_delta_guard_hides_small_cohort_acts(monkeypatch):
+    source = {
+        "act_win_delta": {
+            "act_1": win_metric(35.1, 2, 74),  # picked cohort too small
+            "act_2": win_metric(4.9, 30, 300),
+            "act_3": win_metric(1.2, 120, 25),  # comparison cohort too small
+        },
+    }
+    snapshot = {"cards": {"CARNAGE": {"metrics": {STS1_ASC7PLUS_SOURCE_ID: source}}}}
+    monkeypatch.setattr("card_guess.qq.renderer.load_sts1_card_stats", lambda: snapshot)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_card_image", lambda c: None)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", lambda c: None)
+
+    reply = render_card_query_reply(
+        [make_card(name="残杀", card_id="CARNAGE", game="sts1", pool="ironclad")]
+    )
+
+    assert "第一/二/三幕胜率差\n- / +4.9 / - 个百分点" in reply
+    assert "35.1" not in reply
+    assert "1.2" not in reply
+
+
+def test_sts1_query_without_any_stats_still_renders_header_and_image(monkeypatch):
+    card = make_card(name="疼痛", card_id="PAIN", game="sts1", pool="curse")
+    monkeypatch.setattr("card_guess.qq.renderer.load_sts1_card_stats", lambda: {"cards": {}})
+    monkeypatch.setattr(
+        "card_guess.qq.renderer.resolve_local_card_image",
+        lambda c: Path("/tmp/PAIN.png"),
+    )
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", lambda c: None)
+
+    reply = render_card_query_reply([card])
+
+    assert "=== 疼痛 · STS1 · 诅咒 ===" in reply
+    assert "一代统计" not in reply
+    assert "描述：" not in reply
+    assert "费用：" not in reply
+    assert reply.image_path == Path("/tmp/PAIN.png")
+
+
+def test_sts1_stats_missing_snapshot_or_malformed_entry_is_safe(monkeypatch):
+    card = make_card(name="残杀", card_id="CARNAGE", game="sts1", pool="ironclad")
+    for bad_snapshot in [None, [], {"cards": None}, {"cards": {"CARNAGE": None}}]:
+        monkeypatch.setattr("card_guess.qq.renderer.load_sts1_card_stats", lambda: bad_snapshot)
+        monkeypatch.setattr("card_guess.qq.renderer.resolve_local_card_image", lambda c: None)
+        monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", lambda c: None)
+
+        reply = render_card_query_reply([card])
+
+        assert "=== 残杀 · STS1 · 铁甲战士 ===" in reply
+        assert "一代统计" not in reply
+        assert reply.image_paths == ()
+
+
 def test_sts2_single_card_query_includes_compact_stats(monkeypatch):
     card = make_card()
     monkeypatch.setattr("card_guess.qq.renderer.load_sts2_card_stats", lambda: make_full_snapshot())
@@ -80,14 +246,18 @@ def test_sts2_single_card_query_includes_compact_stats(monkeypatch):
     reply = render_card_query_reply([card])
 
     assert isinstance(reply, RenderedReply)
-    assert "=== 卡牌资料 ===" in reply
-    assert "卡名：磨蚀" in reply
-    assert "=== 二代统计 ===" in reply
+    assert "=== 磨蚀 · STS2 · 静默猎手 ===" in reply
+    assert "=== 二代统计 ===" not in reply
     assert "第一/二/三幕抓取率\n52% / 60% / 55%" in reply
     assert "第一/二/三幕商店购买率\n37% / 44% / 44%" in reply
     assert "第一/二/三幕升级率\n25% / 14% / 10%" in reply
     assert "第一/二/三幕胜率差\n+2.0 / +1.0 / -2.0 个百分点" in reply
-    assert "终局卡组出现率：3.03%" in reply
+    assert "对局结束时持有率：3.03%" in reply
+    assert "描述：" not in reply
+    assert "费用：" not in reply
+    assert "类型：" not in reply
+    assert "稀有度：" not in reply
+    assert "=== 卡牌资料 ===" not in reply
     assert reply.image_path == Path("/tmp/ABRASIVE.png")
     assert reply.image_paths == (
         Path("/tmp/ABRASIVE.png"),
@@ -123,11 +293,12 @@ def test_sts2_stats_missing_acts_show_dash_never_zero(monkeypatch):
 
     reply = render_card_query_reply([make_card()])
 
+    assert "=== 磨蚀 · STS2 · 静默猎手 ===" in reply
     assert "第一/二/三幕抓取率\n52% / - / 55%" in reply
     assert "第一/二/三幕胜率差\n+2.0 / - / - 个百分点" in reply
     assert "第一/二/三幕商店购买率\n37% / 44% / -" in reply
     assert "第一/二/三幕升级率" not in reply
-    assert "终局卡组出现率" not in reply
+    assert "对局结束时持有率" not in reply
     assert "0% / 0% / 0%" not in reply
 
 
@@ -142,7 +313,7 @@ def test_sts2_query_without_any_stats_still_renders_card(monkeypatch):
 
     reply = render_card_query_reply([card])
 
-    assert "=== 卡牌资料 ===" in reply
+    assert "=== 疯狂科学 · STS2 · 静默猎手 ===" in reply
     assert "二代统计" not in reply
     assert reply.image_path == Path("/tmp/MAD_SCIENCE.png")
     assert reply.image_paths == (Path("/tmp/MAD_SCIENCE.png"),)
@@ -158,7 +329,7 @@ def test_sts2_query_missing_upgraded_image_falls_back_to_base(monkeypatch):
 
     reply = render_card_query_reply([make_card()])
 
-    assert "=== 二代统计 ===" in reply
+    assert "=== 二代统计 ===" not in reply
     assert reply.image_paths == (Path("/tmp/ABRASIVE.png"),)
 
 
@@ -179,25 +350,25 @@ def test_sts2_query_with_only_final_deck_presence_renders_that_row(monkeypatch):
 
     reply = render_card_query_reply([make_card()])
 
-    assert "=== 二代统计 ===" in reply
-    assert "终局卡组出现率：3.03%" in reply
+    assert "=== 二代统计 ===" not in reply
+    assert "对局结束时持有率：3.03%" in reply
     assert "第一/二/三幕" not in reply
 
 
-def test_sts1_query_keeps_current_behavior_without_stats(monkeypatch):
-    card = make_card(name="痛击", card_id="BASH", game="sts1")
+def test_sts1_query_without_stats_shows_identity_only(monkeypatch):
+    card = make_card(name="痛击", card_id="BASH", game="sts1", pool="ironclad")
     monkeypatch.setattr("card_guess.qq.renderer.load_sts2_card_stats", lambda: make_full_snapshot())
+    monkeypatch.setattr("card_guess.qq.renderer.load_sts1_card_stats", lambda: {"cards": {}})
     monkeypatch.setattr("card_guess.qq.renderer.resolve_local_card_image", lambda c: Path("/tmp/BASH.png"))
 
-    def fail_if_called(*args):
-        raise AssertionError("STS1 不应解析升级图")
-
-    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", fail_if_called)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", lambda c: None)
 
     reply = render_card_query_reply([card])
 
+    assert "=== 痛击 · STS1 · 铁甲战士 ===" in reply
     assert "=== 二代统计 ===" not in reply
     assert "第一/二/三幕" not in reply
+    assert "一代统计" not in reply
     assert reply.image_path == Path("/tmp/BASH.png")
     assert reply.image_paths == (Path("/tmp/BASH.png"),)
 
@@ -210,7 +381,7 @@ def test_sts2_stats_missing_snapshot_or_malformed_entry_is_safe(monkeypatch):
 
         reply = render_card_query_reply([make_card()])
 
-        assert "=== 卡牌资料 ===" in reply
+        assert "=== 磨蚀 · STS2 · 静默猎手 ===" in reply
         assert "二代统计" not in reply
         assert reply.image_paths == ()
 
@@ -346,10 +517,85 @@ def test_route_group_command_sts2_suffix_query_includes_stats(monkeypatch):
 
     reply = bot.route_group_command(101, "白噪声2")
 
-    assert "=== 卡牌资料 ===" in reply
-    assert "=== 二代统计 ===" in reply
-    assert "终局卡组出现率：3.03%" in reply
+    assert "=== 白噪声 · STS2 · 故障机器人 ===" in reply
+    assert "=== 二代统计 ===" not in reply
+    assert "对局结束时持有率：3.03%" in reply
     assert reply.image_paths == (
         Path("/tmp/WHITE_NOISE_2.png"),
         Path("/tmp/upgraded/WHITE_NOISE_2.png"),
     )
+
+
+
+def _render_sts1_query(monkeypatch, card_id, snapshot):
+    card = make_card(name="残杀", card_id=card_id, game="sts1", pool="ironclad")
+    monkeypatch.setattr("card_guess.qq.renderer.load_sts1_card_stats", lambda: snapshot)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_card_image", lambda c: None)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", lambda c: None)
+    return str(render_card_query_reply([card]))
+
+
+def test_sts1_heart_presence_line_renders_after_terminal_lines(monkeypatch):
+    source = {
+        "act_pick_rate": {
+            "act_1": metric(52.1),
+            "act_2": metric(60.0),
+            "act_3": metric(55.0),
+        },
+        "act_win_delta": {
+            "act_1": win_metric(2.5, 30, 30),
+            "act_2": win_metric(1.0, 30, 30),
+            "act_3": win_metric(-2.0, 30, 30),
+        },
+        "first_pick_floor_mean": metric(8.7, "floor"),
+        "repick_rate": metric(19.1),
+        "final_deck_presence_rate": metric(2.9),
+        "final_deck_copy_mean": metric(1.33, "copies"),
+        "final_upgrade_rate": metric(42.8),
+        "heart_win_deck_presence_rate": metric(3.3333),
+    }
+    snapshot = {"cards": {"CARNAGE": {"metrics": {STS1_ASC7PLUS_SOURCE_ID: source}}}}
+    reply = _render_sts1_query(monkeypatch, "CARNAGE", snapshot)
+
+    assert "心脏胜利卡组出现率：3.33%" in reply
+    assert "对局结束时持有率：2.90%" in reply
+    assert reply.index("结束时升级比例") < reply.index("心脏胜利卡组出现率")
+    assert "心脏胜利卡组出现率：0" not in reply
+
+
+def test_sts1_heart_missing_renders_dash_never_zero(monkeypatch):
+    source = {"final_deck_presence_rate": metric(2.9)}
+    snapshot = {"cards": {"CARNAGE": {"metrics": {STS1_ASC7PLUS_SOURCE_ID: source}}}}
+    reply = _render_sts1_query(monkeypatch, "CARNAGE", snapshot)
+
+    assert "心脏胜利卡组出现率：-" in reply
+    assert "心脏胜利卡组出现率：0.00%" not in reply
+    assert "0.00%" not in reply
+
+
+def test_sts2_reply_never_includes_heart_line(monkeypatch):
+    monkeypatch.setattr("card_guess.qq.renderer.load_sts2_card_stats", lambda: make_full_snapshot())
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_card_image", lambda c: None)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", lambda c: None)
+
+    reply = str(render_card_query_reply([make_card()]))
+
+    assert "对局结束时持有率：3.03%" in reply
+    assert "心脏" not in reply
+
+
+
+def test_sts1_starter_card_heart_metric_still_renders(monkeypatch):
+    card = make_card(name="打击", card_id="STRIKE_R", game="sts1", pool="ironclad")
+    card["rarity"] = "Basic"
+    source = {
+        "final_deck_presence_rate": metric(9.0),
+        "heart_win_deck_presence_rate": metric(2.25),
+    }
+    snapshot = {"cards": {"STRIKE_R": {"metrics": {STS1_ASC7PLUS_SOURCE_ID: source}}}}
+    monkeypatch.setattr("card_guess.qq.renderer.load_sts1_card_stats", lambda: snapshot)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_card_image", lambda c: None)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", lambda c: None)
+    reply = str(render_card_query_reply([card]))
+    assert "心脏胜利卡组出现率：2.25%" in reply
+    assert "对局结束时持有率：9.00%" in reply

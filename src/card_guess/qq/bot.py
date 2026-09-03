@@ -4,7 +4,9 @@ import logging
 import re
 
 from card_guess.cards import find_cards_by_exact_name, load_cards
-from card_guess.puzzle import format_rarity
+from card_guess import leaderboard as lb
+from card_guess.leaderboard import parse_leaderboard_keyword
+from card_guess.puzzle import POOL_NAMES, format_rarity
 from card_guess.qq import sessions
 from card_guess.qq.onebot import (
     build_friend_add_request_action,
@@ -19,7 +21,6 @@ from card_guess.qq.renderer import (
     render_in_progress_reply,
     render_starting_puzzle,
     render_terminal_reply,
-    render_wrong_card_guess_reply,
 )
 
 logger = logging.getLogger("card_guess.qq.bot")
@@ -27,33 +28,291 @@ logger = logging.getLogger("card_guess.qq.bot")
 START_WORDS = {"猜词", "猜谜", "开始", "开局", "开始游戏"}
 START_SUFFIX_MODES = {"": "mixed", "1": "sts1", "2": "sts2"}
 END_COMMANDS = {"结束", "end"}
-HELP_TEXT = """故障机器人｜杀戮尖塔 1+2 猜卡
+HELP_TEXT = """=== 帮助 ===
 
-开局后会随机抽一张卡，并隐藏牌名和大部分描述。
+开始猜卡：
+开始 = 一二代混合
+开始1 = 只猜一代    开始2 = 只猜二代
 
-@故障机器人 + 你想猜的内容
-• 猜中描述 → 点亮对应内容
-• 猜中牌名片段 → 揭开对应字符
-• 猜错会累计，并自动获得提示
-• 猜中完整牌名，或牌名全部揭开 → 获胜
+指定题库：
+开始 猎宝    开始2 骨妹
+开始 无色    开始1 事件
 
-【开局】
-@故障机器人 猜词 / 猜词1 / 猜词2
-→ 1+2混合 / 仅1 / 仅2
+可指定：
+角色：战士 / 猎宝 / 鸡煲 / 紫皮 / 骨妹 / 储君
+特殊：无色 / 事件 / 任务 / 衍生
 
-也可限定角色，原名或昵称都可以：
-@故障机器人 猜词 鸡煲
+查卡：
+直接发送完整卡名
+跨代同名：卡名1 / 卡名2
 
-一代：
-铁甲战士/战士哥｜静默猎手/猎宝｜故障机器人/鸡煲｜观者/紫皮
+榜单/数据排行：
+猎宝1 抓取    猎宝1 抓取2
+战士1 胜率3    骨妹2 抓取1
+STS1 无数字 = 全局；STS2 仅 1/2/3 幕
+心脏 = 打赢心脏的牌组出现率，仅 STS1（示例：猎宝1 心脏）
 
-二代：
-铁甲战士｜静默猎手｜故障机器人｜摄政王/储君｜亡灵契约师/骨妹
-
-@故障机器人 结束 → 结束当前游戏
-
-现在可以 @故障机器人 猜词 开始游戏了。"""
+更多：
+帮助 猜卡 / 帮助 查卡 / 帮助 题库 / 帮助 榜单"""
 HELP_COMMANDS = {"帮助", "help"}
+
+
+HELP_SUBCOMMANDS = {
+    "猜卡": """=== 帮助 猜卡 ===
+
+开始：
+开始 = 一二代混合
+开始1 = 只猜一代    开始2 = 只猜二代
+
+指定题库：
+开始 猎宝    开始2 骨妹
+开始 无色    开始1 事件
+
+猜测：直接发送卡名或描述片段
+结束：发送 结束
+
+提示：猜错累计后会自动揭示稀有度、描述、卡名等提示
+
+猜卡进行中：
+普通输入只作为猜测
+完整卡名 + 1/2 可临时查卡""",
+    "查卡": """=== 帮助 查卡 ===
+
+直接发送完整卡名即可查卡
+
+跨代同名：
+愤怒 → 提示选择一代/二代
+愤怒1 → 查一代    愤怒2 → 查二代
+
+同代多版本：
+打击2 → 列出二代各角色版本
+打击2 铁甲战士 → 查对应角色版本
+
+猜卡进行中：
+普通卡名仍作为猜测
+完整卡名 + 1/2（可加角色）才作为显式查卡
+
+胜率差样本过少时不展示。""",
+    "题库": """=== 帮助 题库 ===
+
+不写1/2 = 一二代混合
+写1/2 = 只使用对应代际
+
+STS1：
+铁甲战士（战士/战士哥）
+静默猎手（猎宝/猎豹）
+故障机器人（鸡煲/机宝）
+观者（紫皮）
+
+STS2：
+铁甲战士（战士/战士哥）
+静默猎手（猎宝/猎豹）
+故障机器人（鸡煲/机宝）
+死灵契约师（亡灵契约师/骨妹）
+摄政王（储君）
+
+特殊：
+无色（无色牌） / 事件（事件牌）
+任务（任务牌） / 衍生（衍生牌）
+
+空格随意：
+开始1猎宝 / 开始 1 猎宝 / 开始   2   无色""",
+        "榜单": """=== 帮助 榜单 ===
+
+数据排行（角色别名 + 版本 + 指标）：
+猎宝1 抓取    猎宝1 抓取2
+战士1 胜率3    骨妹2 抓取1
+猎宝1 心脏
+
+STS1：
+抓取 / 胜率 = 全局（1-50 层全部奖励）
+抓取1/2/3、胜率1/2/3 = 各幕
+心脏 = 打赢心脏的牌组出现率（仅 STS1）
+角色：战士 / 猎宝 / 鸡煲 / 观者
+
+STS2：
+抓取1/2/3、胜率1/2/3
+暂不支持可靠全局口径（无数字会提示）
+角色：战士 / 猎宝 / 鸡煲 / 骨妹 / 储君
+
+不写角色 = 该代全部正常角色卡
+胜率差样本过少时不展示。
+
+旧命令（榜单1/2 …）仍兼容。""",
+}
+
+
+def render_help(text):
+    parts = (text or "").strip().split(None, 1)
+    if len(parts) == 1:
+        return HELP_TEXT
+    sub = parts[1].strip()
+    if sub in HELP_SUBCOMMANDS:
+        return HELP_SUBCOMMANDS[sub]
+    return "没有子帮助“{}”。\n可用：帮助 {}".format(
+        sub, " / 帮助 ".join(HELP_SUBCOMMANDS)
+    )
+
+
+
+
+
+_ACT_PHRASE_NUMBERS = {"第一幕": 1, "第二幕": 2, "第三幕": 3}
+
+
+def _act_number_in_text(text):
+    if not isinstance(text, str):
+        return None
+    for phrase, number in _ACT_PHRASE_NUMBERS.items():
+        if phrase in text:
+            return number
+    match = re.search(r"([123])\s*幕", text)
+    if match is not None:
+        return int(match.group(1))
+    return None
+
+
+def _leaderboard_metric_suffix_hint(example_prefix, metric_root, tail):
+    """Copy when an act number was written as words or after the metric."""
+    rest = tail[len(metric_root):]
+    match = re.fullmatch(r"([0-9]*)(.*)", rest, re.S)
+    digit_raw, junk = match.groups() if match is not None else ("", rest)
+    if digit_raw and digit_raw not in {"1", "2", "3"}:
+        return f"幕数仅支持 1/2/3。\n示例：{example_prefix} {metric_root}2"
+    act_number = _act_number_in_text(junk)
+    digit = int(digit_raw) if digit_raw in {"1", "2", "3"} else None
+    target = digit if digit is not None else act_number
+    if target is not None:
+        return f"幕数请直接写在指标后：\n{example_prefix} {metric_root}{target}"
+    return (
+        f"榜单指标需为：{metric_root} 或 {metric_root}1/2/3。\n"
+        f"示例：{example_prefix} {metric_root}2"
+    )
+
+
+def _short_leaderboard_regex():
+    pattern = getattr(_short_leaderboard_regex, "pattern", None)
+    if pattern is None:
+        aliases = sorted(sessions.CHARACTER_ALIASES, key=len, reverse=True)
+        pattern = "|".join(re.escape(alias) for alias in aliases)
+        _short_leaderboard_regex.pattern = pattern
+    return pattern
+
+
+def _short_leaderboard_matchers():
+    cached = getattr(_short_leaderboard_matchers, "cached", None)
+    if cached is None:
+        pattern = _short_leaderboard_regex()
+        cached = (
+            re.compile(rf"^({pattern})([12])\s*(抓取|胜率)([123]?)\s*$"),
+            re.compile(rf"^({pattern})\s*((?:抓取|胜率)[123]?|心脏)\s*$"),
+            re.compile(rf"^({pattern})([12])\s*(.+)$"),
+        )
+        _short_leaderboard_matchers.cached = cached
+    return cached
+
+
+def _render_short_leaderboard_reply(command):
+    """Full-match short leaderboard commands (猎宝1 抓取 / 骨妹2 胜率3).
+
+    Returns a reply string when the message is clearly a short leaderboard
+    command, including near-misses like “猎宝2 胜率 第二幕” that must not be
+    routed as a card guess; returns ``None`` otherwise.
+    """
+    full_re, no_gen_re, prefix_re = _short_leaderboard_matchers()
+    full = full_re.fullmatch(command or "")
+    if full is not None:
+        alias, generation, metric, suffix = full.groups()
+        keyword = f"{metric}{suffix or ''}"
+        return lb.build_leaderboard_reply(generation, keyword, role=alias)
+    no_gen = no_gen_re.fullmatch(command or "")
+    if no_gen is not None:
+        alias, keyword = no_gen.groups()
+        try:
+            pool = sessions.resolve_character(alias)
+        except ValueError:
+            return None
+        generations = lb.pool_generations(pool)
+        if not generations:
+            return None
+        if len(generations) > 1:
+            return f"这个角色两代都有，请写 {alias}1 或 {alias}2。"
+        generation = "1" if generations[0] == "sts1" else "2"
+        return lb.build_leaderboard_reply(generation, keyword, role=alias)
+    prefix = prefix_re.match(command or "")
+    if prefix is None:
+        return None
+    alias, generation, tail = prefix.groups()
+    tail = tail.strip()
+    if tail == "心脏":
+        return lb.build_leaderboard_reply(generation, "心脏", role=alias)
+    metric_root = None
+    for root in ("抓取", "胜率"):
+        if tail.startswith(root):
+            metric_root = root
+            break
+    if metric_root is None:
+        return None
+    return _leaderboard_metric_suffix_hint(f"{alias}{generation}", metric_root, tail)
+
+
+def _render_leaderboard_reply(command):
+    match = re.fullmatch(r"榜单([12])(?:\s+(.*))?", command)
+    if match is None:
+        return (
+            "榜单语法：榜单1/2 [角色] 抓取|胜率（可加 1/2/3 幕）\n"
+            "示例：榜单1 抓取 / 榜单2 猎宝 胜率2"
+        )
+    tag = match.group(1)
+    rest = (match.group(2) or "").strip()
+    if not rest:
+        return "缺少榜单指标：抓取 / 胜率（可加 1/2/3 幕）\n示例：榜单1 抓取2"
+    tokens = rest.split()
+    keyword = tokens[-1]
+
+    act_number = _act_number_in_text(rest)
+    if act_number is not None:
+        metric_token = next(
+            (token for token in tokens if token in {"抓取", "胜率"}),
+            None,
+        )
+        if metric_token is not None:
+            others = [
+                token
+                for token in tokens
+                if token not in {"抓取", "胜率"} and _act_number_in_text(token) is None
+            ]
+            prefix = " ".join(["榜单" + tag] + others)
+            return f"幕数请直接写在指标后：\n{prefix} {metric_token}{act_number}"
+
+    if keyword == "终局":
+        role = " ".join(tokens[:-1]).strip() or None
+        return lb.build_leaderboard_reply(tag, keyword, role)
+
+    if keyword == "心脏":
+        role = " ".join(tokens[:-1]).strip() or None
+        return lb.build_leaderboard_reply(tag, keyword, role)
+
+    if parse_leaderboard_keyword(keyword) is None:
+        root = next(
+            (
+                root
+                for root in ("抓取", "胜率")
+                if keyword.startswith(root) and len(keyword) > len(root)
+            ),
+            None,
+        )
+        if root is not None:
+            return (
+                f"榜单仅支持 {root}1 / {root}2 / {root}3，不支持“{keyword}”。\n"
+                f"示例：榜单{tag} {root}2"
+            )
+        return (
+            "榜单指标需为：抓取 / 胜率（可加 1/2/3 幕）。\n"
+            f"示例：榜单{tag} 抓取2 / 榜单{tag} 猎宝 胜率3"
+        )
+    role = " ".join(tokens[:-1]).strip() or None
+    return lb.build_leaderboard_reply(tag, keyword, role)
 
 
 def _load_query_cards():
@@ -124,24 +383,34 @@ def _parse_start_request(text):
         if not command.startswith(word):
             continue
 
-        if command.startswith(word + " "):
-            remainder = command[len(word):].strip()
-            return START_SUFFIX_MODES[""], remainder or None
+        remainder = command[len(word):]
 
-        rest = command[len(word):]
-        if not rest:
+        if word == "开始":
+            compact = re.sub(r"\s+", "", remainder)
+            if compact and compact[0] in START_SUFFIX_MODES:
+                return START_SUFFIX_MODES[compact[0]], compact[1:] or None
+
+            if command.startswith(word + " "):
+                return START_SUFFIX_MODES[""], compact or None
             continue
 
-        suffix = rest[0]
+        if command.startswith(word + " "):
+            tail = remainder.strip()
+            return START_SUFFIX_MODES[""], tail or None
+
+        if not remainder:
+            continue
+
+        suffix = remainder[0]
         if suffix not in START_SUFFIX_MODES:
             continue
 
-        tail = rest[1:]
+        tail = remainder[1:]
         if not tail:
             return START_SUFFIX_MODES[suffix], None
         if tail.startswith(" "):
-            remainder = tail.strip()
-            return START_SUFFIX_MODES[suffix], remainder or None
+            name = tail.strip()
+            return START_SUFFIX_MODES[suffix], name or None
 
     return None, None
 
@@ -149,16 +418,21 @@ def _parse_start_request(text):
 def _parse_generation_selector(text):
     command = (text or "").strip()
     if not command:
-        return None, None
+        return None, None, None
 
-    match = re.fullmatch(r"(.+?)(?:\s*([12]))", command)
+    match = re.fullmatch(r"(.+?)(?:\s*([12]))?(?:\s+(\S+))?", command)
     if match is None:
-        return command, None
+        return command, None, None
 
-    name, suffix = match.groups()
+    name, suffix, role = match.groups()
     if not name:
-        return command, None
-    return name, int(suffix)
+        return command, None, None
+
+    generation = int(suffix) if suffix else None
+    if role is not None and generation is None:
+        # 仅支持“卡名1/2 角色名”顺序；角色在前或无代际后缀时不作为查卡语法
+        return command, None, None
+    return name, generation, role
 
 
 def _find_cards_by_name(name, generation=None):
@@ -174,28 +448,57 @@ def _find_cards_by_name(name, generation=None):
         if str(card.get("game", "")).strip() == f"sts{generation}"
     ]
 
+def _display_pool(pool):
+    return POOL_NAMES.get(pool, pool or "")
 
-def _select_wrong_guess_cards(name, game, explicit_generation=None):
-    all_matches = _find_cards_by_name(name)
-    if explicit_generation is not None:
-        return _find_cards_by_name(name, explicit_generation)
 
-    if game is not None and getattr(game, "card", None):
-        current_generation = str(game.card.get("game", "")).strip()
-        if current_generation:
-            current_matches = _find_cards_by_name(name, int(current_generation[-1])) if current_generation.startswith("sts") else []
-            if current_matches:
-                return current_matches
+def _render_generation_query(name, generation, role=None):
+    """显式查卡：卡名1/2 [角色名]。名称+代际无匹配时返回 None（交给普通猜测）。"""
+    matches = _find_cards_by_name(name, generation)
+    if not matches:
+        return None
 
-    if len(all_matches) == 1:
-        return all_matches
-    return []
+    if role is None:
+        reply = render_card_query_reply(matches)
+        if len(matches) > 1:
+            hint = (
+                f"提示：有 {len(matches)} 张同名卡，可加角色名消歧，例如：\n"
+                f"{name}{generation} 角色名"
+            )
+            reply = RenderedReply(f"{reply.text}\n\n{hint}")
+        return reply
+
+    try:
+        pool = sessions.resolve_character(role)
+    except ValueError:
+        valid = "、".join(_display_pool(m.get("pool")) for m in matches)
+        return RenderedReply(
+            f"无法识别角色“{role}”。\n"
+            f"“{name}{generation}”可选角色：{valid}"
+        )
+
+    filtered = [m for m in matches if m.get("pool") == pool]
+    if not filtered:
+        return RenderedReply(
+            f"“{name}{generation}”没有角色“{_display_pool(pool)}”的卡牌。"
+        )
+    return render_card_query_reply(filtered)
+
+
+
 
 
 def route_group_command(group_id, text):
     command = (text or "").strip()
-    if command in HELP_COMMANDS or command.lower() == "help":
-        return HELP_TEXT
+    if command.split(None, 1)[0].lower() in HELP_COMMANDS:
+        return render_help(command)
+
+    if command.startswith("榜单"):
+        return RenderedReply(_render_leaderboard_reply(command))
+
+    short_board = _render_short_leaderboard_reply(command)
+    if short_board is not None:
+        return RenderedReply(short_board)
 
     start_mode, start_character = _parse_start_request(command)
 
@@ -230,14 +533,15 @@ def route_group_command(group_id, text):
 
     game = sessions.get(group_id)
     if game is None:
-        parsed_name, generation = _parse_generation_selector(command)
+        parsed_name, generation, role = _parse_generation_selector(command)
+        if parsed_name is not None and generation is not None:
+            reply = _render_generation_query(parsed_name, generation, role)
+            if reply is not None:
+                return reply
+            return RenderedReply("当前没有进行中的游戏")
+
         if parsed_name is not None:
             all_matches = _find_cards_by_name(parsed_name)
-            if generation is not None:
-                matches = _find_cards_by_name(parsed_name, generation)
-                if not matches:
-                    return RenderedReply("当前没有进行中的游戏")
-                return render_card_query_reply(matches)
 
             if len(all_matches) > 1:
                 return RenderedReply(
@@ -258,6 +562,12 @@ def route_group_command(group_id, text):
             return render_card_query_reply(matches)
         return RenderedReply("当前没有进行中的游戏")
 
+    parsed_name, generation, role = _parse_generation_selector(command)
+    if parsed_name is not None and generation is not None:
+        reply = _render_generation_query(parsed_name, generation, role)
+        if reply is not None:
+            return reply
+
     result = game.handle_input(command)
     reply_text = _format_game_result(game, result)
 
@@ -268,16 +578,6 @@ def route_group_command(group_id, text):
 
     if result.status == "invalid":
         return RenderedReply(reply_text)
-
-    if result.status == "wrong":
-        guessed_name, explicit_generation = _parse_generation_selector(command)
-        if guessed_name:
-            matches = _select_wrong_guess_cards(guessed_name, game, explicit_generation)
-            if matches:
-                return render_wrong_card_guess_reply(game, reply_text, matches)
-            all_matches = _find_cards_by_name(guessed_name)
-            if len(all_matches) == 1:
-                return render_wrong_card_guess_reply(game, reply_text, all_matches)
 
     return render_in_progress_reply(game, reply_text)
 

@@ -258,3 +258,40 @@ def test_original_character_aliases_still_work(monkeypatch):
         (101, "sts2", "necrobinder"),
         (101, "sts2", "regent"),
     ]
+
+
+@pytest.mark.parametrize(
+    "phrase",
+    ["开始1猎宝", "开始 1 猎宝", "开始 1猎宝", "开始1 猎宝"],
+)
+def test_start1_silent_ignores_whitespace_between_tokens(monkeypatch, phrase):
+    calls = patch_start(monkeypatch)
+
+    bot.route_group_command(101, phrase)
+
+    assert calls == [(101, "sts1", "silent")]
+
+
+def test_start2_colorless_ignores_extra_whitespace(monkeypatch):
+    calls = patch_start(monkeypatch)
+
+    bot.route_group_command(101, "开始   2   无色")
+
+    assert calls == [(101, "sts2", "colorless")]
+
+
+def test_start_space_before_generation_suffix_starts_sts1(monkeypatch):
+    calls = patch_start(monkeypatch)
+
+    bot.route_group_command(101, "开始 1")
+
+    assert calls == [(101, "sts1", None)]
+
+
+def test_whitespace_normalization_applies_only_to_start_word(monkeypatch):
+    calls = patch_start(monkeypatch)
+
+    reply = bot.route_group_command(101, "猜词1猎宝")
+
+    assert reply == "当前没有进行中的游戏"
+    assert calls == []
