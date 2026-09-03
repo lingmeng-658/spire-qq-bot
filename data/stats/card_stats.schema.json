@@ -1,0 +1,674 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://card-guess-bot.local/schemas/card_stats.schema.json",
+  "title": "Unified Slay the Spire card statistics snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "cards"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "cards": {
+      "type": "object",
+      "propertyNames": {
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/card"
+      }
+    }
+  },
+  "$defs": {
+    "card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metrics"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "character": {
+          "type": "string"
+        },
+        "metrics": {
+          "type": "object",
+          "propertyNames": {
+            "minLength": 1
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/sourceMetrics"
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "game",
+        "character_scope"
+      ],
+      "properties": {
+        "game": {
+          "enum": [
+            "sts1",
+            "sts2"
+          ]
+        },
+        "character": {
+          "type": "string",
+          "minLength": 1
+        },
+        "character_scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ascension_min": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ascension_max": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "date_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "date_end": {
+          "type": "string",
+          "format": "date"
+        },
+        "build_versions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "excluded_modes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "filters": {
+          "type": "object"
+        }
+      }
+    },
+    "metricDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "unit"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "enum": [
+            "percent",
+            "percentage_points",
+            "count",
+            "floor",
+            "copies"
+          ]
+        },
+        "formula": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "rateMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "provenance",
+        "sample_size"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "unit": {
+          "const": "percent"
+        },
+        "provenance": {
+          "enum": [
+            "computed",
+            "reported"
+          ]
+        },
+        "numerator": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "denominator": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sample_size": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "dependentRequired": {
+        "numerator": [
+          "denominator"
+        ],
+        "denominator": [
+          "numerator"
+        ]
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "provenance": {
+                "const": "computed"
+              }
+            },
+            "required": [
+              "provenance"
+            ]
+          },
+          "then": {
+            "required": [
+              "numerator",
+              "denominator"
+            ]
+          }
+        }
+      ]
+    },
+    "deltaMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "provenance",
+        "sample_size"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 100
+        },
+        "unit": {
+          "const": "percentage_points"
+        },
+        "provenance": {
+          "enum": [
+            "computed",
+            "reported"
+          ]
+        },
+        "numerator": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "denominator": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "comparison_numerator": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "comparison_denominator": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sample_size": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "dependentRequired": {
+        "numerator": [
+          "denominator"
+        ],
+        "denominator": [
+          "numerator"
+        ],
+        "comparison_numerator": [
+          "comparison_denominator"
+        ],
+        "comparison_denominator": [
+          "comparison_numerator"
+        ]
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "provenance": {
+                "const": "computed"
+              }
+            },
+            "required": [
+              "provenance"
+            ]
+          },
+          "then": {
+            "required": [
+              "numerator",
+              "denominator",
+              "comparison_numerator",
+              "comparison_denominator"
+            ]
+          }
+        }
+      ]
+    },
+    "actRates": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "act_1": {
+          "$ref": "#/$defs/rateMetric"
+        },
+        "act_2": {
+          "$ref": "#/$defs/rateMetric"
+        },
+        "act_3": {
+          "$ref": "#/$defs/rateMetric"
+        }
+      }
+    },
+    "actDeltas": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "act_1": {
+          "$ref": "#/$defs/deltaMetric"
+        },
+        "act_2": {
+          "$ref": "#/$defs/deltaMetric"
+        },
+        "act_3": {
+          "$ref": "#/$defs/deltaMetric"
+        }
+      }
+    },
+    "scalarMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "provenance",
+        "sample_size"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "enum": [
+            "count",
+            "floor",
+            "copies"
+          ]
+        },
+        "provenance": {
+          "enum": [
+            "computed",
+            "reported"
+          ]
+        },
+        "sample_size": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "sourceMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "scope",
+        "version",
+        "collected_at",
+        "metric_definitions"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "version": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "collected_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metric_definitions": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "enum": [
+              "act_pick_rate",
+              "act_shop_buy_rate",
+              "act_upgrade_rate",
+              "act_win_delta",
+              "offered_count",
+              "picked_count",
+              "picked_run_count",
+              "skip_count",
+              "skip_rate",
+              "first_pick_floor_mean",
+              "final_deck_presence_rate",
+              "final_deck_copy_mean",
+              "final_upgrade_rate",
+              "repick_rate",
+              "retention_rate",
+              "heart_win_deck_presence_rate",
+              "campfire_upgrade_count",
+              "campfire_upgrade_floor_mean",
+              "pick_rate",
+              "win_delta"
+            ]
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/metricDefinition"
+          }
+        },
+        "act_pick_rate": {
+          "$ref": "#/$defs/actRates"
+        },
+        "act_shop_buy_rate": {
+          "$ref": "#/$defs/actRates"
+        },
+        "act_upgrade_rate": {
+          "$ref": "#/$defs/actRates"
+        },
+        "act_win_delta": {
+          "$ref": "#/$defs/actDeltas"
+        },
+        "offered_count": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/scalarMetric"
+            },
+            {
+              "properties": {
+                "value": {
+                  "type": "integer"
+                },
+                "unit": {
+                  "const": "count"
+                }
+              }
+            }
+          ]
+        },
+        "picked_count": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/scalarMetric"
+            },
+            {
+              "properties": {
+                "value": {
+                  "type": "integer"
+                },
+                "unit": {
+                  "const": "count"
+                }
+              }
+            }
+          ]
+        },
+        "picked_run_count": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/scalarMetric"
+            },
+            {
+              "properties": {
+                "value": {
+                  "type": "integer"
+                },
+                "unit": {
+                  "const": "count"
+                }
+              }
+            }
+          ]
+        },
+        "skip_count": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/scalarMetric"
+            },
+            {
+              "properties": {
+                "value": {
+                  "type": "integer"
+                },
+                "unit": {
+                  "const": "count"
+                }
+              }
+            }
+          ]
+        },
+        "skip_rate": {
+          "$ref": "#/$defs/rateMetric"
+        },
+        "first_pick_floor_mean": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/scalarMetric"
+            },
+            {
+              "properties": {
+                "unit": {
+                  "const": "floor"
+                }
+              }
+            }
+          ]
+        },
+        "final_deck_presence_rate": {
+          "$ref": "#/$defs/rateMetric"
+        },
+        "final_deck_copy_mean": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/scalarMetric"
+            },
+            {
+              "properties": {
+                "unit": {
+                  "const": "copies"
+                }
+              }
+            }
+          ]
+        },
+        "final_upgrade_rate": {
+          "$ref": "#/$defs/rateMetric"
+        },
+        "repick_rate": {
+          "$ref": "#/$defs/rateMetric"
+        },
+        "retention_rate": {
+          "$ref": "#/$defs/rateMetric"
+        },
+        "heart_win_deck_presence_rate": {
+          "$ref": "#/$defs/rateMetric"
+        },
+        "campfire_upgrade_count": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/scalarMetric"
+            },
+            {
+              "properties": {
+                "value": {
+                  "type": "integer"
+                },
+                "unit": {
+                  "const": "count"
+                }
+              }
+            }
+          ]
+        },
+        "campfire_upgrade_floor_mean": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/scalarMetric"
+            },
+            {
+              "properties": {
+                "unit": {
+                  "const": "floor"
+                }
+              }
+            }
+          ]
+        },
+        "pick_rate": {
+          "$ref": "#/$defs/rateMetric"
+        },
+        "win_delta": {
+          "$ref": "#/$defs/deltaMetric"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "act_pick_rate"
+          ]
+        },
+        {
+          "required": [
+            "act_shop_buy_rate"
+          ]
+        },
+        {
+          "required": [
+            "act_upgrade_rate"
+          ]
+        },
+        {
+          "required": [
+            "act_win_delta"
+          ]
+        },
+        {
+          "required": [
+            "offered_count"
+          ]
+        },
+        {
+          "required": [
+            "picked_count"
+          ]
+        },
+        {
+          "required": [
+            "picked_run_count"
+          ]
+        },
+        {
+          "required": [
+            "skip_count"
+          ]
+        },
+        {
+          "required": [
+            "skip_rate"
+          ]
+        },
+        {
+          "required": [
+            "first_pick_floor_mean"
+          ]
+        },
+        {
+          "required": [
+            "final_deck_presence_rate"
+          ]
+        },
+        {
+          "required": [
+            "final_deck_copy_mean"
+          ]
+        },
+        {
+          "required": [
+            "final_upgrade_rate"
+          ]
+        },
+        {
+          "required": [
+            "repick_rate"
+          ]
+        },
+        {
+          "required": [
+            "retention_rate"
+          ]
+        },
+        {
+          "required": [
+            "heart_win_deck_presence_rate"
+          ]
+        },
+        {
+          "required": [
+            "campfire_upgrade_count"
+          ]
+        },
+        {
+          "required": [
+            "campfire_upgrade_floor_mean"
+          ]
+        },
+        {
+          "required": [
+            "pick_rate"
+          ]
+        },
+        {
+          "required": [
+            "win_delta"
+          ]
+        }
+      ]
+    }
+  }
+}
