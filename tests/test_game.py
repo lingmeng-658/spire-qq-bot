@@ -85,6 +85,44 @@ def test_energy_token_replacements_are_idempotent_in_mixed_text():
     assert render_description({**card, "description": "⚡[E]"}) == "⚡⚡"
     assert render_description({**card, "description": "⚡"}) == "⚡"
     assert render_description({**card, "description": "获得⚡，然后获得[E]"}) == "获得⚡，然后获得⚡"
+def test_sts2_energy_tokens_list_consumed_in_order():
+    card = {
+        "game": "sts2",
+        "id": "MAD_SCIENCE",
+        "vars": {},
+        "description": "\u83b7\u5f97[E]\u3002\n\u8017\u80fd\u589e\u52a0[E]\u3002",
+    }
+    assert render_description(card) == "\u83b7\u5f97\u26a1\u26a1\u3002\n\u8017\u80fd\u589e\u52a0\u26a1\u3002"
+
+
+def test_sts2_zero_energy_never_renders_empty():
+    card = {"game": "sts2", "vars": {"energy": 0}, "description": "\u83b7\u5f97[E]\u3002"}
+    assert render_description(card) == "\u83b7\u5f97\u26a1\u3002"
+
+
+def test_sts2_multi_energy_tokens_render_ordered_values():
+    cards = {c["id"]: c for c in load_cards("sts2")}
+
+    borrowed = cards["BORROWED_TIME"]
+    display = render_description(borrowed)
+    assert "\u83b7\u5f97\u26a1\u26a1\u26a1\u26a1" in display
+    assert "\u8017\u80fd\u589e\u52a0\u26a1" in display
+
+    expect = cards["EXPECT_A_FIGHT"]
+    display = render_description(expect)
+    assert "\u5c31\u83b7\u5f97\u26a1" in display
+    assert "\u4e0d\u80fd\u518d\u83b7\u5f97\u26a1" in display
+    assert "\uff08\u83b7\u5f97\u26a1\uff09" in display
+
+    mad = cards["MAD_SCIENCE"]
+    display = render_description(mad)
+    assert "\u83b7\u5f97\u26a1\u26a1" in display
+    assert "\u51cf\u5c11\u0031\u26a1" in display
+
+    orbit = cards["ORBIT"]
+    display = render_description(orbit)
+    assert "\u6bcf\u82b1\u8d39\u0034\u26a1" in display
+    assert "\u5c31\u83b7\u5f97\u26a1" in display
 
 
 def test_display_description_orders_sts1_traits_before_and_after_text():
@@ -417,6 +455,21 @@ def test_handle_input_reveals_description_phrase():
     assert result.status == "revealed"
     assert result.revealed_count == 2
     assert game.revealed_positions == {5, 6}
+    assert game.wrong_count == 0
+
+
+def test_handle_input_reveals_unrevealed_part_of_phrase_containing_revealed_text():
+    card = make_test_card()
+    card["description"] = "造成伤害。"
+    game = GameState(card)
+    game.revealed_positions = {0, 1}
+
+    result = game.handle_input("造成伤害")
+
+    assert result.status == "revealed"
+    assert result.reveal_target == "description"
+    assert result.revealed_count == 2
+    assert game.revealed_positions == {0, 1, 2, 3}
     assert game.wrong_count == 0
 
 

@@ -304,6 +304,14 @@ def render_sts1_energy(description):
     return re.sub(pattern, replace_energy, description)
 
 
+STS2_ENERGY_TOKENS = {
+    "BORROWED_TIME": [4, 1],
+    "EXPECT_A_FIGHT": [1, 1, 1],
+    "MAD_SCIENCE": [2, 1],
+    "ORBIT": [1, 1],
+}
+
+
 def _apply_token_replacements(description, card):
     if not isinstance(card, dict):
         return str(description or "")
@@ -314,11 +322,22 @@ def _apply_token_replacements(description, card):
         return text
 
     if card.get("game") == "sts2":
-        energy = card.get("vars", {}).get("energy")
-        if energy is not None:
-            text = re.sub(r"\[E\]", "⚡" * energy, text)
-        else:
-            text = text.replace("[E]", "⚡")
+        vars_ = card.get("vars", {})
+        energy_tokens = STS2_ENERGY_TOKENS.get(card.get("id"))
+        energy = vars_.get("energy")
+        token_index = 0
+
+        def replace_energy(match):
+            nonlocal token_index
+            if energy_tokens:
+                value = energy_tokens[token_index] if token_index < len(energy_tokens) else None
+                token_index += 1
+            else:
+                value = energy
+            count = int(value) if value is not None else 1
+            return "⚡" * count if count > 0 else "⚡"
+
+        text = re.sub(r"\[E\]", replace_energy, text)
 
         stars = card.get("vars", {}).get("stars_var")
         if stars is not None:
