@@ -1,0 +1,422 @@
+"""Shared relic-rate snapshot helpers behind the STS1 relic snapshot.
+
+Policy C for relic rates: never infer character eligibility from the catalog
+``color`` field.  Every relic snapshot carries both a per-character hold rate
+(denominator = eligible runs of that character) and an overall hold rate
+(denominator = all eligible runs).  A small display policy layer chooses which
+metric to surface based on the character coverage actually observed in the run
+data (single-character relics default to the per-character rate, universal
+four-character relics default to the overall rate).
+
+Scope note: these helpers only back the audited STS1 terminal-hold snapshot.
+They do not compute acquisition sources, floors, or STS2 statistics.
+R2A-2 adds the heart-win presence rate and per-act boss choice counts for STS1.
+"""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from typing import Any, Mapping
+
+
+SCHEMA_VERSION = "1.0.0"
+
+# Canonical Slay the Spire character keys used by run records.
+CHARACTERS = ("IRONCLAD", "THE_SILENT", "DEFECT", "WATCHER")
+CHARACTER_SET = frozenset(CHARACTERS)
+
+# Display modes a consumer may rely on.  ``both`` means per-character and
+# overall are comparable and either may be shown.
+DISPLAY_MODES = ("none", "per_character", "both", "overall")
+
+DEFAULT_SUPPORT_MIN_HOLD_RUNS = 2
+DEFAULT_SUPPORT_MIN_SHARE = 0.0005  # 0.05% of the character's eligible runs
+
+# R2A-2 metric keys and the two STS1 boss relic acts recorded in the dump.
+HEART_WIN_KEY = "heart_win_presence_rate"
+BOSS_CHOICE_KEY = "boss_choice"
+BOSS_ACT_KEYS = ("act1", "act2")
+
+
+def is_character(value: Any) -> bool:
+    """Return whether ``value`` is one of the four canonical characters."""
+    return isinstance(value, str) and value in CHARACTER_SET
+
+
+def utc_now() -> str:
+    """Current UTC time as an ISO-8601 string with ``Z`` suffix."""
+    return (
+        datetime.now(timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
+
+
+def make_relic_rate_metric(numerator: int, denominator: int) -> dict[str, Any]:
+    """Build a percent hold-rate metric from count source values."""
+    _integer(numerator, "metric.numerator", minimum=0)
+    _integer(denominator, "metric.denominator", minimum=1)
+    if numerator > denominator:
+        _fail("metric", "numerator must not exceed denominator")
+    metric: dict[str, Any] = {
+        "value": numerator / denominator * 100,
+        "unit": "percent",
+        "provenance": "computed",
+        "numerator": numerator,
+        "denominator": denominator,
+        "sample_size": denominator,
+    }
+    _validate_rate_metric(metric, "metric")
+    return metric
+
+
+def make_relic_count_metric(value: int, sample_size: int) -> dict[str, Any]:
+    """Build a plain count metric (no numerator/denominator) with its sample size."""
+    _integer(value, "metric.value", minimum=0)
+    _integer(sample_size, "metric.sample_size", minimum=1)
+    if value > sample_size:
+        _fail("metric", "value must not exceed sample_size")
+    metric: dict[str, Any] = {
+        "value": value,
+        "unit": "count",
+        "provenance": "computed",
+        "sample_size": sample_size,
+    }
+    _validate_count_metric(metric, "metric")
+    return metric
+
+
+def relic_display_policy(
+    hold_runs: Mapping[str, int],
+    eligible_runs: Mapping[str, int],
+    *,
+    min_hold_runs: int = DEFAULT_SUPPORT_MIN_HOLD_RUNS,
+    min_share: float = DEFAULT_SUPPORT_MIN_SHARE,
+) -> tuple[list[str], str]:
+    """Derive supported characters and the display mode from observed holds.
+
+    A character is *supported* when it has at least ``min_hold_runs`` terminal
+    holds and those holds cover at least ``min_share`` of the character's
+    eligible runs.  One- or two-run cross-character strays therefore never make
+    a relic look universal.  Supported characters are returned in canonical
+    character order.
+    """
+    if min_hold_runs < 1:
+        raise ValueError("min_hold_runs must be at least 1")
+    if not 0 < min_share < 1:
+        raise ValueError("min_share must be between 0 and 1")
+
+    supported: list[str] = []
+    for role in CHARACTERS:
+        eligible = eligible_runs.get(role, 0)
+        holds = hold_runs.get(role, 0)
+        if eligible < 1 or holds < min_hold_runs:
+            continue
+        if holds / eligible >= min_share:
+            supported.append(role)
+
+    count = len(supported)
+    if count == 0:
+        mode = "none"
+    elif count == 1:
+        mode = "per_character"
+    elif count == len(CHARACTERS):
+        mode = "overall"
+    else:
+        mode = "both"
+    return supported, mode
+
+
+def validate_relic_stats_snapshot(snapshot: Mapping[str, Any]) -> None:
+    """Validate the relic snapshot contract, raising ``ValueError`` on failure."""
+    root = _mapping(snapshot, "snapshot")
+    _exact_keys(root, {"schema_version", "relics", "scope"}, "snapshot")
+    if root.get("schema_version") != SCHEMA_VERSION:
+        _fail("snapshot.schema_version", f"must be {SCHEMA_VERSION!r}")
+
+    scope = _mapping(root.get("scope"), "snapshot.scope")
+    for required in ("source", "collected_at", "display_policy", "filters", "character_runs"):
+        if required not in scope:
+            _fail(f"snapshot.scope.{required}", "missing required field")
+    character_runs = _integer_map(scope["character_runs"], "snapshot.scope.character_runs")
+
+    heart_win_runs = 0
+    if "heart_win_runs" in scope:
+        _integer(scope["heart_win_runs"], "snapshot.scope.heart_win_runs", minimum=0)
+        heart_win_runs = scope["heart_win_runs"]
+    boss_screens: dict[str, int] = {}
+    if "boss_relic_screens" in scope:
+        raw_screens = _mapping(
+            scope["boss_relic_screens"], "snapshot.scope.boss_relic_screens"
+        )
+        for act, count in raw_screens.items():
+            if act not in BOSS_ACT_KEYS:
+                _fail(
+                    "snapshot.scope.boss_relic_screens",
+                    f"keys must be one of {sorted(BOSS_ACT_KEYS)!r}",
+                )
+            _integer(count, f"snapshot.scope.boss_relic_screens[{act!r}]", minimum=0)
+        boss_screens = {
+            act: raw_screens[act]
+            for act in BOSS_ACT_KEYS
+            if raw_screens.get(act, 0) > 0
+        }
+
+    relics = _mapping(root.get("relics"), "snapshot.relics")
+    for relic_id, raw_relic in relics.items():
+        if not isinstance(relic_id, str) or not relic_id:
+            _fail("snapshot.relics", "relic IDs must be non-empty strings")
+        path = f"snapshot.relics[{relic_id!r}]"
+        relic = _mapping(raw_relic, path)
+        required_relic_fields = {
+            "name_en",
+            "tier",
+            "catalog_color",
+            "catalog_color_trusted",
+            "observed_roles",
+            "supported_roles",
+            "display_mode",
+            "total_hold_runs",
+            "overall",
+            "per_character",
+        }
+        if heart_win_runs > 0:
+            required_relic_fields.add(HEART_WIN_KEY)
+        if boss_screens:
+            required_relic_fields.add(BOSS_CHOICE_KEY)
+        _exact_keys(relic, required_relic_fields, path)
+        if not isinstance(relic["name_en"], str) or not relic["name_en"]:
+            _fail(f"{path}.name_en", "must be a non-empty string")
+        for field_name in ("tier", "catalog_color"):
+            value = relic[field_name]
+            if value is not None and (not isinstance(value, str) or not value):
+                _fail(f"{path}.{field_name}", "must be a non-empty string or null")
+        if not isinstance(relic["catalog_color_trusted"], bool):
+            _fail(f"{path}.catalog_color_trusted", "must be a boolean")
+        if relic["catalog_color_trusted"] is True:
+            _fail(f"{path}.catalog_color_trusted", "policy C forbids trusting catalog color")
+        if relic["display_mode"] not in DISPLAY_MODES:
+            _fail(f"{path}.display_mode", f"must be one of {sorted(DISPLAY_MODES)!r}")
+
+        observed = _role_map(relic["observed_roles"], f"{path}.observed_roles")
+        supported = _role_list(relic["supported_roles"], f"{path}.supported_roles")
+        if not set(supported) <= set(observed):
+            _fail(f"{path}.supported_roles", "supported roles must be a subset of observed roles")
+        expected_mode = _display_mode_for_count(len(supported))
+        if relic["display_mode"] != expected_mode:
+            _fail(
+                f"{path}.display_mode",
+                f"must be {expected_mode!r} for {len(supported)} supported roles",
+            )
+        _integer(relic["total_hold_runs"], f"{path}.total_hold_runs", minimum=0)
+        if relic["total_hold_runs"] != sum(observed.values()):
+            _fail(f"{path}.total_hold_runs", "must equal the sum of per-character hold runs")
+
+        overall = _mapping(relic["overall"], f"{path}.overall")
+        _validate_rate_metric(overall, f"{path}.overall")
+        if overall["numerator"] != relic["total_hold_runs"]:
+            _fail(f"{path}.overall.numerator", "must equal total_hold_runs")
+
+        characters = _mapping(relic["per_character"], f"{path}.per_character")
+        expected_roles = {
+            role for role in CHARACTERS if character_runs.get(role, 0) > 0
+        }
+        if set(characters) != expected_roles:
+            _fail(
+                f"{path}.per_character",
+                "keys must exactly cover the characters with eligible runs",
+            )
+        denominator_sum = 0
+        numerator_sum = 0
+        for role, raw_metric in characters.items():
+            metric = _mapping(raw_metric, f"{path}.per_character[{role!r}]")
+            _validate_rate_metric(metric, f"{path}.per_character[{role!r}]")
+            if metric["denominator"] != character_runs[role]:
+                _fail(
+                    f"{path}.per_character[{role!r}].denominator",
+                    "must equal the character run count in scope",
+                )
+            numerator_sum += metric["numerator"]
+            denominator_sum += metric["denominator"]
+        if numerator_sum != relic["total_hold_runs"]:
+            _fail(f"{path}.per_character", "numerator sum must equal total_hold_runs")
+        if denominator_sum != overall["denominator"]:
+            _fail(f"{path}.per_character", "denominator sum must equal the overall denominator")
+
+        if HEART_WIN_KEY in relic:
+            heart_metric = _mapping(relic[HEART_WIN_KEY], f"{path}.{HEART_WIN_KEY}")
+            _validate_rate_metric(heart_metric, f"{path}.{HEART_WIN_KEY}")
+            if heart_metric["denominator"] != heart_win_runs:
+                _fail(
+                    f"{path}.{HEART_WIN_KEY}.denominator",
+                    "must equal the heart-win run count in scope",
+                )
+
+        if BOSS_CHOICE_KEY in relic:
+            choice = _mapping(relic[BOSS_CHOICE_KEY], f"{path}.{BOSS_CHOICE_KEY}")
+            if set(choice) != set(boss_screens):
+                _fail(
+                    f"{path}.{BOSS_CHOICE_KEY}",
+                    "must cover the same acts as snapshot.scope.boss_relic_screens",
+                )
+            for act in BOSS_ACT_KEYS:
+                if act not in boss_screens:
+                    continue
+                act_path = f"{path}.{BOSS_CHOICE_KEY}.{act}"
+                act_data = _mapping(choice[act], act_path)
+                missing = {"offered_count", "picked_count"} - set(act_data)
+                if missing:
+                    _fail(act_path, f"missing required fields: {sorted(missing)!r}")
+                unknown = set(act_data) - {"offered_count", "picked_count", "pick_rate"}
+                if unknown:
+                    _fail(act_path, f"contains unknown fields: {sorted(unknown)!r}")
+                offered_metric = _mapping(
+                    act_data["offered_count"], f"{act_path}.offered_count"
+                )
+                picked_metric = _mapping(
+                    act_data["picked_count"], f"{act_path}.picked_count"
+                )
+                _validate_count_metric(offered_metric, f"{act_path}.offered_count")
+                _validate_count_metric(picked_metric, f"{act_path}.picked_count")
+                for field, metric in (
+                    ("offered_count", offered_metric),
+                    ("picked_count", picked_metric),
+                ):
+                    if metric["sample_size"] != boss_screens[act]:
+                        _fail(
+                            f"{act_path}.{field}.sample_size",
+                            f"must equal the {act} boss screen count",
+                        )
+                offered = offered_metric["value"]
+                picked = picked_metric["value"]
+                if picked > offered:
+                    _fail(f"{act_path}.picked_count", "must not exceed offered_count")
+                if offered > 0:
+                    if "pick_rate" not in act_data:
+                        _fail(
+                            f"{act_path}.pick_rate",
+                            "requires pick_rate when the relic was offered",
+                        )
+                    pick_rate = _mapping(act_data["pick_rate"], f"{act_path}.pick_rate")
+                    _validate_rate_metric(pick_rate, f"{act_path}.pick_rate")
+                    if pick_rate["numerator"] != picked:
+                        _fail(f"{act_path}.pick_rate.numerator", "must equal picked_count")
+                    if pick_rate["denominator"] != offered:
+                        _fail(f"{act_path}.pick_rate.denominator", "must equal offered_count")
+                elif "pick_rate" in act_data:
+                    _fail(
+                        f"{act_path}.pick_rate",
+                        "forbids pick_rate when the relic was never offered",
+                    )
+
+
+def _validate_count_metric(metric: Mapping[str, Any], path: str) -> None:
+    _exact_keys(metric, {"value", "unit", "provenance", "sample_size"}, path)
+    _integer(metric["value"], f"{path}.value", minimum=0)
+    if metric["unit"] != "count":
+        _fail(f"{path}.unit", "must be 'count'")
+    if metric["provenance"] != "computed":
+        _fail(f"{path}.provenance", "must be 'computed'")
+    _integer(metric["sample_size"], f"{path}.sample_size", minimum=1)
+    if metric["value"] > metric["sample_size"]:
+        _fail(path, "value must not exceed sample_size")
+
+
+def _validate_rate_metric(metric: Mapping[str, Any], path: str) -> None:
+    _exact_keys(
+        metric,
+        {"value", "unit", "provenance", "numerator", "denominator", "sample_size"},
+        path,
+    )
+    value = metric["value"]
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        _fail(f"{path}.value", "must be a number")
+    if not 0 <= value <= 100:
+        _fail(f"{path}.value", "must be between 0 and 100")
+    if metric["unit"] != "percent":
+        _fail(f"{path}.unit", "must be 'percent'")
+    if metric["provenance"] != "computed":
+        _fail(f"{path}.provenance", "must be 'computed'")
+    _integer(metric["numerator"], f"{path}.numerator", minimum=0)
+    _integer(metric["denominator"], f"{path}.denominator", minimum=1)
+    _integer(metric["sample_size"], f"{path}.sample_size", minimum=1)
+    if metric["numerator"] > metric["denominator"]:
+        _fail(path, "numerator must not exceed denominator")
+    if metric["sample_size"] != metric["denominator"]:
+        _fail(f"{path}.sample_size", "must equal denominator")
+
+
+def _display_mode_for_count(count: int) -> str:
+    if count == 0:
+        return "none"
+    if count == 1:
+        return "per_character"
+    if count == len(CHARACTERS):
+        return "overall"
+    return "both"
+
+
+def _role_list(value: Any, path: str) -> list[str]:
+    """Validate a canonical-character role list and return it as a list."""
+    if not isinstance(value, list):
+        _fail(path, "must be a list of canonical characters")
+    output: list[str] = []
+    for role in value:
+        if not is_character(role):
+            _fail(path, "must contain only canonical characters")
+        output.append(role)
+    if len(output) != len(set(output)):
+        _fail(path, "must not contain duplicates")
+    return output
+
+
+def _role_map(value: Any, path: str) -> dict[str, int]:
+    """Validate a role-keyed integer mapping and return it as a dict."""
+    mapping = _mapping(value, path)
+    output: dict[str, int] = {}
+    for role, count in mapping.items():
+        if not is_character(role):
+            _fail(path, "keys must be canonical characters")
+        _integer(count, f"{path}[{role!r}]", minimum=0)
+        output[role] = count
+    return output
+
+
+def _integer_map(value: Any, path: str) -> dict[str, int]:
+    mapping = _mapping(value, path)
+    output: dict[str, int] = {}
+    for key, count in mapping.items():
+        if not is_character(key):
+            _fail(path, "keys must be canonical characters")
+        _integer(count, f"{path}[{key!r}]", minimum=0)
+        output[key] = count
+    return output
+
+
+def _mapping(value: Any, path: str) -> Mapping[str, Any]:
+    if not isinstance(value, Mapping):
+        _fail(path, "must be an object")
+    return value
+
+
+def _exact_keys(
+    value: Mapping[str, Any],
+    required: set[str],
+    path: str,
+) -> None:
+    missing = required - set(value)
+    if missing:
+        _fail(path, f"missing required fields: {sorted(missing)!r}")
+    unknown = set(value) - required
+    if unknown:
+        _fail(path, f"contains unknown fields: {sorted(unknown)!r}")
+
+
+def _integer(value: Any, path: str, *, minimum: int) -> None:
+    if isinstance(value, bool) or not isinstance(value, int) or value < minimum:
+        _fail(path, f"must be an integer greater than or equal to {minimum}")
+
+
+def _fail(path: str, message: str) -> None:
+    raise ValueError(f"{path}: {message}")
