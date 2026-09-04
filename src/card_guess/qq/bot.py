@@ -4,6 +4,7 @@ import logging
 import re
 
 from card_guess.cards import find_cards_by_exact_name, load_cards
+from card_guess.relics import find_relics_by_name, load_relics
 from card_guess import leaderboard as lb
 from card_guess.leaderboard import parse_leaderboard_keyword
 from card_guess.puzzle import POOL_NAMES, format_rarity
@@ -19,6 +20,7 @@ from card_guess.qq.renderer import (
     RenderedReply,
     render_card_query_reply,
     render_in_progress_reply,
+    render_relic_query_reply,
     render_starting_puzzle,
     render_terminal_reply,
 )
@@ -448,6 +450,39 @@ def _find_cards_by_name(name, generation=None):
         if str(card.get("game", "")).strip() == f"sts{generation}"
     ]
 
+
+def _load_query_relics():
+    return load_relics("sts1")
+
+
+def _find_relics_by_name(name, generation=None):
+    return find_relics_by_name(_load_query_relics(), name, generation=generation)
+
+
+def _render_sts2_relic_unavailable(name):
+    return (
+        f"“{name}2”暂不可用：本阶段仅接入 STS1 遗物查询。\n"
+        f"可发送：\n{name}1 —— 查看一代遗物"
+    )
+
+
+def _render_relic_generation_query(name, generation, role=None):
+    """显式遗物查询（遗物名+1/2）。
+
+    一代命中渲染遗物资料；二代命中且一代存在同名遗物时提示暂不可用。
+    角色名仅用于卡牌消歧，遗物不支持角色参数；无命中返回 None 交给原流程。
+    """
+    if role is not None:
+        return None
+
+    sts1_matches = _find_relics_by_name(name, generation=1)
+    if not sts1_matches:
+        return None
+    if generation == 2:
+        return RenderedReply(_render_sts2_relic_unavailable(name))
+    return render_relic_query_reply(sts1_matches)
+
+
 def _display_pool(pool):
     return POOL_NAMES.get(pool, pool or "")
 
@@ -536,6 +571,8 @@ def route_group_command(group_id, text):
         parsed_name, generation, role = _parse_generation_selector(command)
         if parsed_name is not None and generation is not None:
             reply = _render_generation_query(parsed_name, generation, role)
+            if reply is None:
+                reply = _render_relic_generation_query(parsed_name, generation, role)
             if reply is not None:
                 return reply
             return RenderedReply("当前没有进行中的游戏")
@@ -550,6 +587,10 @@ def route_group_command(group_id, text):
                 )
             if all_matches:
                 return render_card_query_reply(all_matches)
+
+            relic_matches = _find_relics_by_name(parsed_name)
+            if relic_matches:
+                return render_relic_query_reply(relic_matches)
             return RenderedReply("当前没有进行中的游戏")
 
         matches = _find_exact_card_matches(command)
@@ -565,6 +606,8 @@ def route_group_command(group_id, text):
     parsed_name, generation, role = _parse_generation_selector(command)
     if parsed_name is not None and generation is not None:
         reply = _render_generation_query(parsed_name, generation, role)
+        if reply is None:
+            reply = _render_relic_generation_query(parsed_name, generation, role)
         if reply is not None:
             return reply
 

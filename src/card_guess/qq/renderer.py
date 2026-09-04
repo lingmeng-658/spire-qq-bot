@@ -1,9 +1,15 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
-from card_guess.cards import format_cost, format_star_cost, render_description
+from card_guess.cards import (
+    format_cost,
+    format_star_cost,
+    render_description,
+    render_sts1_energy,
+)
 from card_guess.leaderboard import is_win_delta_eligible
 from card_guess.puzzle import format_pool, format_rarity, format_type
 from card_guess.sts1_card_stats import SOURCE_ID as STS1_SOURCE_ID
@@ -12,6 +18,7 @@ from card_guess.sts1_snapshot import COHORT_ASC7PLUS
 REPO_ROOT = Path(__file__).resolve().parents[3]
 STS1_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts1_card_stats.json"
 STS2_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts2_card_stats.json"
+STS1_RELIC_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts1_relic_stats.json"
 GAME_NAMES = {
     "sts1": "杀戮尖塔 1",
     "sts2": "杀戮尖塔 2",
@@ -23,6 +30,7 @@ GAME_TAGS = {
 
 _sts1_card_stats_cache = None
 _sts2_card_stats_cache = None
+_sts1_relic_stats_cache = None
 
 STS1_ASC7PLUS_SOURCE_ID = f"{STS1_SOURCE_ID}_{COHORT_ASC7PLUS.key}"
 
@@ -95,6 +103,17 @@ def load_sts1_card_stats():
         except (OSError, json.JSONDecodeError):
             _sts1_card_stats_cache = {}
     return _sts1_card_stats_cache
+
+
+def load_sts1_relic_stats():
+    global _sts1_relic_stats_cache
+    if _sts1_relic_stats_cache is None:
+        try:
+            with open(STS1_RELIC_STATS_SNAPSHOT, encoding="utf-8") as f:
+                _sts1_relic_stats_cache = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            _sts1_relic_stats_cache = {}
+    return _sts1_relic_stats_cache
 
 
 _ACTS = ("act_1", "act_2", "act_3")
@@ -262,6 +281,269 @@ def render_sts1_stats(card, snapshot):
     body = "\n\n".join(lines)
     return body
 
+
+STS1_RELIC_ROLE_LABELS = {
+    "IRONCLAD": "铁甲",
+    "THE_SILENT": "静默",
+    "DEFECT": "机器人",
+    "WATCHER": "观者",
+}
+
+_RELIC_TIER_LABELS = {
+    "starter": "初始遗物",
+    "common": "普通遗物",
+    "uncommon": "罕见遗物",
+    "rare": "稀有遗物",
+    "boss": "Boss 遗物",
+    "shop": "商店遗物",
+    "special": "特殊遗物",
+}
+
+
+def _relic_metric_value(metric):
+    """Return a numeric rate value from a snapshot metric dict, or None."""
+    if not isinstance(metric, dict):
+        return None
+    value = metric.get("value")
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return value
+
+
+def _format_relic_percent(value):
+    return f"{value:.2f}%"
+
+
+def _relic_tier_display(relic):
+    tier = str(relic.get("tier") or "").strip()
+    if not tier:
+        return ""
+    return _RELIC_TIER_LABELS.get(tier.lower(), tier)
+
+
+RELIC_ACT_LABELS = (("act1", "第一幕"), ("act2", "第二幕"))
+RELIC_SPREAD_MIN_RATIO = 2.0
+RELIC_SPREAD_MIN_GAP = 1.0
+
+
+def _metric_count(metric, key):
+    """Return an integer count field from a metric dict, or None."""
+    if not isinstance(metric, dict):
+        return None
+    value = metric.get(key)
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return int(value)
+
+
+def _overall_hold_sentence(metric):
+    """Explain how many runs ended while still carrying the relic."""
+    value = _relic_metric_value(metric)
+    numerator = _metric_count(metric, "numerator")
+    denominator = _metric_count(metric, "denominator")
+    if value is None or numerator is None or denominator is None or numerator < 1:
+        return None
+    return (
+        f"在本次{denominator}场对局统计中，有{numerator}场结束时仍然携带它"
+        f"（{_format_relic_percent(value)}）。"
+    )
+
+
+def _heart_hold_sentence(metric):
+    """Explain heart-win presence with an explicit beaten-heart denominator."""
+    value = _relic_metric_value(metric)
+    numerator = _metric_count(metric, "numerator")
+    denominator = _metric_count(metric, "denominator")
+    if value is None or numerator is None or denominator is None or numerator < 1:
+        return None
+    return (
+        f"在本次统计中，共有{denominator}场对局成功击败心脏。\n"
+        f"其中{numerator}场结束时携带它（{_format_relic_percent(value)}）。"
+    )
+
+
+def _single_role_hold_sentence(role_label, per_character_metric, overall_metric):
+    """Explain the hold rate for a relic that only one character supports."""
+    value = _relic_metric_value(per_character_metric)
+    if value is None:
+        return None
+    hold = _metric_count(per_character_metric, "numerator")
+    if hold is None:
+        hold = _metric_count(overall_metric, "numerator")
+    if hold is None or hold < 1:
+        return (
+            f"它几乎只出现在{role_label}对局，该职业携带比例约"
+            f"{_format_relic_percent(value)}。"
+        )
+    return (
+        f"它几乎只出现在{role_label}对局：{hold}场结束时仍然携带它"
+        f"（{_format_relic_percent(value)}）。"
+    )
+
+
+def _role_spread_sentence(role_rates):
+    """Summarize per-character spread, or state that no preference stands out."""
+    values = [value for _, value in role_rates]
+    if len(values) < 2:
+        return None
+    low = min(values)
+    high = max(values)
+    if low <= 0:
+        return "各职业携带比例接近，没有明显职业偏好。"
+    if high >= low * RELIC_SPREAD_MIN_RATIO and high - low >= RELIC_SPREAD_MIN_GAP:
+        label, _ = max(role_rates, key=lambda item: item[1])
+        return (
+            f"{label}携带比例最高（{_format_relic_percent(high)}），"
+            f"职业差异比较明显。"
+        )
+    return "各职业携带比例接近，没有明显职业偏好。"
+
+
+def _boss_choice_paragraph(entry):
+    """Explain boss-relic three-choice offers and act pick rates."""
+    boss_choice = entry.get("boss_choice")
+    if not isinstance(boss_choice, dict):
+        return None
+    lines = []
+    for act_key, act_label in RELIC_ACT_LABELS:
+        act_data = boss_choice.get(act_key)
+        value = (
+            _relic_metric_value(act_data.get("pick_rate"))
+            if isinstance(act_data, dict)
+            else None
+        )
+        if value is not None:
+            lines.append(
+                f"{act_label} Boss 奖励出现它时，约{_format_relic_percent(value)}"
+                "的玩家会选择。"
+            )
+    if not lines:
+        return None
+    return "\n".join(["Boss奖励："] + lines)
+
+
+def _starter_explanation(role_label):
+    """Explain starter-relic persistence without inventing replacement stats."""
+    return (
+        f"作为初始遗物，它通常会陪伴{role_label}走完全程。\n"
+        "部分路线会替换初始遗物，所以不会达到100%。"
+    )
+
+
+def render_relic_stats(relic, snapshot):
+    """Render audited STS1 relic stats as natural-language sentences."""
+    if not isinstance(snapshot, dict):
+        return ""
+    relic_stats = snapshot.get("relics")
+    if not isinstance(relic_stats, dict):
+        return ""
+    entry = relic_stats.get(str(relic.get("id") or ""))
+    if not isinstance(entry, dict):
+        return ""
+
+    tier = str(relic.get("tier") or "").strip().lower()
+    supported = entry.get("supported_roles")
+    supported = (
+        [role for role in supported if isinstance(role, str)]
+        if isinstance(supported, list)
+        else []
+    )
+    per_character = entry.get("per_character")
+    if not isinstance(per_character, dict):
+        per_character = {}
+    overall_metric = entry.get("overall")
+    if not isinstance(overall_metric, dict):
+        overall_metric = None
+
+    role_rates = []
+    for role in supported:
+        label = STS1_RELIC_ROLE_LABELS.get(role)
+        metric = per_character.get(role)
+        value = _relic_metric_value(metric)
+        if label is None or value is None:
+            continue
+        role_rates.append((label, value))
+
+    paragraphs = []
+    if tier == "boss":
+        boss_paragraph = _boss_choice_paragraph(entry)
+        if boss_paragraph is not None:
+            paragraphs.append(boss_paragraph)
+
+    if len(role_rates) == 1:
+        label, value = role_rates[0]
+        sentence = _single_role_hold_sentence(
+            label, per_character.get(supported[0]), overall_metric
+        )
+        if sentence is not None:
+            paragraphs.append(sentence)
+        if tier == "starter" and value < 100:
+            paragraphs.append(_starter_explanation(label))
+    else:
+        overall_sentence = _overall_hold_sentence(overall_metric)
+        if overall_sentence is not None:
+            paragraphs.append(overall_sentence)
+        if len(role_rates) >= 2 and tier != "boss":
+            spread_sentence = _role_spread_sentence(role_rates)
+            if spread_sentence is not None:
+                paragraphs.append(spread_sentence)
+
+    heart_metric = entry.get("heart_win_presence_rate")
+    if isinstance(heart_metric, dict):
+        heart_sentence = _heart_hold_sentence(heart_metric)
+        if heart_sentence is not None:
+            paragraphs.append(heart_sentence)
+
+    return "\n\n".join(paragraphs)
+
+
+def render_relic_candidates(name, relics):
+    lines = [f"找到 {len(relics)} 个同名遗物“{name}”："]
+    for relic in relics:
+        lines.append(f"- {_format_game(relic)}｜{_relic_tier_display(relic)}")
+    return "\n".join(lines)
+
+
+def _render_relic_description(relic):
+    """Render an STS1 relic description into player-facing token text."""
+    if not isinstance(relic, dict):
+        return ""
+    text = str(relic.get("description") or "")
+    if str(relic.get("game") or "") != "sts1":
+        return text
+
+    def energy_phrase(match):
+        count = len(re.findall(r"\[E\]", match.group(0)))
+        return f"{count}点能量" if count > 1 else "1点能量"
+
+    text = re.sub(r"(?:\[E\]\s*)+", energy_phrase, text)
+    text = render_sts1_energy(text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r" ([，。？！、：；])", r"\1", text)
+    return text.strip()
+
+
+def render_relic_query_reply(relics):
+    if len(relics) == 1:
+        relic = relics[0]
+        game = str(relic.get("game") or "")
+        tag = GAME_TAGS.get(game, game)
+        name = str(relic.get("name") or "")
+        parts = [
+            f"=== {name} · {tag} ===",
+            f"效果：\n{_render_relic_description(relic)}",
+            f"稀有度：\n{_relic_tier_display(relic)}",
+        ]
+        if game == "sts1":
+            stats_body = render_relic_stats(relic, load_sts1_relic_stats())
+            if stats_body:
+                parts.append(f"统计：\n{stats_body}")
+        return RenderedReply("\n\n".join(parts))
+
+    return RenderedReply(
+        render_relic_candidates(relics[0].get("name", ""), relics),
+        image_path=None,
+    )
 
 def _format_game(card):
     game = card.get("game", "")
