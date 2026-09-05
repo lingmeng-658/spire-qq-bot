@@ -119,6 +119,8 @@ def patch_query_env(monkeypatch, relic=None, snapshot=None):
     relics = [relic] if relic is not None else []
     monkeypatch.setattr(bot, "_load_query_cards", lambda: cards, raising=False)
     monkeypatch.setattr(bot, "_load_query_relics", lambda: relics, raising=False)
+    # 显式“遗物名2”查询读取二代目录；无参默认按二代缺失处理，保持测试自洽。
+    monkeypatch.setattr(bot, "_load_sts2_query_relics", lambda: [], raising=False)
     patch_loader(monkeypatch, snapshot if snapshot is not None else {})
 
 
@@ -290,7 +292,7 @@ def test_generation_suffix_1_queries_sts1_relic(monkeypatch):
     assert "效果：" in reply
 
 
-def test_generation_suffix_2_reports_sts2_not_available(monkeypatch):
+def test_generation_suffix_2_falls_back_to_sts1_hint_when_sts2_missing(monkeypatch):
     relic = make_relic()
     snapshot = make_snapshot("AKABEKO")
     patch_query_env(monkeypatch, relic=relic, snapshot=snapshot)
@@ -298,9 +300,9 @@ def test_generation_suffix_2_reports_sts2_not_available(monkeypatch):
     reply = bot.route_group_command(101, "赤牛2")
 
     assert isinstance(reply, RenderedReply)
-    assert "暂不可用" in reply
-    assert "STS1" in reply
+    assert "“赤牛2”没有对应的二代遗物。" in reply
     assert "赤牛1" in reply
+    assert "查看一代遗物" in reply
     assert "心脏" not in reply
 
 

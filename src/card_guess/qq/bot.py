@@ -8,7 +8,9 @@ from card_guess.relics import find_relics_by_name, load_relics
 from card_guess import leaderboard as lb
 from card_guess.leaderboard import parse_leaderboard_keyword
 from card_guess.puzzle import POOL_NAMES, format_rarity
+from card_guess.sts2_ancient_choice import ACT_ZH
 from card_guess.qq import sessions
+from card_guess.qq import renderer as qq_renderer
 from card_guess.qq.onebot import (
     build_friend_add_request_action,
     build_group_add_request_action,
@@ -317,6 +319,102 @@ def _render_leaderboard_reply(command):
     return lb.build_leaderboard_reply(tag, keyword, role)
 
 
+_ANCIENT_BOARD_KEYWORDS = ("\u6392\u884c", "\u6700\u9ad8", "\u6700\u4f4e")
+
+
+def _ancient_choice_npc_zh(snapshot):
+    """Map official zh NPC names in the snapshot back to NPC ids."""
+    if not isinstance(snapshot, dict):
+        return {}
+    choice = snapshot.get("ancient_choice")
+    if not isinstance(choice, dict):
+        return {}
+    names = choice.get("npc_names_zh")
+    if not isinstance(names, dict):
+        return {}
+    mapping = {}
+    for npc_id, zh in names.items():
+        if isinstance(zh, str) and zh.strip():
+            mapping[zh.strip()] = str(npc_id)
+    return mapping
+
+
+def _parse_ancient_choice_request(snapshot, command):
+    """Parse official-zh-NPC board commands ("NPC2 \u6392\u884c2" style).
+
+    Keyword order must be one of: NPC[2] \u6392\u884c[2], NPC[2]
+    \u7b2cX\u5e55 \u6392\u884c, or NPC[2] \u6700\u9ad8 / \u6700\u4f4e.
+    Returns a request dict, a hint string, or None (not a board command)."""
+    if not command:
+        return None
+    zh_to_id = _ancient_choice_npc_zh(snapshot)
+    if not zh_to_id:
+        return None
+    npc_pattern = "|".join(re.escape(zh) for zh in sorted(zh_to_id, key=len, reverse=True))
+    keyword_pattern = "|".join(re.escape(kw) for kw in _ANCIENT_BOARD_KEYWORDS)
+    act_word_pattern = "|".join(re.escape(zh) for zh in ACT_ZH.values())
+    act_word_number = {zh: act for act, zh in ACT_ZH.items()}
+    keyword_kind = {"\u6392\u884c": "full", "\u6700\u9ad8": "top", "\u6700\u4f4e": "bottom"}
+    board_form = re.compile(
+        rf"^(?P<npc>{npc_pattern})(?P<suffix>[123])?\s*"
+        rf"(?P<kw>{keyword_pattern})\s*(?P<act>[123])?$"
+    )
+    match = board_form.fullmatch(command)
+    if match is not None:
+        act_raw = match.group("act")
+        return {
+            "npc_id": zh_to_id[match.group("npc")],
+            "npc_zh": match.group("npc"),
+            "kind": keyword_kind[match.group("kw")],
+            "act": int(act_raw) if act_raw else None,
+        }
+    act_form = re.compile(
+        rf"^(?P<npc>{npc_pattern})(?P<suffix>[123])?\s*"
+        rf"(?P<actword>{act_word_pattern})\s*(?P<kw>{keyword_pattern})$"
+    )
+    match = act_form.fullmatch(command)
+    if match is not None:
+        return {
+            "npc_id": zh_to_id[match.group("npc")],
+            "npc_zh": match.group("npc"),
+            "kind": keyword_kind[match.group("kw")],
+            "act": act_word_number[match.group("actword")],
+        }
+    hint_form = re.compile(
+        rf"^(?P<npc>{npc_pattern})(?P<suffix>[123])?\s*"
+        rf"(?P<kw>{keyword_pattern})\s*(?P<actword>{act_word_pattern})$"
+    )
+    match = hint_form.fullmatch(command)
+    if match is not None:
+        return (
+            "\u5e55\u6570\u8bf7\u76f4\u63a5\u5199\u5728\u6307\u6807\u540e\uff1a\n"
+            f"{match.group('npc')}{match.group('suffix') or ''} {match.group('kw')}{act_word_number[match.group('actword')]}"
+        )
+    return None
+
+
+def _render_ancient_choice_leaderboard_reply(command):
+    """Render an official-NPC Ancient choice leaderboard command or None."""
+    snapshot = qq_renderer.load_sts2_ancient_choice_stats()
+    request = _parse_ancient_choice_request(snapshot, (command or "").strip())
+    if request is None:
+        return None
+    if isinstance(request, str):
+        return request
+    board = qq_renderer.render_ancient_choice_leaderboard(
+        request["npc_id"],
+        request["act"],
+        request["kind"],
+        snapshot=snapshot,
+    )
+    if board is not None:
+        return board
+    if request["act"] is None:
+        return f"{request['npc_zh']}\u8fd8\u6ca1\u6709\u53ef\u7528\u7684\u9009\u62e9\u6570\u636e\u3002"
+    return (
+        f"{request['npc_zh']}\u8fd8\u6ca1\u6709"
+        f"{ACT_ZH[request['act']]}\u7684\u9009\u62e9\u6570\u636e\u3002"
+    )
 def _load_query_cards():
     return load_cards("sts1") + load_cards("sts2")
 
@@ -455,31 +553,42 @@ def _load_query_relics():
     return load_relics("sts1")
 
 
+def _load_sts2_query_relics():
+    return load_relics("sts2")
+
+
 def _find_relics_by_name(name, generation=None):
     return find_relics_by_name(_load_query_relics(), name, generation=generation)
 
 
-def _render_sts2_relic_unavailable(name):
-    return (
-        f"“{name}2”暂不可用：本阶段仅接入 STS1 遗物查询。\n"
-        f"可发送：\n{name}1 —— 查看一代遗物"
-    )
+def _find_sts2_relics_by_name(name):
+    return find_relics_by_name(_load_sts2_query_relics(), name, generation=2)
 
 
 def _render_relic_generation_query(name, generation, role=None):
     """显式遗物查询（遗物名+1/2）。
 
-    一代命中渲染遗物资料；二代命中且一代存在同名遗物时提示暂不可用。
+    一代只查 STS1 遗物并渲染一代资料；二代查 STS2 遗物并
+    渲染二代资料。 STS2 中无同名遗物时给出提示；
     角色名仅用于卡牌消歧，遗物不支持角色参数；无命中返回 None 交给原流程。
     """
     if role is not None:
         return None
 
+    if generation == 2:
+        sts2_matches = _find_sts2_relics_by_name(name)
+        if sts2_matches:
+            return render_relic_query_reply(sts2_matches)
+        if _find_relics_by_name(name, generation=1):
+            return RenderedReply(
+                f"“{name}2”没有对应的二代遗物。\n"
+                f"可发送：\n{name}1 —— 查看一代遗物"
+            )
+        return None
+
     sts1_matches = _find_relics_by_name(name, generation=1)
     if not sts1_matches:
         return None
-    if generation == 2:
-        return RenderedReply(_render_sts2_relic_unavailable(name))
     return render_relic_query_reply(sts1_matches)
 
 
@@ -534,6 +643,10 @@ def route_group_command(group_id, text):
     short_board = _render_short_leaderboard_reply(command)
     if short_board is not None:
         return RenderedReply(short_board)
+
+    ancient_board = _render_ancient_choice_leaderboard_reply(command)
+    if ancient_board is not None:
+        return RenderedReply(ancient_board)
 
     start_mode, start_character = _parse_start_request(command)
 

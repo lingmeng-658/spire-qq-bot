@@ -55,7 +55,7 @@
      - not primary display by default unless there is clear product value
 - Do not show a metric just because it is computable; it must answer a question a player would naturally ask.
 - Rankings need a reasonable comparison cohort. For example:
-  - relic: compare within the same tier
+  - relic: prefer the same decision context or source pool; use tier only as an explicitly justified fallback
   - card: compare within the same game + character + act
   Do not rank across naturally different distributions.
 - Every ratio must use the correct denominator. Never use all characters as the denominator for character-specific entities. Do not infer character ownership from catalog color; use real data distributions / audited supported_roles.
@@ -65,6 +65,33 @@
   - developer language such as “终局”
 - Complex statistics may remain in the snapshot, but the default renderer may hide them.
 - New entities (relic / potion / event / card) follow the same principle: first ask whether the data helps player decisions, then decide whether to show it.
+
+Comparison and leaderboard rules:
+
+- Never assume that entities are comparable only because they share the same tier, rarity, or broad type.
+- Prefer a decision cohort: entities that compete in the same real player decision, with comparable opportunity cost and denominator.
+- Comparison priority:
+  1. same concrete decision context (same event / NPC / reward screen)
+  2. same source pool and game stage
+  3. broader source-specific cohort
+  4. tier / rarity / character cohorts only as explicitly justified fallbacks
+- Separate cohorts when game stage materially changes the decision. For example, Act 1 and Act 2 Boss relic choices should not be merged by default.
+- Do not mix free rewards, shop purchases, event rewards, or unrelated NPC pools in one leaderboard merely because the entities have the same rarity.
+- Every leaderboard must be able to answer: "Why are these entries fair to compare?"
+- Prefer showing both the decision rate and its rank within the valid cohort when both are available.
+- Leaderboards may support Top N, Bottom N, and full rankings only when the denominator and cohort are consistent.
+- Low-sample entries must not create misleading rankings; define and test a minimum sample policy before exposing a leaderboard.
+
+The unit of player-facing statistical value is often the decision context, not the entity itself.
+
+## Player-facing localization
+
+- All player-facing game terminology must use the official Simplified Chinese localization when an official translation exists.
+- This includes relic names, card names, character names, NPC / Ancient names, event names, keywords, mechanics, locations, and other in-game terms.
+- Do not invent, literally translate, or paraphrase an official game term from its English identifier.
+- Internal English IDs, API field names, enum values, source keys, and NPC codes may remain in the data/model layer, but must not leak into player-facing QQ output.
+- If an official Simplified Chinese translation cannot be verified, do not guess. Keep the unresolved localization explicit in the data/audit layer until a reliable official source is available.
+- Bot-authored statistical explanations may use concise natural Chinese, but any embedded game terminology must still use the official localization.
 
 ## Scope discipline
 - Do not expand a task into STS2, potion, event, or unrelated systems unless explicitly requested.

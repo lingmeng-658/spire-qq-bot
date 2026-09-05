@@ -15,11 +15,19 @@ from card_guess.leaderboard import is_win_delta_eligible
 from card_guess.puzzle import format_pool, format_rarity, format_type
 from card_guess.sts1_card_stats import SOURCE_ID as STS1_SOURCE_ID
 from card_guess.sts1_snapshot import COHORT_ASC7PLUS
+from card_guess.sts2_ancient_choice import (
+    ACT_ZH,
+    leaderboard_contexts,
+    leaderboard_npc_acts,
+    rankable_contexts_for_relic,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 STS1_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts1_card_stats.json"
 STS2_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts2_card_stats.json"
 STS1_RELIC_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts1_relic_stats.json"
+STS2_RELIC_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts2_relic_stats.json"
+STS2_ANCIENT_CHOICE_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts2_ancient_choice.json"
 GAME_NAMES = {
     "sts1": "杀戮尖塔 1",
     "sts2": "杀戮尖塔 2",
@@ -32,6 +40,8 @@ GAME_TAGS = {
 _sts1_card_stats_cache = None
 _sts2_card_stats_cache = None
 _sts1_relic_stats_cache = None
+_sts2_relic_stats_cache = None
+_sts2_ancient_choice_cache = None
 
 STS1_ASC7PLUS_SOURCE_ID = f"{STS1_SOURCE_ID}_{COHORT_ASC7PLUS.key}"
 
@@ -133,6 +143,28 @@ def load_sts1_relic_stats():
         except (OSError, json.JSONDecodeError):
             _sts1_relic_stats_cache = {}
     return _sts1_relic_stats_cache
+
+
+def load_sts2_relic_stats():
+    global _sts2_relic_stats_cache
+    if _sts2_relic_stats_cache is None:
+        try:
+            with open(STS2_RELIC_STATS_SNAPSHOT, encoding="utf-8") as f:
+                _sts2_relic_stats_cache = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            _sts2_relic_stats_cache = {}
+    return _sts2_relic_stats_cache
+
+
+def load_sts2_ancient_choice_stats():
+    global _sts2_ancient_choice_cache
+    if _sts2_ancient_choice_cache is None:
+        try:
+            with open(STS2_ANCIENT_CHOICE_SNAPSHOT, encoding="utf-8") as f:
+                _sts2_ancient_choice_cache = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            _sts2_ancient_choice_cache = {}
+    return _sts2_ancient_choice_cache
 
 
 _ACTS = ("act_1", "act_2", "act_3")
@@ -316,6 +348,8 @@ _RELIC_TIER_LABELS = {
     "boss": "Boss 遗物",
     "shop": "商店遗物",
     "special": "特殊遗物",
+    "ancient": "先古遗物",
+    "event": "事件遗物",
 }
 
 
@@ -335,7 +369,7 @@ def _format_relic_percent(value):
 
 def _relic_tier_display(relic):
     tier = str(relic.get("tier") or "").strip()
-    if not tier:
+    if not tier or tier.lower() == "none":
         return ""
     return _RELIC_TIER_LABELS.get(tier.lower(), tier)
 
@@ -559,6 +593,130 @@ def render_relic_stats(relic, snapshot):
     return "\n\n".join(paragraphs)
 
 
+# STS2 Ancient choice (offer -> pick) display.
+#
+# The supported STS2 decision metric is the offer-to-pick rate recorded on
+# Untapped "Ancient Choice" relic pages.  Ranks only ever compare one
+# (NPC x act) cohort; end-of-run relic presence is deliberately not shown
+# as a default statistic.
+
+
+def _ancient_choice_block(snapshot):
+    if not isinstance(snapshot, dict):
+        return None
+    choice = snapshot.get("ancient_choice")
+    if not isinstance(choice, dict):
+        return None
+    return choice
+
+
+def _resolve_ancient_npc_id(snapshot, npc_name_or_zh):
+    """Resolve an NPC code or its official zh name inside the snapshot."""
+    choice = _ancient_choice_block(snapshot)
+    if choice is None:
+        return None
+    names = choice.get("npc_names_zh")
+    if not isinstance(names, dict):
+        return None
+    key = str(npc_name_or_zh or "").strip()
+    if not key:
+        return None
+    if key in names:
+        return key
+    for npc_id, zh in names.items():
+        if isinstance(zh, str) and zh == key:
+            return str(npc_id)
+    return None
+
+
+def _render_ancient_act_prompt(npc_name_zh, acts):
+    options = " / ".join(ACT_ZH[act] for act in sorted(acts))
+    example_act = min(acts)
+    example = f"{npc_name_zh}{example_act} \u6392\u884c{example_act}"
+    return (
+        f"{npc_name_zh} \u5728{options}\u90fd\u6709\u9009\u62e9\u6570\u636e\uff0c"
+        f"\u8bf7\u5148\u6307\u5b9a\u5e55\u6570\u518d\u67e5\u3002\n"
+        f"\u793a\u4f8b\uff1a{example}"
+    )
+
+
+def render_ancient_choice_leaderboard(npc_name_or_zh, act, kind="full", snapshot=None):
+    """Render one NPC x act Ancient choice board (top / bottom / full)."""
+    if snapshot is None:
+        snapshot = load_sts2_ancient_choice_stats()
+    choice = _ancient_choice_block(snapshot)
+    if choice is None:
+        return None
+    npc_id = _resolve_ancient_npc_id(snapshot, npc_name_or_zh)
+    if npc_id is None:
+        return None
+    names = choice.get("npc_names_zh")
+    npc_zh = names.get(npc_id) if isinstance(names, dict) else None
+    if not isinstance(npc_zh, str) or not npc_zh:
+        return None
+    acts = leaderboard_npc_acts(snapshot, npc_id)
+    if not acts:
+        return None
+    if act is None:
+        if len(acts) == 1:
+            act = acts[0]
+        else:
+            return _render_ancient_act_prompt(npc_zh, acts)
+    elif act not in acts and len(acts) == 1:
+        act = acts[0]
+    elif act not in acts:
+        return None
+    contexts = leaderboard_contexts(snapshot, npc_id, act)
+    if not contexts:
+        return None
+    rows = list(contexts)
+    act_label = ACT_ZH.get(act, f"{act}")
+    header = f"{npc_zh} \u00b7 {act_label}\u9009\u62e9\u6392\u884c"
+    if kind == "top":
+        header = f"{header} \u00b7 \u6700\u9ad8 5"
+        rows = rows[:5]
+    elif kind == "bottom":
+        header = f"{header} \u00b7 \u6700\u4f4e 5"
+        rows = rows[-5:]
+    relic_names = choice.get("relic_names_zh")
+    relic_names = relic_names if isinstance(relic_names, dict) else {}
+    body = []
+    for context in rows:
+        relic_zh = relic_names.get(context.get("relic_id"))
+        if not isinstance(relic_zh, str) or not relic_zh:
+            continue
+        body.append(
+            f"{context['rank']}. {relic_zh} \u2014\u2014 {context['picked_rate']}%"
+        )
+    if not body:
+        return None
+    return "\n".join([header] + body)
+
+
+def render_sts2_ancient_choice_stats(relic, snapshot):
+    """Render per-(NPC, act) choice contexts for one Ancient relic."""
+    if not isinstance(relic, dict) or not isinstance(snapshot, dict):
+        return ""
+    if str(relic.get("tier") or "").strip().lower() != "ancient":
+        return ""
+    relic_id = str(relic.get("id") or "")
+    if not relic_id:
+        return ""
+    lines = []
+    for context in rankable_contexts_for_relic(snapshot, relic_id):
+        npc_zh = context.get("npc_name_zh")
+        if not isinstance(npc_zh, str) or not npc_zh:
+            continue
+        act = context.get("act")
+        act_label = ACT_ZH.get(act, "") if isinstance(act, int) else ""
+        if not act_label:
+            continue
+        lines.append(
+            f"{npc_zh} \u00b7 {act_label}\uff1a"
+            f"\u51fa\u73b0\u65f6\u7ea6{context['picked_rate']}%\u4f1a\u9009\uff0c"
+            f"\u9009\u62e9\u7387\u7b2c{context['rank']} / {context['cohort_size']}\u3002"
+        )
+    return "\n".join(lines)
 def render_relic_candidates(name, relics):
     lines = [f"找到 {len(relics)} 个同名遗物“{name}”："]
     for relic in relics:
@@ -567,19 +725,25 @@ def render_relic_candidates(name, relics):
 
 
 def _render_relic_description(relic):
-    """Render an STS1 relic description into player-facing token text."""
+    """Render a relic description into player-facing token text."""
     if not isinstance(relic, dict):
         return ""
     text = str(relic.get("description") or "")
-    if str(relic.get("game") or "") != "sts1":
+    game = str(relic.get("game") or "")
+
+    if game == "sts1":
+        def energy_phrase(match):
+            count = len(re.findall(r"\[E\]", match.group(0)))
+            return f"{count}点能量" if count > 1 else "1点能量"
+
+        text = re.sub(r"(?:\[E\]\s*)+", energy_phrase, text)
+        text = render_sts1_energy(text)
+    elif game == "sts2":
+        # STS2 spells out icons in card/relic text; mirror the card rendering.
+        text = text.replace("[E]", "⚡").replace("[S]", "⭐")
+    else:
         return text
 
-    def energy_phrase(match):
-        count = len(re.findall(r"\[E\]", match.group(0)))
-        return f"{count}点能量" if count > 1 else "1点能量"
-
-    text = re.sub(r"(?:\[E\]\s*)+", energy_phrase, text)
-    text = render_sts1_energy(text)
     text = re.sub(r"[ \t]+", " ", text)
     text = re.sub(r" ([，。？！、：；])", r"\1", text)
     return text.strip()
@@ -594,10 +758,18 @@ def render_relic_query_reply(relics):
         parts = [
             f"=== {name} · {tag} ===",
             f"效果：\n{_render_relic_description(relic)}",
-            _relic_tier_display(relic),
         ]
+        tier_text = _relic_tier_display(relic)
+        if tier_text:
+            parts.append(tier_text)
         if game == "sts1":
             stats_body = render_relic_stats(relic, load_sts1_relic_stats())
+            if stats_body:
+                parts.append(stats_body)
+        elif game == "sts2":
+            stats_body = render_sts2_ancient_choice_stats(
+                relic, load_sts2_ancient_choice_stats()
+            )
             if stats_body:
                 parts.append(stats_body)
         text = "\n\n".join(parts)
