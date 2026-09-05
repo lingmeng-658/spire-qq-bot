@@ -11,6 +11,8 @@ four-character relics default to the overall rate).
 Scope note: these helpers only back the audited STS1 terminal-hold snapshot.
 They do not compute acquisition sources, floors, or STS2 statistics.
 R2A-2 adds the heart-win presence rate and per-act boss choice counts for STS1.
+R5B adds the optional per-relic ``first_acquisition`` section for Common /
+Uncommon / Rare relics only (never Boss / Starter / Shop / Special).
 """
 
 from __future__ import annotations
@@ -36,6 +38,15 @@ DEFAULT_SUPPORT_MIN_SHARE = 0.0005  # 0.05% of the character's eligible runs
 HEART_WIN_KEY = "heart_win_presence_rate"
 BOSS_CHOICE_KEY = "boss_choice"
 BOSS_ACT_KEYS = ("act1", "act2")
+
+# R5B: optional per-relic ``first_acquisition`` timing for Common/Uncommon/Rare
+# relics, sourced from ``relics_obtained`` events with a legal recorded floor.
+FIRST_ACQUISITION_KEY = "first_acquisition"
+ACQUISITION_TIERS = ("Common", "Uncommon", "Rare")
+ACQUISITION_TIER_SET = frozenset(ACQUISITION_TIERS)
+ACQUISITION_FLOOR_MIN = 1
+ACQUISITION_FLOOR_MAX = 56
+ACQUISITION_ACT_RATE_KEYS = ("act1_rate", "act2_rate", "act3_rate")
 
 
 def is_character(value: Any) -> bool:
@@ -185,6 +196,8 @@ def validate_relic_stats_snapshot(snapshot: Mapping[str, Any]) -> None:
             required_relic_fields.add(HEART_WIN_KEY)
         if boss_screens:
             required_relic_fields.add(BOSS_CHOICE_KEY)
+        if FIRST_ACQUISITION_KEY in relic:
+            required_relic_fields.add(FIRST_ACQUISITION_KEY)
         _exact_keys(relic, required_relic_fields, path)
         if not isinstance(relic["name_en"], str) or not relic["name_en"]:
             _fail(f"{path}.name_en", "must be a non-empty string")
@@ -243,6 +256,9 @@ def validate_relic_stats_snapshot(snapshot: Mapping[str, Any]) -> None:
             _fail(f"{path}.per_character", "numerator sum must equal total_hold_runs")
         if denominator_sum != overall["denominator"]:
             _fail(f"{path}.per_character", "denominator sum must equal the overall denominator")
+
+        if FIRST_ACQUISITION_KEY in relic:
+            _validate_first_acquisition(relic, path)
 
         if HEART_WIN_KEY in relic:
             heart_metric = _mapping(relic[HEART_WIN_KEY], f"{path}.{HEART_WIN_KEY}")
@@ -309,6 +325,82 @@ def validate_relic_stats_snapshot(snapshot: Mapping[str, Any]) -> None:
                         f"{act_path}.pick_rate",
                         "forbids pick_rate when the relic was never offered",
                     )
+
+
+def _validate_first_acquisition(relic: Mapping[str, Any], path: str) -> None:
+    """Validate the optional R5B per-relic first_acquisition section."""
+    fa_path = f"{path}.{FIRST_ACQUISITION_KEY}"
+    fa = _mapping(relic[FIRST_ACQUISITION_KEY], fa_path)
+    if relic.get("tier") not in ACQUISITION_TIER_SET:
+        _fail(
+            fa_path,
+            "only Common/Uncommon/Rare relics may carry first_acquisition",
+        )
+    _exact_keys(
+        fa,
+        {
+            "sample_size",
+            "final_presence_runs",
+            "coverage_rate",
+            "median_floor",
+            "p25_floor",
+            "p75_floor",
+            *ACQUISITION_ACT_RATE_KEYS,
+        },
+        fa_path,
+    )
+    sample_size = fa["sample_size"]
+    _integer(sample_size, f"{fa_path}.sample_size", minimum=1)
+    presence = fa["final_presence_runs"]
+    _integer(presence, f"{fa_path}.final_presence_runs", minimum=1)
+    if sample_size > presence:
+        _fail(f"{fa_path}.sample_size", "must not exceed final_presence_runs")
+    total_holds = relic.get("total_hold_runs")
+    if (
+        isinstance(total_holds, int)
+        and not isinstance(total_holds, bool)
+        and presence != total_holds
+    ):
+        _fail(
+            f"{fa_path}.final_presence_runs",
+            "must equal total_hold_runs",
+        )
+    coverage = _mapping(fa["coverage_rate"], f"{fa_path}.coverage_rate")
+    _validate_rate_metric(coverage, f"{fa_path}.coverage_rate")
+    if coverage["numerator"] != sample_size:
+        _fail(f"{fa_path}.coverage_rate.numerator", "must equal sample_size")
+    if coverage["denominator"] != presence:
+        _fail(
+            f"{fa_path}.coverage_rate.denominator",
+            "must equal final_presence_runs",
+        )
+    p25 = _floor_number(fa["p25_floor"], f"{fa_path}.p25_floor")
+    median = _floor_number(fa["median_floor"], f"{fa_path}.median_floor")
+    p75 = _floor_number(fa["p75_floor"], f"{fa_path}.p75_floor")
+    for label, value in (("p25_floor", p25), ("median_floor", median), ("p75_floor", p75)):
+        if not ACQUISITION_FLOOR_MIN <= value <= ACQUISITION_FLOOR_MAX:
+            _fail(
+                f"{fa_path}.{label}",
+                f"must be between {ACQUISITION_FLOOR_MIN} and {ACQUISITION_FLOOR_MAX}",
+            )
+    if not p25 <= median <= p75:
+        _fail(fa_path, "percentiles must satisfy p25_floor <= median_floor <= p75_floor")
+    act_total = 0
+    for act in ACQUISITION_ACT_RATE_KEYS:
+        metric = _mapping(fa[act], f"{fa_path}.{act}")
+        _validate_rate_metric(metric, f"{fa_path}.{act}")
+        if metric["denominator"] != sample_size:
+            _fail(f"{fa_path}.{act}.denominator", "must equal sample_size")
+        act_total += metric["numerator"]
+    if act_total != sample_size:
+        _fail(fa_path, "act numerators must sum to sample_size")
+
+
+def _floor_number(value: Any, path: str) -> float:
+    """Return a numeric floor value, rejecting booleans and non-numbers."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        _fail(path, "must be a number")
+    return float(value)
 
 
 def _validate_count_metric(metric: Mapping[str, Any], path: str) -> None:

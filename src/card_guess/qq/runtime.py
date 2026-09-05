@@ -5,6 +5,16 @@ import os
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
+try:
+    import msvcrt
+except ImportError:  # pragma: no cover - non-Windows
+    msvcrt = None
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - Windows
+    fcntl = None
+
 import websockets
 
 from card_guess.qq.bot import handle_event
@@ -19,6 +29,7 @@ LOG_DIR = Path(__file__).resolve().parents[3] / "logs"
 LOG_FILE_NAME = "bot.log"
 LOG_MAX_BYTES = 5 * 1024 * 1024
 LOG_BACKUP_COUNT = 3
+SINGLE_INSTANCE_LOCK_PATH = LOG_DIR / "bot.lock"
 
 logger = logging.getLogger("card_guess.qq.runtime")
 _logging_configured = False
@@ -149,11 +160,70 @@ def configure_logging(log_dir=None):
     _logging_configured = True
 
 
+class SingleInstanceLock:
+    """Exclusive OS file lock held by the running bot process.
+
+    Two live bot instances would each answer the same QQ message, so every
+    relic (and other) query would be replied to twice.  The second instance
+    refuses to start while the first one still holds the lock.
+    """
+
+    def __init__(self, path):
+        self._path = Path(path)
+        self._handle = None
+
+    def acquire(self):
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        handle = self._path.open("a+", encoding="utf-8")
+        try:
+            handle.seek(0, os.SEEK_END)
+            if handle.tell() == 0:
+                handle.write("\0")
+                handle.flush()
+            handle.seek(0)
+            if msvcrt is not None:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            elif fcntl is not None:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            handle.close()
+            raise RuntimeError(
+                f"已有 bot 实例在运行（锁文件：{self._path}），本次启动退出。"
+            ) from None
+        self._handle = handle
+        return self
+
+    def release(self):
+        handle, self._handle = self._handle, None
+        if handle is None:
+            return
+        try:
+            handle.seek(0)
+            if msvcrt is not None:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+            elif fcntl is not None:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        finally:
+            handle.close()
+
+
+def acquire_single_instance_lock(path=None):
+    if path is None:
+        path = SINGLE_INSTANCE_LOCK_PATH
+    lock = SingleInstanceLock(path)
+    lock.acquire()
+    return lock
+
+
 def main():
     config = load_config()
     configure_logging()
-    logger.info("runtime 启动")
-    asyncio.run(run_forever(config))
+    lock = acquire_single_instance_lock()
+    try:
+        logger.info("runtime 启动")
+        asyncio.run(run_forever(config))
+    finally:
+        lock.release()
 
 
 if __name__ == "__main__":

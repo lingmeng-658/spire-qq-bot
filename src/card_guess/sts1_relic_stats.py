@@ -10,8 +10,14 @@ in the run data.
 R2A-2 keeps the scope narrow: terminal ``relics`` presence per run, the
 heart-win presence rate (reusing the audited heart-win judgment) and per-act
 ``boss_choice`` offer/pick counts from ``boss_relics`` (index 0 = act1,
-index 1 = act2).  Obtained counts, first-acquisition floors, shop purchases
-and STS2 statistics are out of scope and are not computed here.
+index 1 = act2).
+
+R5B adds a ``first_acquisition`` section for Common / Uncommon / Rare relics
+only, sourced from ``relics_obtained`` events: per run the legal first
+recorded floor (1..56, integer or integer-valued float, earliest event wins)
+feeds sample/percentile/act summaries.  The logs are incomplete, so coverage
+against terminal presence is stored but never treated as a universal
+acquisition log.  Shop purchases and STS2 statistics remain out of scope.
 """
 
 from __future__ import annotations
@@ -19,14 +25,18 @@ from __future__ import annotations
 from collections import Counter
 from pathlib import Path
 import re
+import statistics
 from typing import Any, Iterable, Iterator, Mapping
 
 from card_guess.relic_stats import (
     BOSS_ACT_KEYS,
     BOSS_CHOICE_KEY,
+    ACQUISITION_FLOOR_MAX,
+    ACQUISITION_TIER_SET,
     CHARACTERS,
     DEFAULT_SUPPORT_MIN_HOLD_RUNS,
     DEFAULT_SUPPORT_MIN_SHARE,
+    FIRST_ACQUISITION_KEY,
     HEART_WIN_KEY,
     SCHEMA_VERSION,
     is_character,
@@ -65,6 +75,26 @@ RELIC_RUN_KEY_ALIASES = {
 
 # ``boss_relics`` list position maps to the boss relic act screen.
 _BOSS_ACT_BY_INDEX = dict(enumerate(BOSS_ACT_KEYS))
+
+# R5B: recorded-acquisition floor act boundaries (locked by tests).
+ACT1_MAX_FLOOR = 16
+ACT2_MAX_FLOOR = 33
+
+
+def acquisition_floor_quartiles(floors):
+    """Return ``(p25, median, p75)`` from stdlib inclusive quantiles.
+
+    The project has no percentile helper; this locks the Python standard
+    library definition ``statistics.quantiles(..., n=4, method="inclusive")``
+    so the median always equals ``statistics.median`` and results are
+    deterministic.  Quartiles are returned as floats (integer input floors
+    give exact quarter-step values).
+    """
+    ordered = sorted(floors)
+    if not ordered:
+        raise ValueError("floors must not be empty")
+    p25, median, p75 = statistics.quantiles(ordered, n=4, method="inclusive")
+    return p25, median, p75
 
 
 def _canonical_relic_key(value: str) -> str:
@@ -167,6 +197,14 @@ def aggregate_sts1_relics(
     resolver = RelicKeyResolver(relic_catalog)
     catalog_ids = sorted(resolver.catalog)
     hold_runs = {relic_id: Counter() for relic_id in catalog_ids}
+    acquisition_floors: dict[str, list[int]] = {
+        relic_id: [] for relic_id in catalog_ids
+    }
+    acquisition_ids = frozenset(
+        relic_id
+        for relic_id in catalog_ids
+        if resolver.catalog[relic_id].get("tier") in ACQUISITION_TIER_SET
+    )
     character_runs: Counter[str] = Counter()
     heart_holds: Counter[str] = Counter()
     boss_offered: dict[str, Counter[str]] = {
@@ -229,6 +267,35 @@ def aggregate_sts1_relics(
             if heart_win:
                 heart_holds[relic_id] += 1
 
+        # R5B: first recorded legal acquisition floor per eligible relic.
+        # ``relics_obtained`` is an incomplete log, so these runs only feed
+        # the acquisition sample; terminal presence is counted separately.
+        run_first_floor: dict[str, int] = {}
+        obtained = raw_run.get("relics_obtained")
+        if isinstance(obtained, list):
+            for event in obtained:
+                if not isinstance(event, Mapping):
+                    continue
+                floor = event.get("floor")
+                if isinstance(floor, bool) or not isinstance(floor, (int, float)):
+                    continue
+                if isinstance(floor, float) and not floor.is_integer():
+                    continue
+                floor_int = int(floor)
+                if floor_int < 1 or floor_int > ACQUISITION_FLOOR_MAX:
+                    continue
+                raw_key = event.get("key")
+                if not isinstance(raw_key, str) or not raw_key:
+                    continue
+                relic_id = resolver.resolve(raw_key)
+                if relic_id is None or relic_id not in acquisition_ids:
+                    continue
+                prior = run_first_floor.get(relic_id)
+                if prior is None or floor_int < prior:
+                    run_first_floor[relic_id] = floor_int
+        for relic_id, floor_int in run_first_floor.items():
+            acquisition_floors[relic_id].append(floor_int)
+
         boss_relics = raw_run.get("boss_relics")
         if isinstance(boss_relics, list):
             for act_index, screen in enumerate(boss_relics):
@@ -269,6 +336,7 @@ def aggregate_sts1_relics(
     snapshot = _build_snapshot(
         resolver,
         hold_runs,
+        acquisition_floors,
         character_runs,
         report,
         heart_holds,
@@ -288,6 +356,7 @@ def aggregate_sts1_relics(
 def _build_snapshot(
     resolver: RelicKeyResolver,
     hold_runs: Mapping[str, Counter[str]],
+    acquisition_floors: Mapping[str, list[int]],
     character_runs: Mapping[str, int],
     report: Mapping[str, Any],
     heart_holds: Mapping[str, int],
@@ -319,6 +388,7 @@ def _build_snapshot(
             "terminal_relics": "recorded_relics_list_required",
             "terminal_hold": "at_most_once_per_run",
             "catalog_color": "ignored_for_eligibility",
+            "acquisition_timing": "relics_obtained_first_legal_floor_1_to_56",
         },
         "display_policy": {
             "basis": "observed_terminal_holds",
@@ -375,6 +445,23 @@ def _build_snapshot(
                 for role in present_roles
             },
         }
+        floors = acquisition_floors.get(relic_id, ())
+        if record.get("tier") in ACQUISITION_TIER_SET and floors and total_holds > 0:
+            act1 = sum(1 for floor in floors if floor <= ACT1_MAX_FLOOR)
+            act3 = sum(1 for floor in floors if floor > ACT2_MAX_FLOOR)
+            act2 = len(floors) - act1 - act3
+            p25, median, p75 = acquisition_floor_quartiles(floors)
+            relic[FIRST_ACQUISITION_KEY] = {
+                "sample_size": len(floors),
+                "final_presence_runs": total_holds,
+                "coverage_rate": make_relic_rate_metric(len(floors), total_holds),
+                "median_floor": median,
+                "p25_floor": p25,
+                "p75_floor": p75,
+                "act1_rate": make_relic_rate_metric(act1, len(floors)),
+                "act2_rate": make_relic_rate_metric(act2, len(floors)),
+                "act3_rate": make_relic_rate_metric(act3, len(floors)),
+            }
         if heart_win_runs > 0:
             relic[HEART_WIN_KEY] = make_relic_rate_metric(
                 heart_holds.get(relic_id, 0),

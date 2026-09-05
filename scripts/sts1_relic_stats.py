@@ -5,8 +5,10 @@ the official November run dump and the STS1 relic catalog.  Runtime/bot code
 must only consume the generated JSON and must never call these sources
 directly.
 
-R2A scope: the snapshot only covers terminal ``relics`` presence.  It does not
-compute obtained counts, first-acquisition floors, shop purchases, or STS2.
+R2A-2 scope: the snapshot covers terminal ``relics`` presence, heart-win
+presence, and per-act boss choices.  R5B adds first-acquisition floor timing
+for Common / Uncommon / Rare relics from recorded ``relics_obtained`` events.
+It still does not compute shop purchases or STS2 statistics.
 """
 
 from __future__ import annotations

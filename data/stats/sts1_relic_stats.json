@@ -8,14 +8,15 @@
       "id": "official_120k_november_sample",
       "file": "november.json"
     },
-    "collected_at": "2026-09-03T16:05:21Z",
+    "collected_at": "2026-09-04T14:44:32Z",
     "filters": {
       "is_beta": "excluded",
       "play_id": "not_deduplicated",
       "characters": "four_canonical_roles",
       "terminal_relics": "recorded_relics_list_required",
       "terminal_hold": "at_most_once_per_run",
-      "catalog_color": "ignored_for_eligibility"
+      "catalog_color": "ignored_for_eligibility",
+      "acquisition_timing": "relics_obtained_first_legal_floor_1_to_56"
     },
     "display_policy": {
       "basis": "observed_terminal_holds",
@@ -96,6 +97,45 @@
           "numerator": 1065,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 3206,
+        "final_presence_runs": 4216,
+        "coverage_rate": {
+          "value": 76.0436432637571,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3206,
+          "denominator": 4216,
+          "sample_size": 4216
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 27.0,
+        "act1_rate": {
+          "value": 54.429195258889585,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1745,
+          "denominator": 3206,
+          "sample_size": 3206
+        },
+        "act2_rate": {
+          "value": 27.91640673736744,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 895,
+          "denominator": 3206,
+          "sample_size": 3206
+        },
+        "act3_rate": {
+          "value": 17.654398003742983,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 566,
+          "denominator": 3206,
+          "sample_size": 3206
         }
       },
       "heart_win_presence_rate": {
@@ -198,6 +238,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7421,
+        "final_presence_runs": 10341,
+        "coverage_rate": {
+          "value": 71.7628856010057,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7421,
+          "denominator": 10341,
+          "sample_size": 10341
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.26209405740467,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4101,
+          "denominator": 7421,
+          "sample_size": 7421
+        },
+        "act2_rate": {
+          "value": 28.244171944481877,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2096,
+          "denominator": 7421,
+          "sample_size": 7421
+        },
+        "act3_rate": {
+          "value": 16.49373399811346,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1224,
+          "denominator": 7421,
+          "sample_size": 7421
+        }
+      },
       "heart_win_presence_rate": {
         "value": 30.29801324503311,
         "unit": "percent",
@@ -298,6 +377,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7057,
+        "final_presence_runs": 8899,
+        "coverage_rate": {
+          "value": 79.30104506124283,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7057,
+          "denominator": 8899,
+          "sample_size": 8899
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.05979878135185,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3815,
+          "denominator": 7057,
+          "sample_size": 7057
+        },
+        "act2_rate": {
+          "value": 29.502621510556892,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2082,
+          "denominator": 7057,
+          "sample_size": 7057
+        },
+        "act3_rate": {
+          "value": 16.437579708091256,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1160,
+          "denominator": 7057,
+          "sample_size": 7057
+        }
+      },
       "heart_win_presence_rate": {
         "value": 20.695364238410598,
         "unit": "percent",
@@ -396,6 +514,45 @@
           "numerator": 1209,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 5247,
+        "final_presence_runs": 6715,
+        "coverage_rate": {
+          "value": 78.13849590469098,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 5247,
+          "denominator": 6715,
+          "sample_size": 6715
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.41204497808272,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2855,
+          "denominator": 5247,
+          "sample_size": 5247
+        },
+        "act2_rate": {
+          "value": 27.99695063846007,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1469,
+          "denominator": 5247,
+          "sample_size": 5247
+        },
+        "act3_rate": {
+          "value": 17.591004383457214,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 923,
+          "denominator": 5247,
+          "sample_size": 5247
         }
       },
       "heart_win_presence_rate": {
@@ -614,6 +771,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7125,
+        "final_presence_runs": 9594,
+        "coverage_rate": {
+          "value": 74.26516572858036,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7125,
+          "denominator": 9594,
+          "sample_size": 9594
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.29824561403509,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3940,
+          "denominator": 7125,
+          "sample_size": 7125
+        },
+        "act2_rate": {
+          "value": 28.210526315789476,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2010,
+          "denominator": 7125,
+          "sample_size": 7125
+        },
+        "act3_rate": {
+          "value": 16.49122807017544,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1175,
+          "denominator": 7125,
+          "sample_size": 7125
+        }
+      },
       "heart_win_presence_rate": {
         "value": 25.124172185430467,
         "unit": "percent",
@@ -714,6 +910,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7308,
+        "final_presence_runs": 10008,
+        "coverage_rate": {
+          "value": 73.02158273381295,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7308,
+          "denominator": 10008,
+          "sample_size": 10008
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.26819923371647,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4039,
+          "denominator": 7308,
+          "sample_size": 7308
+        },
+        "act2_rate": {
+          "value": 28.776683087027916,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2103,
+          "denominator": 7308,
+          "sample_size": 7308
+        },
+        "act3_rate": {
+          "value": 15.95511767925561,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1166,
+          "denominator": 7308,
+          "sample_size": 7308
+        }
+      },
       "heart_win_presence_rate": {
         "value": 31.912251655629138,
         "unit": "percent",
@@ -812,6 +1047,45 @@
           "numerator": 676,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 3128,
+        "final_presence_runs": 3960,
+        "coverage_rate": {
+          "value": 78.98989898989899,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3128,
+          "denominator": 3960,
+          "sample_size": 3960
+        },
+        "median_floor": 22.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 44.469309462915604,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1391,
+          "denominator": 3128,
+          "sample_size": 3128
+        },
+        "act2_rate": {
+          "value": 26.278772378516624,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 822,
+          "denominator": 3128,
+          "sample_size": 3128
+        },
+        "act3_rate": {
+          "value": 29.251918158567776,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 915,
+          "denominator": 3128,
+          "sample_size": 3128
         }
       },
       "heart_win_presence_rate": {
@@ -1240,6 +1514,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7225,
+        "final_presence_runs": 9402,
+        "coverage_rate": {
+          "value": 76.84535205275473,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7225,
+          "denominator": 9402,
+          "sample_size": 9402
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.71280276816609,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3953,
+          "denominator": 7225,
+          "sample_size": 7225
+        },
+        "act2_rate": {
+          "value": 28.26297577854671,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2042,
+          "denominator": 7225,
+          "sample_size": 7225
+        },
+        "act3_rate": {
+          "value": 17.024221453287197,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1230,
+          "denominator": 7225,
+          "sample_size": 7225
+        }
+      },
       "heart_win_presence_rate": {
         "value": 23.799668874172188,
         "unit": "percent",
@@ -1338,6 +1651,45 @@
           "numerator": 840,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 4144,
+        "final_presence_runs": 4809,
+        "coverage_rate": {
+          "value": 86.17176128093159,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4144,
+          "denominator": 4809,
+          "sample_size": 4809
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 27.0,
+        "act1_rate": {
+          "value": 54.27123552123552,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2249,
+          "denominator": 4144,
+          "sample_size": 4144
+        },
+        "act2_rate": {
+          "value": 28.933397683397683,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1199,
+          "denominator": 4144,
+          "sample_size": 4144
+        },
+        "act3_rate": {
+          "value": 16.795366795366796,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 696,
+          "denominator": 4144,
+          "sample_size": 4144
         }
       },
       "heart_win_presence_rate": {
@@ -1440,6 +1792,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7237,
+        "final_presence_runs": 9013,
+        "coverage_rate": {
+          "value": 80.29512925773882,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7237,
+          "denominator": 9013,
+          "sample_size": 9013
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.5806273317673,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3950,
+          "denominator": 7237,
+          "sample_size": 7237
+        },
+        "act2_rate": {
+          "value": 28.188475887798813,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2040,
+          "denominator": 7237,
+          "sample_size": 7237
+        },
+        "act3_rate": {
+          "value": 17.230896780433884,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1247,
+          "denominator": 7237,
+          "sample_size": 7237
+        }
+      },
       "heart_win_presence_rate": {
         "value": 20.653973509933774,
         "unit": "percent",
@@ -1538,6 +1929,45 @@
           "numerator": 959,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 4898,
+        "final_presence_runs": 5290,
+        "coverage_rate": {
+          "value": 92.58979206049149,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4898,
+          "denominator": 5290,
+          "sample_size": 5290
+        },
+        "median_floor": 14.0,
+        "p25_floor": 9.0,
+        "p75_floor": 27.0,
+        "act1_rate": {
+          "value": 52.91955900367496,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2592,
+          "denominator": 4898,
+          "sample_size": 4898
+        },
+        "act2_rate": {
+          "value": 29.706002449979586,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1455,
+          "denominator": 4898,
+          "sample_size": 4898
+        },
+        "act3_rate": {
+          "value": 17.37443854634545,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 851,
+          "denominator": 4898,
+          "sample_size": 4898
         }
       },
       "heart_win_presence_rate": {
@@ -1640,6 +2070,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 5165,
+        "final_presence_runs": 5766,
+        "coverage_rate": {
+          "value": 89.5768296912938,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 5165,
+          "denominator": 5766,
+          "sample_size": 5766
+        },
+        "median_floor": 14.0,
+        "p25_floor": 9.0,
+        "p75_floor": 27.0,
+        "act1_rate": {
+          "value": 51.40367860600193,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2655,
+          "denominator": 5165,
+          "sample_size": 5165
+        },
+        "act2_rate": {
+          "value": 31.01645692158761,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1602,
+          "denominator": 5165,
+          "sample_size": 5165
+        },
+        "act3_rate": {
+          "value": 17.579864472410456,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 908,
+          "denominator": 5165,
+          "sample_size": 5165
+        }
+      },
       "heart_win_presence_rate": {
         "value": 15.480132450331126,
         "unit": "percent",
@@ -1738,6 +2207,45 @@
           "numerator": 662,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 3701,
+        "final_presence_runs": 4397,
+        "coverage_rate": {
+          "value": 84.17102569934046,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3701,
+          "denominator": 4397,
+          "sample_size": 4397
+        },
+        "median_floor": 25.0,
+        "p25_floor": 9.0,
+        "p75_floor": 31.0,
+        "act1_rate": {
+          "value": 40.98892191299649,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1517,
+          "denominator": 3701,
+          "sample_size": 3701
+        },
+        "act2_rate": {
+          "value": 35.639016482031884,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1319,
+          "denominator": 3701,
+          "sample_size": 3701
+        },
+        "act3_rate": {
+          "value": 23.37206160497163,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 865,
+          "denominator": 3701,
+          "sample_size": 3701
         }
       },
       "heart_win_presence_rate": {
@@ -1932,6 +2440,45 @@
           "numerator": 1665,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 7318,
+        "final_presence_runs": 10152,
+        "coverage_rate": {
+          "value": 72.0843183609141,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7318,
+          "denominator": 10152,
+          "sample_size": 10152
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 53.7168625307461,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3931,
+          "denominator": 7318,
+          "sample_size": 7318
+        },
+        "act2_rate": {
+          "value": 29.898879475266465,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2188,
+          "denominator": 7318,
+          "sample_size": 7318
+        },
+        "act3_rate": {
+          "value": 16.38425799398743,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1199,
+          "denominator": 7318,
+          "sample_size": 7318
         }
       },
       "heart_win_presence_rate": {
@@ -2238,6 +2785,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 1007,
+        "final_presence_runs": 1292,
+        "coverage_rate": {
+          "value": 77.94117647058823,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1007,
+          "denominator": 1292,
+          "sample_size": 1292
+        },
+        "median_floor": 12.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 58.19265143992055,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 586,
+          "denominator": 1007,
+          "sample_size": 1007
+        },
+        "act2_rate": {
+          "value": 28.997020854021848,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 292,
+          "denominator": 1007,
+          "sample_size": 1007
+        },
+        "act3_rate": {
+          "value": 12.810327706057597,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 129,
+          "denominator": 1007,
+          "sample_size": 1007
+        }
+      },
       "heart_win_presence_rate": {
         "value": 4.635761589403973,
         "unit": "percent",
@@ -2336,6 +2922,45 @@
           "numerator": 733,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 3000,
+        "final_presence_runs": 3889,
+        "coverage_rate": {
+          "value": 77.14065312419646,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3000,
+          "denominator": 3889,
+          "sample_size": 3889
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 41.93333333333334,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1258,
+          "denominator": 3000,
+          "sample_size": 3000
+        },
+        "act2_rate": {
+          "value": 29.4,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 882,
+          "denominator": 3000,
+          "sample_size": 3000
+        },
+        "act3_rate": {
+          "value": 28.666666666666668,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 860,
+          "denominator": 3000,
+          "sample_size": 3000
         }
       },
       "heart_win_presence_rate": {
@@ -2554,6 +3179,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 2992,
+        "final_presence_runs": 3885,
+        "coverage_rate": {
+          "value": 77.014157014157,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2992,
+          "denominator": 3885,
+          "sample_size": 3885
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 44.88636363636363,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1343,
+          "denominator": 2992,
+          "sample_size": 2992
+        },
+        "act2_rate": {
+          "value": 26.938502673796794,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 806,
+          "denominator": 2992,
+          "sample_size": 2992
+        },
+        "act3_rate": {
+          "value": 28.17513368983957,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 843,
+          "denominator": 2992,
+          "sample_size": 2992
+        }
+      },
       "heart_win_presence_rate": {
         "value": 14.072847682119205,
         "unit": "percent",
@@ -2754,6 +3418,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7043,
+        "final_presence_runs": 8865,
+        "coverage_rate": {
+          "value": 79.44726452340666,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7043,
+          "denominator": 8865,
+          "sample_size": 8865
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.4086326849354,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3832,
+          "denominator": 7043,
+          "sample_size": 7043
+        },
+        "act2_rate": {
+          "value": 28.851341757773675,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2032,
+          "denominator": 7043,
+          "sample_size": 7043
+        },
+        "act3_rate": {
+          "value": 16.740025557290927,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1179,
+          "denominator": 7043,
+          "sample_size": 7043
+        }
+      },
       "heart_win_presence_rate": {
         "value": 25.7864238410596,
         "unit": "percent",
@@ -2854,6 +3557,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 3218,
+        "final_presence_runs": 3966,
+        "coverage_rate": {
+          "value": 81.1396873424105,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3218,
+          "denominator": 3966,
+          "sample_size": 3966
+        },
+        "median_floor": 12.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 57.395898073337484,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1847,
+          "denominator": 3218,
+          "sample_size": 3218
+        },
+        "act2_rate": {
+          "value": 27.470478558110628,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 884,
+          "denominator": 3218,
+          "sample_size": 3218
+        },
+        "act3_rate": {
+          "value": 15.133623368551897,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 487,
+          "denominator": 3218,
+          "sample_size": 3218
+        }
+      },
       "heart_win_presence_rate": {
         "value": 11.672185430463577,
         "unit": "percent",
@@ -2948,6 +3690,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 996,
+        "final_presence_runs": 1285,
+        "coverage_rate": {
+          "value": 77.50972762645915,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 996,
+          "denominator": 1285,
+          "sample_size": 1285
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 34.0,
+        "act1_rate": {
+          "value": 44.97991967871486,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 448,
+          "denominator": 996,
+          "sample_size": 996
+        },
+        "act2_rate": {
+          "value": 28.514056224899598,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 284,
+          "denominator": 996,
+          "sample_size": 996
+        },
+        "act3_rate": {
+          "value": 26.506024096385545,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 264,
+          "denominator": 996,
+          "sample_size": 996
+        }
+      },
       "heart_win_presence_rate": {
         "value": 3.3112582781456954,
         "unit": "percent",
@@ -3040,6 +3821,45 @@
           "numerator": 0,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 1023,
+        "final_presence_runs": 1299,
+        "coverage_rate": {
+          "value": 78.75288683602771,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1023,
+          "denominator": 1299,
+          "sample_size": 1299
+        },
+        "median_floor": 21.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 43.79276637341153,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 448,
+          "denominator": 1023,
+          "sample_size": 1023
+        },
+        "act2_rate": {
+          "value": 28.739002932551323,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 294,
+          "denominator": 1023,
+          "sample_size": 1023
+        },
+        "act3_rate": {
+          "value": 27.468230694037143,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 281,
+          "denominator": 1023,
+          "sample_size": 1023
         }
       },
       "heart_win_presence_rate": {
@@ -3337,6 +4157,45 @@
           "numerator": 378,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 296,
+        "final_presence_runs": 378,
+        "coverage_rate": {
+          "value": 78.3068783068783,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 296,
+          "denominator": 378,
+          "sample_size": 378
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 39.0,
+        "act1_rate": {
+          "value": 44.932432432432435,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 133,
+          "denominator": 296,
+          "sample_size": 296
+        },
+        "act2_rate": {
+          "value": 20.60810810810811,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 61,
+          "denominator": 296,
+          "sample_size": 296
+        },
+        "act3_rate": {
+          "value": 34.45945945945946,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 102,
+          "denominator": 296,
+          "sample_size": 296
         }
       },
       "heart_win_presence_rate": {
@@ -3959,6 +4818,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 1207,
+        "final_presence_runs": 1754,
+        "coverage_rate": {
+          "value": 68.81413911060433,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1207,
+          "denominator": 1754,
+          "sample_size": 1754
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.18392709196355,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 654,
+          "denominator": 1207,
+          "sample_size": 1207
+        },
+        "act2_rate": {
+          "value": 28.91466445733223,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 349,
+          "denominator": 1207,
+          "sample_size": 1207
+        },
+        "act3_rate": {
+          "value": 16.901408450704224,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 204,
+          "denominator": 1207,
+          "sample_size": 1207
+        }
+      },
       "heart_win_presence_rate": {
         "value": 5.380794701986755,
         "unit": "percent",
@@ -4059,6 +4957,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 5619,
+        "final_presence_runs": 6471,
+        "coverage_rate": {
+          "value": 86.83356513676402,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 5619,
+          "denominator": 6471,
+          "sample_size": 6471
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.098772023491726,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3096,
+          "denominator": 5619,
+          "sample_size": 5619
+        },
+        "act2_rate": {
+          "value": 29.934151984338854,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1682,
+          "denominator": 5619,
+          "sample_size": 5619
+        },
+        "act3_rate": {
+          "value": 14.967075992169427,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 841,
+          "denominator": 5619,
+          "sample_size": 5619
+        }
+      },
       "heart_win_presence_rate": {
         "value": 12.955298013245034,
         "unit": "percent",
@@ -4151,6 +5088,45 @@
           "numerator": 0,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 1058,
+        "final_presence_runs": 1708,
+        "coverage_rate": {
+          "value": 61.94379391100703,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1058,
+          "denominator": 1708,
+          "sample_size": 1708
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 56.14366729678639,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 594,
+          "denominator": 1058,
+          "sample_size": 1058
+        },
+        "act2_rate": {
+          "value": 29.39508506616257,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 311,
+          "denominator": 1058,
+          "sample_size": 1058
+        },
+        "act3_rate": {
+          "value": 14.46124763705104,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 153,
+          "denominator": 1058,
+          "sample_size": 1058
         }
       },
       "heart_win_presence_rate": {
@@ -4251,6 +5227,45 @@
           "numerator": 452,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 1969,
+        "final_presence_runs": 2575,
+        "coverage_rate": {
+          "value": 76.46601941747574,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1969,
+          "denominator": 2575,
+          "sample_size": 2575
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 34.0,
+        "act1_rate": {
+          "value": 46.31792788217369,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 912,
+          "denominator": 1969,
+          "sample_size": 1969
+        },
+        "act2_rate": {
+          "value": 27.78059928897918,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 547,
+          "denominator": 1969,
+          "sample_size": 1969
+        },
+        "act3_rate": {
+          "value": 25.901472828847133,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 510,
+          "denominator": 1969,
+          "sample_size": 1969
         }
       },
       "heart_win_presence_rate": {
@@ -4543,6 +5558,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6998,
+        "final_presence_runs": 8821,
+        "coverage_rate": {
+          "value": 79.33340891055435,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6998,
+          "denominator": 8821,
+          "sample_size": 8821
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.77279222635039,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3833,
+          "denominator": 6998,
+          "sample_size": 6998
+        },
+        "act2_rate": {
+          "value": 29.779937124892825,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2084,
+          "denominator": 6998,
+          "sample_size": 6998
+        },
+        "act3_rate": {
+          "value": 15.447270648756788,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1081,
+          "denominator": 6998,
+          "sample_size": 6998
+        }
+      },
       "heart_win_presence_rate": {
         "value": 17.259933774834437,
         "unit": "percent",
@@ -4641,6 +5695,45 @@
           "numerator": 618,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 2593,
+        "final_presence_runs": 3266,
+        "coverage_rate": {
+          "value": 79.3937538273117,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2593,
+          "denominator": 3266,
+          "sample_size": 3266
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 42.88468954878519,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1112,
+          "denominator": 2593,
+          "sample_size": 2593
+        },
+        "act2_rate": {
+          "value": 28.0370227535673,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 727,
+          "denominator": 2593,
+          "sample_size": 2593
+        },
+        "act3_rate": {
+          "value": 29.078287697647514,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 754,
+          "denominator": 2593,
+          "sample_size": 2593
         }
       },
       "heart_win_presence_rate": {
@@ -4851,6 +5944,45 @@
           "numerator": 0,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 441,
+        "final_presence_runs": 600,
+        "coverage_rate": {
+          "value": 73.5,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 441,
+          "denominator": 600,
+          "sample_size": 600
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 34.0,
+        "act1_rate": {
+          "value": 46.48526077097506,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 205,
+          "denominator": 441,
+          "sample_size": 441
+        },
+        "act2_rate": {
+          "value": 27.43764172335601,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 121,
+          "denominator": 441,
+          "sample_size": 441
+        },
+        "act3_rate": {
+          "value": 26.077097505668934,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 115,
+          "denominator": 441,
+          "sample_size": 441
         }
       },
       "heart_win_presence_rate": {
@@ -5169,6 +6301,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6235,
+        "final_presence_runs": 7584,
+        "coverage_rate": {
+          "value": 82.21255274261603,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6235,
+          "denominator": 7584,
+          "sample_size": 7584
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 53.424218123496395,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3331,
+          "denominator": 6235,
+          "sample_size": 6235
+        },
+        "act2_rate": {
+          "value": 30.697674418604652,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1914,
+          "denominator": 6235,
+          "sample_size": 6235
+        },
+        "act3_rate": {
+          "value": 15.878107457898958,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 990,
+          "denominator": 6235,
+          "sample_size": 6235
+        }
+      },
       "heart_win_presence_rate": {
         "value": 18.087748344370862,
         "unit": "percent",
@@ -5385,6 +6556,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 3087,
+        "final_presence_runs": 4126,
+        "coverage_rate": {
+          "value": 74.81822588463403,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3087,
+          "denominator": 4126,
+          "sample_size": 4126
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 42.72756721736314,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1319,
+          "denominator": 3087,
+          "sample_size": 3087
+        },
+        "act2_rate": {
+          "value": 27.988338192419825,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 864,
+          "denominator": 3087,
+          "sample_size": 3087
+        },
+        "act3_rate": {
+          "value": 29.28409459021704,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 904,
+          "denominator": 3087,
+          "sample_size": 3087
+        }
+      },
       "heart_win_presence_rate": {
         "value": 15.60430463576159,
         "unit": "percent",
@@ -5594,6 +6804,45 @@
           "numerator": 1209,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 6111,
+        "final_presence_runs": 7611,
+        "coverage_rate": {
+          "value": 80.29168309026409,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6111,
+          "denominator": 7611,
+          "sample_size": 7611
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.32646048109966,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3381,
+          "denominator": 6111,
+          "sample_size": 6111
+        },
+        "act2_rate": {
+          "value": 30.7151039109802,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1877,
+          "denominator": 6111,
+          "sample_size": 6111
+        },
+        "act3_rate": {
+          "value": 13.958435607920144,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 853,
+          "denominator": 6111,
+          "sample_size": 6111
         }
       },
       "heart_win_presence_rate": {
@@ -5912,6 +7161,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 3039,
+        "final_presence_runs": 3840,
+        "coverage_rate": {
+          "value": 79.140625,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3039,
+          "denominator": 3840,
+          "sample_size": 3840
+        },
+        "median_floor": 20.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 44.3566962816716,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1348,
+          "denominator": 3039,
+          "sample_size": 3039
+        },
+        "act2_rate": {
+          "value": 27.377426785126683,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 832,
+          "denominator": 3039,
+          "sample_size": 3039
+        },
+        "act3_rate": {
+          "value": 28.26587693320171,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 859,
+          "denominator": 3039,
+          "sample_size": 3039
+        }
+      },
       "heart_win_presence_rate": {
         "value": 12.665562913907285,
         "unit": "percent",
@@ -6010,6 +7298,45 @@
           "numerator": 656,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 3198,
+        "final_presence_runs": 4159,
+        "coverage_rate": {
+          "value": 76.89348401057947,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3198,
+          "denominator": 4159,
+          "sample_size": 4159
+        },
+        "median_floor": 21.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 44.15259537210757,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1412,
+          "denominator": 3198,
+          "sample_size": 3198
+        },
+        "act2_rate": {
+          "value": 27.76735459662289,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 888,
+          "denominator": 3198,
+          "sample_size": 3198
+        },
+        "act3_rate": {
+          "value": 28.080050031269543,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 898,
+          "denominator": 3198,
+          "sample_size": 3198
         }
       },
       "heart_win_presence_rate": {
@@ -6112,6 +7439,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 2899,
+        "final_presence_runs": 3680,
+        "coverage_rate": {
+          "value": 78.77717391304347,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2899,
+          "denominator": 3680,
+          "sample_size": 3680
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 34.0,
+        "act1_rate": {
+          "value": 45.36046912728527,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1315,
+          "denominator": 2899,
+          "sample_size": 2899
+        },
+        "act2_rate": {
+          "value": 28.630562262849256,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 830,
+          "denominator": 2899,
+          "sample_size": 2899
+        },
+        "act3_rate": {
+          "value": 26.00896860986547,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 754,
+          "denominator": 2899,
+          "sample_size": 2899
+        }
+      },
       "heart_win_presence_rate": {
         "value": 8.485099337748345,
         "unit": "percent",
@@ -6204,6 +7570,45 @@
           "numerator": 607,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 499,
+        "final_presence_runs": 607,
+        "coverage_rate": {
+          "value": 82.20757825370676,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 499,
+          "denominator": 607,
+          "sample_size": 607
+        },
+        "median_floor": 23.0,
+        "p25_floor": 10.0,
+        "p75_floor": 37.0,
+        "act1_rate": {
+          "value": 40.28056112224449,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 201,
+          "denominator": 499,
+          "sample_size": 499
+        },
+        "act2_rate": {
+          "value": 29.859719438877757,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 149,
+          "denominator": 499,
+          "sample_size": 499
+        },
+        "act3_rate": {
+          "value": 29.859719438877757,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 149,
+          "denominator": 499,
+          "sample_size": 499
         }
       },
       "heart_win_presence_rate": {
@@ -6506,6 +7911,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6081,
+        "final_presence_runs": 7543,
+        "coverage_rate": {
+          "value": 80.61779132970966,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6081,
+          "denominator": 7543,
+          "sample_size": 7543
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.72784081565531,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3328,
+          "denominator": 6081,
+          "sample_size": 6081
+        },
+        "act2_rate": {
+          "value": 30.192402565367537,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1836,
+          "denominator": 6081,
+          "sample_size": 6081
+        },
+        "act3_rate": {
+          "value": 15.079756618977141,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 917,
+          "denominator": 6081,
+          "sample_size": 6081
+        }
+      },
       "heart_win_presence_rate": {
         "value": 17.715231788079468,
         "unit": "percent",
@@ -6704,6 +8148,45 @@
           "numerator": 1715,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 7351,
+        "final_presence_runs": 10411,
+        "coverage_rate": {
+          "value": 70.60801075785227,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7351,
+          "denominator": 10411,
+          "sample_size": 10411
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.6592300367297,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4018,
+          "denominator": 7351,
+          "sample_size": 7351
+        },
+        "act2_rate": {
+          "value": 28.92123520609441,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2126,
+          "denominator": 7351,
+          "sample_size": 7351
+        },
+        "act3_rate": {
+          "value": 16.419534757175892,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1207,
+          "denominator": 7351,
+          "sample_size": 7351
         }
       },
       "heart_win_presence_rate": {
@@ -6916,6 +8399,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 5968,
+        "final_presence_runs": 7425,
+        "coverage_rate": {
+          "value": 80.37710437710437,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 5968,
+          "denominator": 7425,
+          "sample_size": 7425
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 53.41823056300268,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3188,
+          "denominator": 5968,
+          "sample_size": 5968
+        },
+        "act2_rate": {
+          "value": 30.512734584450403,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1821,
+          "denominator": 5968,
+          "sample_size": 5968
+        },
+        "act3_rate": {
+          "value": 16.069034852546917,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 959,
+          "denominator": 5968,
+          "sample_size": 5968
+        }
+      },
       "heart_win_presence_rate": {
         "value": 23.26158940397351,
         "unit": "percent",
@@ -7126,6 +8648,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 3036,
+        "final_presence_runs": 4149,
+        "coverage_rate": {
+          "value": 73.17425885755604,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3036,
+          "denominator": 4149,
+          "sample_size": 4149
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 42.984189723320156,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1305,
+          "denominator": 3036,
+          "sample_size": 3036
+        },
+        "act2_rate": {
+          "value": 27.931488801054016,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 848,
+          "denominator": 3036,
+          "sample_size": 3036
+        },
+        "act3_rate": {
+          "value": 29.084321475625824,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 883,
+          "denominator": 3036,
+          "sample_size": 3036
+        }
+      },
       "heart_win_presence_rate": {
         "value": 13.658940397350994,
         "unit": "percent",
@@ -7226,6 +8787,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 3036,
+        "final_presence_runs": 4022,
+        "coverage_rate": {
+          "value": 75.48483341621083,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3036,
+          "denominator": 4022,
+          "sample_size": 4022
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 41.10671936758894,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1248,
+          "denominator": 3036,
+          "sample_size": 3036
+        },
+        "act2_rate": {
+          "value": 30.632411067193676,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 930,
+          "denominator": 3036,
+          "sample_size": 3036
+        },
+        "act3_rate": {
+          "value": 28.26086956521739,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 858,
+          "denominator": 3036,
+          "sample_size": 3036
+        }
+      },
       "heart_win_presence_rate": {
         "value": 16.142384105960264,
         "unit": "percent",
@@ -7324,6 +8924,45 @@
           "numerator": 1153,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 5835,
+        "final_presence_runs": 6826,
+        "coverage_rate": {
+          "value": 85.48198066217404,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 5835,
+          "denominator": 6826,
+          "sample_size": 6826
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 53.333333333333336,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3112,
+          "denominator": 5835,
+          "sample_size": 5835
+        },
+        "act2_rate": {
+          "value": 30.025706940874038,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1752,
+          "denominator": 5835,
+          "sample_size": 5835
+        },
+        "act3_rate": {
+          "value": 16.64095972579263,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 971,
+          "denominator": 5835,
+          "sample_size": 5835
         }
       },
       "heart_win_presence_rate": {
@@ -7536,6 +9175,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7258,
+        "final_presence_runs": 9642,
+        "coverage_rate": {
+          "value": 75.27483924496993,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7258,
+          "denominator": 9642,
+          "sample_size": 9642
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.75337558556076,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3974,
+          "denominator": 7258,
+          "sample_size": 7258
+        },
+        "act2_rate": {
+          "value": 31.041609258748963,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2253,
+          "denominator": 7258,
+          "sample_size": 7258
+        },
+        "act3_rate": {
+          "value": 14.205015155690273,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1031,
+          "denominator": 7258,
+          "sample_size": 7258
+        }
+      },
       "heart_win_presence_rate": {
         "value": 20.281456953642383,
         "unit": "percent",
@@ -7636,6 +9314,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6120,
+        "final_presence_runs": 7637,
+        "coverage_rate": {
+          "value": 80.13617912792982,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6120,
+          "denominator": 7637,
+          "sample_size": 7637
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 53.61111111111111,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3281,
+          "denominator": 6120,
+          "sample_size": 6120
+        },
+        "act2_rate": {
+          "value": 30.294117647058822,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1854,
+          "denominator": 6120,
+          "sample_size": 6120
+        },
+        "act3_rate": {
+          "value": 16.094771241830067,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 985,
+          "denominator": 6120,
+          "sample_size": 6120
+        }
+      },
       "heart_win_presence_rate": {
         "value": 20.819536423841058,
         "unit": "percent",
@@ -7734,6 +9451,45 @@
           "numerator": 1781,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 7341,
+        "final_presence_runs": 10483,
+        "coverage_rate": {
+          "value": 70.02766383668796,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7341,
+          "denominator": 10483,
+          "sample_size": 10483
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.70644326386051,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4016,
+          "denominator": 7341,
+          "sample_size": 7341
+        },
+        "act2_rate": {
+          "value": 28.68818961994279,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2106,
+          "denominator": 7341,
+          "sample_size": 7341
+        },
+        "act3_rate": {
+          "value": 16.605367116196703,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1219,
+          "denominator": 7341,
+          "sample_size": 7341
         }
       },
       "heart_win_presence_rate": {
@@ -7936,6 +9692,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6137,
+        "final_presence_runs": 7374,
+        "coverage_rate": {
+          "value": 83.22484404665039,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6137,
+          "denominator": 7374,
+          "sample_size": 7374
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.179566563467496,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3325,
+          "denominator": 6137,
+          "sample_size": 6137
+        },
+        "act2_rate": {
+          "value": 29.16734560860355,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1790,
+          "denominator": 6137,
+          "sample_size": 6137
+        },
+        "act3_rate": {
+          "value": 16.653087827928957,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1022,
+          "denominator": 6137,
+          "sample_size": 6137
+        }
+      },
       "heart_win_presence_rate": {
         "value": 18.418874172185433,
         "unit": "percent",
@@ -8034,6 +9829,45 @@
           "numerator": 673,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 2985,
+        "final_presence_runs": 3954,
+        "coverage_rate": {
+          "value": 75.49317147192717,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2985,
+          "denominator": 3954,
+          "sample_size": 3954
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 34.0,
+        "act1_rate": {
+          "value": 43.3500837520938,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1294,
+          "denominator": 2985,
+          "sample_size": 2985
+        },
+        "act2_rate": {
+          "value": 29.614740368509214,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 884,
+          "denominator": 2985,
+          "sample_size": 2985
+        },
+        "act3_rate": {
+          "value": 27.035175879396984,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 807,
+          "denominator": 2985,
+          "sample_size": 2985
         }
       },
       "heart_win_presence_rate": {
@@ -8146,6 +9980,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 956,
+        "final_presence_runs": 1235,
+        "coverage_rate": {
+          "value": 77.40890688259108,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 956,
+          "denominator": 1235,
+          "sample_size": 1235
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 42.88702928870293,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 410,
+          "denominator": 956,
+          "sample_size": 956
+        },
+        "act2_rate": {
+          "value": 28.24267782426778,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 270,
+          "denominator": 956,
+          "sample_size": 956
+        },
+        "act3_rate": {
+          "value": 28.870292887029287,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 276,
+          "denominator": 956,
+          "sample_size": 956
+        }
+      },
       "heart_win_presence_rate": {
         "value": 4.097682119205298,
         "unit": "percent",
@@ -8244,6 +10117,45 @@
           "numerator": 689,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 3030,
+        "final_presence_runs": 3930,
+        "coverage_rate": {
+          "value": 77.09923664122137,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3030,
+          "denominator": 3930,
+          "sample_size": 3930
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 43.92739273927393,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1331,
+          "denominator": 3030,
+          "sample_size": 3030
+        },
+        "act2_rate": {
+          "value": 28.217821782178216,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 855,
+          "denominator": 3030,
+          "sample_size": 3030
+        },
+        "act3_rate": {
+          "value": 27.854785478547857,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 844,
+          "denominator": 3030,
+          "sample_size": 3030
         }
       },
       "heart_win_presence_rate": {
@@ -8556,6 +10468,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 5431,
+        "final_presence_runs": 6901,
+        "coverage_rate": {
+          "value": 78.69873931314302,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 5431,
+          "denominator": 6901,
+          "sample_size": 6901
+        },
+        "median_floor": 11.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 61.24102375253177,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3326,
+          "denominator": 5431,
+          "sample_size": 5431
+        },
+        "act2_rate": {
+          "value": 34.3767262014362,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1867,
+          "denominator": 5431,
+          "sample_size": 5431
+        },
+        "act3_rate": {
+          "value": 4.382250046032039,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 238,
+          "denominator": 5431,
+          "sample_size": 5431
+        }
+      },
       "heart_win_presence_rate": {
         "value": 14.403973509933774,
         "unit": "percent",
@@ -8654,6 +10605,45 @@
           "numerator": 1254,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 7185,
+        "final_presence_runs": 8315,
+        "coverage_rate": {
+          "value": 86.41010222489477,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7185,
+          "denominator": 8315,
+          "sample_size": 8315
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.67153792623522,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4000,
+          "denominator": 7185,
+          "sample_size": 7185
+        },
+        "act2_rate": {
+          "value": 29.672929714683367,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2132,
+          "denominator": 7185,
+          "sample_size": 7185
+        },
+        "act3_rate": {
+          "value": 14.65553235908142,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1053,
+          "denominator": 7185,
+          "sample_size": 7185
         }
       },
       "heart_win_presence_rate": {
@@ -8756,6 +10746,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7210,
+        "final_presence_runs": 9410,
+        "coverage_rate": {
+          "value": 76.62061636556854,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7210,
+          "denominator": 9410,
+          "sample_size": 9410
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.8252427184466,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4025,
+          "denominator": 7210,
+          "sample_size": 7210
+        },
+        "act2_rate": {
+          "value": 29.542302357836338,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2130,
+          "denominator": 7210,
+          "sample_size": 7210
+        },
+        "act3_rate": {
+          "value": 14.63245492371706,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1055,
+          "denominator": 7210,
+          "sample_size": 7210
+        }
+      },
       "heart_win_presence_rate": {
         "value": 20.9023178807947,
         "unit": "percent",
@@ -8854,6 +10883,45 @@
           "numerator": 1197,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 6021,
+        "final_presence_runs": 7401,
+        "coverage_rate": {
+          "value": 81.3538710985002,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6021,
+          "denominator": 7401,
+          "sample_size": 7401
+        },
+        "median_floor": 12.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 56.25311410064773,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3387,
+          "denominator": 6021,
+          "sample_size": 6021
+        },
+        "act2_rate": {
+          "value": 29.231024746719815,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1760,
+          "denominator": 6021,
+          "sample_size": 6021
+        },
+        "act3_rate": {
+          "value": 14.515861152632453,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 874,
+          "denominator": 6021,
+          "sample_size": 6021
         }
       },
       "heart_win_presence_rate": {
@@ -9250,6 +11318,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6114,
+        "final_presence_runs": 7442,
+        "coverage_rate": {
+          "value": 82.15533458747647,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6114,
+          "denominator": 7442,
+          "sample_size": 7442
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.9558390578999,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3360,
+          "denominator": 6114,
+          "sample_size": 6114
+        },
+        "act2_rate": {
+          "value": 29.914949296696108,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1829,
+          "denominator": 6114,
+          "sample_size": 6114
+        },
+        "act3_rate": {
+          "value": 15.129211645403991,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 925,
+          "denominator": 6114,
+          "sample_size": 6114
+        }
+      },
       "heart_win_presence_rate": {
         "value": 20.695364238410598,
         "unit": "percent",
@@ -9350,6 +11457,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6039,
+        "final_presence_runs": 7509,
+        "coverage_rate": {
+          "value": 80.4234918098282,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6039,
+          "denominator": 7509,
+          "sample_size": 7509
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.86007617155158,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3313,
+          "denominator": 6039,
+          "sample_size": 6039
+        },
+        "act2_rate": {
+          "value": 31.346249379036262,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1893,
+          "denominator": 6039,
+          "sample_size": 6039
+        },
+        "act3_rate": {
+          "value": 13.793674449412155,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 833,
+          "denominator": 6039,
+          "sample_size": 6039
+        }
+      },
       "heart_win_presence_rate": {
         "value": 15.562913907284766,
         "unit": "percent",
@@ -9448,6 +11594,45 @@
           "numerator": 1350,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 6234,
+        "final_presence_runs": 7904,
+        "coverage_rate": {
+          "value": 78.87145748987854,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6234,
+          "denominator": 7904,
+          "sample_size": 7904
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.60378569136991,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3404,
+          "denominator": 6234,
+          "sample_size": 6234
+        },
+        "act2_rate": {
+          "value": 29.996791786974654,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1870,
+          "denominator": 6234,
+          "sample_size": 6234
+        },
+        "act3_rate": {
+          "value": 15.399422521655437,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 960,
+          "denominator": 6234,
+          "sample_size": 6234
         }
       },
       "heart_win_presence_rate": {
@@ -9944,6 +12129,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 1512,
+        "final_presence_runs": 1871,
+        "coverage_rate": {
+          "value": 80.81239978621059,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1512,
+          "denominator": 1871,
+          "sample_size": 1871
+        },
+        "median_floor": 12.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.62169312169311,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 841,
+          "denominator": 1512,
+          "sample_size": 1512
+        },
+        "act2_rate": {
+          "value": 29.232804232804234,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 442,
+          "denominator": 1512,
+          "sample_size": 1512
+        },
+        "act3_rate": {
+          "value": 15.145502645502646,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 229,
+          "denominator": 1512,
+          "sample_size": 1512
+        }
+      },
       "heart_win_presence_rate": {
         "value": 4.13907284768212,
         "unit": "percent",
@@ -10354,6 +12578,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7142,
+        "final_presence_runs": 9336,
+        "coverage_rate": {
+          "value": 76.49957155098544,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7142,
+          "denominator": 9336,
+          "sample_size": 9336
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.57854942593111,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3898,
+          "denominator": 7142,
+          "sample_size": 7142
+        },
+        "act2_rate": {
+          "value": 28.82945953514422,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2059,
+          "denominator": 7142,
+          "sample_size": 7142
+        },
+        "act3_rate": {
+          "value": 16.59199103892467,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1185,
+          "denominator": 7142,
+          "sample_size": 7142
+        }
+      },
       "heart_win_presence_rate": {
         "value": 23.054635761589402,
         "unit": "percent",
@@ -10452,6 +12715,45 @@
           "numerator": 1704,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 7458,
+        "final_presence_runs": 10458,
+        "coverage_rate": {
+          "value": 71.31382673551349,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7458,
+          "denominator": 10458,
+          "sample_size": 10458
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.417001877178876,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4133,
+          "denominator": 7458,
+          "sample_size": 7458
+        },
+        "act2_rate": {
+          "value": 28.1040493429874,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2096,
+          "denominator": 7458,
+          "sample_size": 7458
+        },
+        "act3_rate": {
+          "value": 16.478948779833736,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1229,
+          "denominator": 7458,
+          "sample_size": 7458
         }
       },
       "heart_win_presence_rate": {
@@ -10654,6 +12956,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 3056,
+        "final_presence_runs": 3617,
+        "coverage_rate": {
+          "value": 84.4899087641692,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3056,
+          "denominator": 3617,
+          "sample_size": 3617
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 34.0,
+        "act1_rate": {
+          "value": 44.30628272251309,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1354,
+          "denominator": 3056,
+          "sample_size": 3056
+        },
+        "act2_rate": {
+          "value": 28.468586387434552,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 870,
+          "denominator": 3056,
+          "sample_size": 3056
+        },
+        "act3_rate": {
+          "value": 27.225130890052355,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 832,
+          "denominator": 3056,
+          "sample_size": 3056
+        }
+      },
       "heart_win_presence_rate": {
         "value": 9.7682119205298,
         "unit": "percent",
@@ -10752,6 +13093,45 @@
           "numerator": 1497,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 6841,
+        "final_presence_runs": 8995,
+        "coverage_rate": {
+          "value": 76.05336297943302,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6841,
+          "denominator": 8995,
+          "sample_size": 8995
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.708229790966236,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3811,
+          "denominator": 6841,
+          "sample_size": 6841
+        },
+        "act2_rate": {
+          "value": 29.060078935828095,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1988,
+          "denominator": 6841,
+          "sample_size": 6841
+        },
+        "act3_rate": {
+          "value": 15.231691273205673,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1042,
+          "denominator": 6841,
+          "sample_size": 6841
         }
       },
       "heart_win_presence_rate": {
@@ -10954,6 +13334,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7205,
+        "final_presence_runs": 9653,
+        "coverage_rate": {
+          "value": 74.640008287579,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7205,
+          "denominator": 9653,
+          "sample_size": 9653
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.30950728660653,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3913,
+          "denominator": 7205,
+          "sample_size": 7205
+        },
+        "act2_rate": {
+          "value": 28.71616932685635,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2069,
+          "denominator": 7205,
+          "sample_size": 7205
+        },
+        "act3_rate": {
+          "value": 16.974323386537126,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1223,
+          "denominator": 7205,
+          "sample_size": 7205
+        }
+      },
       "heart_win_presence_rate": {
         "value": 25.538079470198678,
         "unit": "percent",
@@ -11052,6 +13471,45 @@
           "numerator": 1314,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 6158,
+        "final_presence_runs": 7456,
+        "coverage_rate": {
+          "value": 82.5912017167382,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6158,
+          "denominator": 7456,
+          "sample_size": 7456
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 53.89736927573887,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3319,
+          "denominator": 6158,
+          "sample_size": 6158
+        },
+        "act2_rate": {
+          "value": 30.10717765508282,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1854,
+          "denominator": 6158,
+          "sample_size": 6158
+        },
+        "act3_rate": {
+          "value": 15.995453069178305,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 985,
+          "denominator": 6158,
+          "sample_size": 6158
         }
       },
       "heart_win_presence_rate": {
@@ -11386,6 +13844,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6195,
+        "final_presence_runs": 7667,
+        "coverage_rate": {
+          "value": 80.80083474631537,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6195,
+          "denominator": 7667,
+          "sample_size": 7667
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 53.930589184826474,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3341,
+          "denominator": 6195,
+          "sample_size": 6195
+        },
+        "act2_rate": {
+          "value": 30.18563357546408,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1870,
+          "denominator": 6195,
+          "sample_size": 6195
+        },
+        "act3_rate": {
+          "value": 15.883777239709444,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 984,
+          "denominator": 6195,
+          "sample_size": 6195
+        }
+      },
       "heart_win_presence_rate": {
         "value": 20.9023178807947,
         "unit": "percent",
@@ -11480,6 +13977,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 1554,
+        "final_presence_runs": 1938,
+        "coverage_rate": {
+          "value": 80.18575851393189,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1554,
+          "denominator": 1938,
+          "sample_size": 1938
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 52.76705276705277,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 820,
+          "denominator": 1554,
+          "sample_size": 1554
+        },
+        "act2_rate": {
+          "value": 30.82368082368082,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 479,
+          "denominator": 1554,
+          "sample_size": 1554
+        },
+        "act3_rate": {
+          "value": 16.409266409266408,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 255,
+          "denominator": 1554,
+          "sample_size": 1554
+        }
+      },
       "heart_win_presence_rate": {
         "value": 6.4155629139072845,
         "unit": "percent",
@@ -11572,6 +14108,45 @@
           "numerator": 0,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 2169,
+        "final_presence_runs": 2688,
+        "coverage_rate": {
+          "value": 80.69196428571429,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2169,
+          "denominator": 2688,
+          "sample_size": 2688
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.58736745043799,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1184,
+          "denominator": 2169,
+          "sample_size": 2169
+        },
+        "act2_rate": {
+          "value": 30.75149838635316,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 667,
+          "denominator": 2169,
+          "sample_size": 2169
+        },
+        "act3_rate": {
+          "value": 14.661134163208853,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 318,
+          "denominator": 2169,
+          "sample_size": 2169
         }
       },
       "heart_win_presence_rate": {
@@ -11674,6 +14249,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 2834,
+        "final_presence_runs": 3600,
+        "coverage_rate": {
+          "value": 78.72222222222223,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2834,
+          "denominator": 3600,
+          "sample_size": 3600
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 34.0,
+        "act1_rate": {
+          "value": 46.25970359915314,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1311,
+          "denominator": 2834,
+          "sample_size": 2834
+        },
+        "act2_rate": {
+          "value": 28.052223006351447,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 795,
+          "denominator": 2834,
+          "sample_size": 2834
+        },
+        "act3_rate": {
+          "value": 25.688073394495415,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 728,
+          "denominator": 2834,
+          "sample_size": 2834
+        }
+      },
       "heart_win_presence_rate": {
         "value": 8.27814569536424,
         "unit": "percent",
@@ -11774,6 +14388,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6041,
+        "final_presence_runs": 7360,
+        "coverage_rate": {
+          "value": 82.07880434782608,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6041,
+          "denominator": 7360,
+          "sample_size": 7360
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.626717430888924,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3300,
+          "denominator": 6041,
+          "sample_size": 6041
+        },
+        "act2_rate": {
+          "value": 29.64740936930972,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1791,
+          "denominator": 6041,
+          "sample_size": 6041
+        },
+        "act3_rate": {
+          "value": 15.725873199801358,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 950,
+          "denominator": 6041,
+          "sample_size": 6041
+        }
+      },
       "heart_win_presence_rate": {
         "value": 19.950331125827812,
         "unit": "percent",
@@ -11872,6 +14525,45 @@
           "numerator": 1652,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 7229,
+        "final_presence_runs": 9782,
+        "coverage_rate": {
+          "value": 73.90104273154773,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7229,
+          "denominator": 9782,
+          "sample_size": 9782
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.52635219255775,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4014,
+          "denominator": 7229,
+          "sample_size": 7229
+        },
+        "act2_rate": {
+          "value": 28.095172222990733,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2031,
+          "denominator": 7229,
+          "sample_size": 7229
+        },
+        "act3_rate": {
+          "value": 16.378475584451515,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1184,
+          "denominator": 7229,
+          "sample_size": 7229
         }
       },
       "heart_win_presence_rate": {
@@ -12090,6 +14782,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 2978,
+        "final_presence_runs": 3655,
+        "coverage_rate": {
+          "value": 81.47742818057455,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2978,
+          "denominator": 3655,
+          "sample_size": 3655
+        },
+        "median_floor": 21.5,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 43.183344526527875,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1286,
+          "denominator": 2978,
+          "sample_size": 2978
+        },
+        "act2_rate": {
+          "value": 27.367360644728006,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 815,
+          "denominator": 2978,
+          "sample_size": 2978
+        },
+        "act3_rate": {
+          "value": 29.449294828744122,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 877,
+          "denominator": 2978,
+          "sample_size": 2978
+        }
+      },
       "heart_win_presence_rate": {
         "value": 12.87251655629139,
         "unit": "percent",
@@ -12188,6 +14919,45 @@
           "numerator": 1443,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 7185,
+        "final_presence_runs": 9072,
+        "coverage_rate": {
+          "value": 79.19973544973546,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7185,
+          "denominator": 9072,
+          "sample_size": 9072
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.97564370215727,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3950,
+          "denominator": 7185,
+          "sample_size": 7185
+        },
+        "act2_rate": {
+          "value": 29.672929714683367,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2132,
+          "denominator": 7185,
+          "sample_size": 7185
+        },
+        "act3_rate": {
+          "value": 15.35142658315936,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1103,
+          "denominator": 7185,
+          "sample_size": 7185
         }
       },
       "heart_win_presence_rate": {
@@ -12290,6 +15060,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 2697,
+        "final_presence_runs": 3434,
+        "coverage_rate": {
+          "value": 78.53814793244031,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2697,
+          "denominator": 3434,
+          "sample_size": 3434
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 34.0,
+        "act1_rate": {
+          "value": 45.45791620318873,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1226,
+          "denominator": 2697,
+          "sample_size": 2697
+        },
+        "act2_rate": {
+          "value": 27.99406748238784,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 755,
+          "denominator": 2697,
+          "sample_size": 2697
+        },
+        "act3_rate": {
+          "value": 26.548016314423435,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 716,
+          "denominator": 2697,
+          "sample_size": 2697
+        }
+      },
       "heart_win_presence_rate": {
         "value": 10.389072847682119,
         "unit": "percent",
@@ -12388,6 +15197,45 @@
           "numerator": 1746,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 7305,
+        "final_presence_runs": 10678,
+        "coverage_rate": {
+          "value": 68.41168758194418,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7305,
+          "denominator": 10678,
+          "sample_size": 10678
+        },
+        "median_floor": 12.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 57.111567419575636,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4172,
+          "denominator": 7305,
+          "sample_size": 7305
+        },
+        "act2_rate": {
+          "value": 28.596851471594796,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2089,
+          "denominator": 7305,
+          "sample_size": 7305
+        },
+        "act3_rate": {
+          "value": 14.291581108829568,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1044,
+          "denominator": 7305,
+          "sample_size": 7305
         }
       },
       "heart_win_presence_rate": {
@@ -12684,6 +15532,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 5992,
+        "final_presence_runs": 7153,
+        "coverage_rate": {
+          "value": 83.76904795190829,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 5992,
+          "denominator": 7153,
+          "sample_size": 7153
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.322429906542055,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3255,
+          "denominator": 5992,
+          "sample_size": 5992
+        },
+        "act2_rate": {
+          "value": 31.091455273698266,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1863,
+          "denominator": 5992,
+          "sample_size": 5992
+        },
+        "act3_rate": {
+          "value": 14.586114819759679,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 874,
+          "denominator": 5992,
+          "sample_size": 5992
+        }
+      },
       "heart_win_presence_rate": {
         "value": 15.314569536423841,
         "unit": "percent",
@@ -12976,6 +15863,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 2514,
+        "final_presence_runs": 3537,
+        "coverage_rate": {
+          "value": 71.0771840542833,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2514,
+          "denominator": 3537,
+          "sample_size": 3537
+        },
+        "median_floor": 12.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 56.324582338902154,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1416,
+          "denominator": 2514,
+          "sample_size": 2514
+        },
+        "act2_rate": {
+          "value": 27.724741447891805,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 697,
+          "denominator": 2514,
+          "sample_size": 2514
+        },
+        "act3_rate": {
+          "value": 15.950676213206046,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 401,
+          "denominator": 2514,
+          "sample_size": 2514
+        }
+      },
       "heart_win_presence_rate": {
         "value": 8.857615894039734,
         "unit": "percent",
@@ -13074,6 +16000,45 @@
           "numerator": 1560,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 7000,
+        "final_presence_runs": 9376,
+        "coverage_rate": {
+          "value": 74.65870307167235,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7000,
+          "denominator": 9376,
+          "sample_size": 9376
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.51428571428571,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3816,
+          "denominator": 7000,
+          "sample_size": 7000
+        },
+        "act2_rate": {
+          "value": 29.75714285714286,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2083,
+          "denominator": 7000,
+          "sample_size": 7000
+        },
+        "act3_rate": {
+          "value": 15.728571428571428,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1101,
+          "denominator": 7000,
+          "sample_size": 7000
         }
       },
       "heart_win_presence_rate": {
@@ -13929,6 +16894,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 2013,
+        "final_presence_runs": 2446,
+        "coverage_rate": {
+          "value": 82.29762878168438,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2013,
+          "denominator": 2446,
+          "sample_size": 2446
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.69448584202683,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1101,
+          "denominator": 2013,
+          "sample_size": 2013
+        },
+        "act2_rate": {
+          "value": 30.004967709885744,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 604,
+          "denominator": 2013,
+          "sample_size": 2013
+        },
+        "act3_rate": {
+          "value": 15.300546448087433,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 308,
+          "denominator": 2013,
+          "sample_size": 2013
+        }
+      },
       "heart_win_presence_rate": {
         "value": 7.450331125827815,
         "unit": "percent",
@@ -14027,6 +17031,45 @@
           "numerator": 578,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 2587,
+        "final_presence_runs": 3361,
+        "coverage_rate": {
+          "value": 76.97113954180304,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2587,
+          "denominator": 3361,
+          "sample_size": 3361
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 34.0,
+        "act1_rate": {
+          "value": 45.187475840742174,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1169,
+          "denominator": 2587,
+          "sample_size": 2587
+        },
+        "act2_rate": {
+          "value": 28.449942017781215,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 736,
+          "denominator": 2587,
+          "sample_size": 2587
+        },
+        "act3_rate": {
+          "value": 26.362582141476615,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 682,
+          "denominator": 2587,
+          "sample_size": 2587
         }
       },
       "heart_win_presence_rate": {
@@ -14129,6 +17172,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6054,
+        "final_presence_runs": 7764,
+        "coverage_rate": {
+          "value": 77.97527047913447,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6054,
+          "denominator": 7764,
+          "sample_size": 7764
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.17905517013545,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3280,
+          "denominator": 6054,
+          "sample_size": 6054
+        },
+        "act2_rate": {
+          "value": 30.09580442682524,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1822,
+          "denominator": 6054,
+          "sample_size": 6054
+        },
+        "act3_rate": {
+          "value": 15.725140403039312,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 952,
+          "denominator": 6054,
+          "sample_size": 6054
+        }
+      },
       "heart_win_presence_rate": {
         "value": 22.599337748344368,
         "unit": "percent",
@@ -14227,6 +17309,45 @@
           "numerator": 893,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 4319,
+        "final_presence_runs": 5244,
+        "coverage_rate": {
+          "value": 82.36079328756675,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4319,
+          "denominator": 5244,
+          "sample_size": 5244
+        },
+        "median_floor": 12.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 56.74924751099791,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2451,
+          "denominator": 4319,
+          "sample_size": 4319
+        },
+        "act2_rate": {
+          "value": 28.965038203287797,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1251,
+          "denominator": 4319,
+          "sample_size": 4319
+        },
+        "act3_rate": {
+          "value": 14.285714285714285,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 617,
+          "denominator": 4319,
+          "sample_size": 4319
         }
       },
       "heart_win_presence_rate": {
@@ -14545,6 +17666,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6141,
+        "final_presence_runs": 7116,
+        "coverage_rate": {
+          "value": 86.29848229342328,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6141,
+          "denominator": 7116,
+          "sample_size": 7116
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.95179938120827,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3436,
+          "denominator": 6141,
+          "sample_size": 6141
+        },
+        "act2_rate": {
+          "value": 28.72496336101612,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1764,
+          "denominator": 6141,
+          "sample_size": 6141
+        },
+        "act3_rate": {
+          "value": 15.323237257775608,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 941,
+          "denominator": 6141,
+          "sample_size": 6141
+        }
+      },
       "heart_win_presence_rate": {
         "value": 16.63907284768212,
         "unit": "percent",
@@ -14637,6 +17797,45 @@
           "numerator": 0,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 1916,
+        "final_presence_runs": 2944,
+        "coverage_rate": {
+          "value": 65.08152173913044,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1916,
+          "denominator": 2944,
+          "sample_size": 2944
+        },
+        "median_floor": 12.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 56.57620041753654,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1084,
+          "denominator": 1916,
+          "sample_size": 1916
+        },
+        "act2_rate": {
+          "value": 27.922755741127347,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 535,
+          "denominator": 1916,
+          "sample_size": 1916
+        },
+        "act3_rate": {
+          "value": 15.501043841336118,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 297,
+          "denominator": 1916,
+          "sample_size": 1916
         }
       },
       "heart_win_presence_rate": {
@@ -15171,6 +18370,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 3057,
+        "final_presence_runs": 4028,
+        "coverage_rate": {
+          "value": 75.89374379344588,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3057,
+          "denominator": 4028,
+          "sample_size": 4028
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 42.36179260713118,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1295,
+          "denominator": 3057,
+          "sample_size": 3057
+        },
+        "act2_rate": {
+          "value": 27.412495911023882,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 838,
+          "denominator": 3057,
+          "sample_size": 3057
+        },
+        "act3_rate": {
+          "value": 30.225711481844947,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 924,
+          "denominator": 3057,
+          "sample_size": 3057
+        }
+      },
       "heart_win_presence_rate": {
         "value": 12.334437086092716,
         "unit": "percent",
@@ -15371,6 +18609,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7320,
+        "final_presence_runs": 9566,
+        "coverage_rate": {
+          "value": 76.52101191720678,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7320,
+          "denominator": 9566,
+          "sample_size": 9566
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 53.68852459016394,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3930,
+          "denominator": 7320,
+          "sample_size": 7320
+        },
+        "act2_rate": {
+          "value": 29.740437158469945,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2177,
+          "denominator": 7320,
+          "sample_size": 7320
+        },
+        "act3_rate": {
+          "value": 16.571038251366122,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1213,
+          "denominator": 7320,
+          "sample_size": 7320
+        }
+      },
       "heart_win_presence_rate": {
         "value": 23.758278145695364,
         "unit": "percent",
@@ -15469,6 +18746,45 @@
           "numerator": 600,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 2237,
+        "final_presence_runs": 2651,
+        "coverage_rate": {
+          "value": 84.38325160316862,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2237,
+          "denominator": 2651,
+          "sample_size": 2651
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 27.0,
+        "act1_rate": {
+          "value": 54.8949485918641,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1228,
+          "denominator": 2237,
+          "sample_size": 2237
+        },
+        "act2_rate": {
+          "value": 27.71569065713009,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 620,
+          "denominator": 2237,
+          "sample_size": 2237
+        },
+        "act3_rate": {
+          "value": 17.38936075100581,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 389,
+          "denominator": 2237,
+          "sample_size": 2237
         }
       },
       "heart_win_presence_rate": {
@@ -15571,6 +18887,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 5960,
+        "final_presence_runs": 7108,
+        "coverage_rate": {
+          "value": 83.84918401800789,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 5960,
+          "denominator": 7108,
+          "sample_size": 7108
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.077181208053695,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3223,
+          "denominator": 5960,
+          "sample_size": 5960
+        },
+        "act2_rate": {
+          "value": 29.513422818791945,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1759,
+          "denominator": 5960,
+          "sample_size": 5960
+        },
+        "act3_rate": {
+          "value": 16.40939597315436,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 978,
+          "denominator": 5960,
+          "sample_size": 5960
+        }
+      },
       "heart_win_presence_rate": {
         "value": 18.915562913907287,
         "unit": "percent",
@@ -15666,6 +19021,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 874,
+        "final_presence_runs": 1113,
+        "coverage_rate": {
+          "value": 78.52650494159928,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 874,
+          "denominator": 1113,
+          "sample_size": 1113
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 56.17848970251716,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 491,
+          "denominator": 874,
+          "sample_size": 874
+        },
+        "act2_rate": {
+          "value": 27.91762013729977,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 244,
+          "denominator": 874,
+          "sample_size": 874
+        },
+        "act3_rate": {
+          "value": 15.903890160183066,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 139,
+          "denominator": 874,
+          "sample_size": 874
+        }
+      },
       "heart_win_presence_rate": {
         "value": 3.435430463576159,
         "unit": "percent",
@@ -15758,6 +19152,45 @@
           "numerator": 766,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 583,
+        "final_presence_runs": 766,
+        "coverage_rate": {
+          "value": 76.10966057441253,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 583,
+          "denominator": 766,
+          "sample_size": 766
+        },
+        "median_floor": 12.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.20240137221269,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 316,
+          "denominator": 583,
+          "sample_size": 583
+        },
+        "act2_rate": {
+          "value": 28.987993138936535,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 169,
+          "denominator": 583,
+          "sample_size": 583
+        },
+        "act3_rate": {
+          "value": 16.80960548885077,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 98,
+          "denominator": 583,
+          "sample_size": 583
         }
       },
       "heart_win_presence_rate": {
@@ -15960,6 +19393,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 4372,
+        "final_presence_runs": 4894,
+        "coverage_rate": {
+          "value": 89.3338782182264,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4372,
+          "denominator": 4894,
+          "sample_size": 4894
+        },
+        "median_floor": 12.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 56.19853613906679,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2457,
+          "denominator": 4372,
+          "sample_size": 4372
+        },
+        "act2_rate": {
+          "value": 29.00274473924977,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1268,
+          "denominator": 4372,
+          "sample_size": 4372
+        },
+        "act3_rate": {
+          "value": 14.79871912168344,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 647,
+          "denominator": 4372,
+          "sample_size": 4372
+        }
+      },
       "heart_win_presence_rate": {
         "value": 12.458609271523178,
         "unit": "percent",
@@ -16052,6 +19524,45 @@
           "numerator": 0,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 769,
+        "final_presence_runs": 1052,
+        "coverage_rate": {
+          "value": 73.09885931558935,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 769,
+          "denominator": 1052,
+          "sample_size": 1052
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 33.0,
+        "act1_rate": {
+          "value": 46.03381014304291,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 354,
+          "denominator": 769,
+          "sample_size": 769
+        },
+        "act2_rate": {
+          "value": 28.998699609882966,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 223,
+          "denominator": 769,
+          "sample_size": 769
+        },
+        "act3_rate": {
+          "value": 24.967490247074124,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 192,
+          "denominator": 769,
+          "sample_size": 769
         }
       },
       "heart_win_presence_rate": {
@@ -16154,6 +19665,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 3077,
+        "final_presence_runs": 4088,
+        "coverage_rate": {
+          "value": 75.26908023483367,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3077,
+          "denominator": 4088,
+          "sample_size": 4088
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 43.678908027299315,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1344,
+          "denominator": 3077,
+          "sample_size": 3077
+        },
+        "act2_rate": {
+          "value": 26.194345141371468,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 806,
+          "denominator": 3077,
+          "sample_size": 3077
+        },
+        "act3_rate": {
+          "value": 30.126746831329214,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 927,
+          "denominator": 3077,
+          "sample_size": 3077
+        }
+      },
       "heart_win_presence_rate": {
         "value": 14.072847682119205,
         "unit": "percent",
@@ -16246,6 +19796,45 @@
           "numerator": 0,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 728,
+        "final_presence_runs": 917,
+        "coverage_rate": {
+          "value": 79.38931297709924,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 728,
+          "denominator": 917,
+          "sample_size": 917
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 42.30769230769231,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 308,
+          "denominator": 728,
+          "sample_size": 728
+        },
+        "act2_rate": {
+          "value": 28.15934065934066,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 205,
+          "denominator": 728,
+          "sample_size": 728
+        },
+        "act3_rate": {
+          "value": 29.532967032967033,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 215,
+          "denominator": 728,
+          "sample_size": 728
         }
       },
       "heart_win_presence_rate": {
@@ -16346,6 +19935,45 @@
           "numerator": 1239,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 5308,
+        "final_presence_runs": 7134,
+        "coverage_rate": {
+          "value": 74.40426128399214,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 5308,
+          "denominator": 7134,
+          "sample_size": 7134
+        },
+        "median_floor": 10.0,
+        "p25_floor": 8.0,
+        "p75_floor": 24.0,
+        "act1_rate": {
+          "value": 65.90052750565185,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3498,
+          "denominator": 5308,
+          "sample_size": 5308
+        },
+        "act2_rate": {
+          "value": 33.19517709118312,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1762,
+          "denominator": 5308,
+          "sample_size": 5308
+        },
+        "act3_rate": {
+          "value": 0.9042954031650339,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 48,
+          "denominator": 5308,
+          "sample_size": 5308
         }
       },
       "heart_win_presence_rate": {
@@ -16664,6 +20292,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 3028,
+        "final_presence_runs": 3994,
+        "coverage_rate": {
+          "value": 75.8137205808713,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3028,
+          "denominator": 3994,
+          "sample_size": 3994
+        },
+        "median_floor": 22.5,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 43.22985468956407,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1309,
+          "denominator": 3028,
+          "sample_size": 3028
+        },
+        "act2_rate": {
+          "value": 28.533685601056803,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 864,
+          "denominator": 3028,
+          "sample_size": 3028
+        },
+        "act3_rate": {
+          "value": 28.23645970937913,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 855,
+          "denominator": 3028,
+          "sample_size": 3028
+        }
+      },
       "heart_win_presence_rate": {
         "value": 14.859271523178808,
         "unit": "percent",
@@ -16756,6 +20423,45 @@
           "numerator": 0,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 740,
+        "final_presence_runs": 959,
+        "coverage_rate": {
+          "value": 77.16371220020855,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 740,
+          "denominator": 959,
+          "sample_size": 959
+        },
+        "median_floor": 20.0,
+        "p25_floor": 9.0,
+        "p75_floor": 34.0,
+        "act1_rate": {
+          "value": 43.648648648648646,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 323,
+          "denominator": 740,
+          "sample_size": 740
+        },
+        "act2_rate": {
+          "value": 29.594594594594593,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 219,
+          "denominator": 740,
+          "sample_size": 740
+        },
+        "act3_rate": {
+          "value": 26.756756756756754,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 198,
+          "denominator": 740,
+          "sample_size": 740
         }
       },
       "heart_win_presence_rate": {
@@ -16858,6 +20564,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 6043,
+        "final_presence_runs": 7541,
+        "coverage_rate": {
+          "value": 80.13526057552049,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6043,
+          "denominator": 7541,
+          "sample_size": 7541
+        },
+        "median_floor": 12.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 56.081416514976,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3389,
+          "denominator": 6043,
+          "sample_size": 6043
+        },
+        "act2_rate": {
+          "value": 30.431904683104417,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1839,
+          "denominator": 6043,
+          "sample_size": 6043
+        },
+        "act3_rate": {
+          "value": 13.486678801919577,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 815,
+          "denominator": 6043,
+          "sample_size": 6043
+        }
+      },
       "heart_win_presence_rate": {
         "value": 20.364238410596027,
         "unit": "percent",
@@ -16956,6 +20701,45 @@
           "numerator": 1506,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 7100,
+        "final_presence_runs": 9225,
+        "coverage_rate": {
+          "value": 76.96476964769647,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7100,
+          "denominator": 9225,
+          "sample_size": 9225
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 27.0,
+        "act1_rate": {
+          "value": 53.183098591549296,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3776,
+          "denominator": 7100,
+          "sample_size": 7100
+        },
+        "act2_rate": {
+          "value": 29.183098591549296,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2072,
+          "denominator": 7100,
+          "sample_size": 7100
+        },
+        "act3_rate": {
+          "value": 17.633802816901408,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1252,
+          "denominator": 7100,
+          "sample_size": 7100
         }
       },
       "heart_win_presence_rate": {
@@ -17058,6 +20842,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 2960,
+        "final_presence_runs": 3908,
+        "coverage_rate": {
+          "value": 75.74206755373592,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2960,
+          "denominator": 3908,
+          "sample_size": 3908
+        },
+        "median_floor": 22.5,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 43.88513513513514,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1299,
+          "denominator": 2960,
+          "sample_size": 2960
+        },
+        "act2_rate": {
+          "value": 27.432432432432428,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 812,
+          "denominator": 2960,
+          "sample_size": 2960
+        },
+        "act3_rate": {
+          "value": 28.68243243243243,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 849,
+          "denominator": 2960,
+          "sample_size": 2960
+        }
+      },
       "heart_win_presence_rate": {
         "value": 15.894039735099339,
         "unit": "percent",
@@ -17156,6 +20979,45 @@
           "numerator": 530,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 2009,
+        "final_presence_runs": 2675,
+        "coverage_rate": {
+          "value": 75.10280373831776,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2009,
+          "denominator": 2675,
+          "sample_size": 2675
+        },
+        "median_floor": 17.0,
+        "p25_floor": 9.0,
+        "p75_floor": 34.0,
+        "act1_rate": {
+          "value": 45.44549527127925,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 913,
+          "denominator": 2009,
+          "sample_size": 2009
+        },
+        "act2_rate": {
+          "value": 27.227476356396217,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 547,
+          "denominator": 2009,
+          "sample_size": 2009
+        },
+        "act3_rate": {
+          "value": 27.32702837232454,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 549,
+          "denominator": 2009,
+          "sample_size": 2009
         }
       },
       "heart_win_presence_rate": {
@@ -17352,6 +21214,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 2931,
+        "final_presence_runs": 3705,
+        "coverage_rate": {
+          "value": 79.10931174089069,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2931,
+          "denominator": 3705,
+          "sample_size": 3705
+        },
+        "median_floor": 23.0,
+        "p25_floor": 9.0,
+        "p75_floor": 36.0,
+        "act1_rate": {
+          "value": 42.57932446264074,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1248,
+          "denominator": 2931,
+          "sample_size": 2931
+        },
+        "act2_rate": {
+          "value": 28.65916069600819,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 840,
+          "denominator": 2931,
+          "sample_size": 2931
+        },
+        "act3_rate": {
+          "value": 28.761514841351076,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 843,
+          "denominator": 2931,
+          "sample_size": 2931
+        }
+      },
       "heart_win_presence_rate": {
         "value": 10.927152317880795,
         "unit": "percent",
@@ -17450,6 +21351,45 @@
           "numerator": 1767,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 7386,
+        "final_presence_runs": 10457,
+        "coverage_rate": {
+          "value": 70.63211246055275,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7386,
+          "denominator": 10457,
+          "sample_size": 10457
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.68453831573247,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 4039,
+          "denominator": 7386,
+          "sample_size": 7386
+        },
+        "act2_rate": {
+          "value": 28.75710804224208,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2124,
+          "denominator": 7386,
+          "sample_size": 7386
+        },
+        "act3_rate": {
+          "value": 16.558353642025452,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1223,
+          "denominator": 7386,
+          "sample_size": 7386
         }
       },
       "heart_win_presence_rate": {
@@ -17878,6 +21818,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7183,
+        "final_presence_runs": 9832,
+        "coverage_rate": {
+          "value": 73.0573637103336,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7183,
+          "denominator": 9832,
+          "sample_size": 9832
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.93526381734652,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3946,
+          "denominator": 7183,
+          "sample_size": 7183
+        },
+        "act2_rate": {
+          "value": 28.163719894194628,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2023,
+          "denominator": 7183,
+          "sample_size": 7183
+        },
+        "act3_rate": {
+          "value": 16.901016288458862,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1214,
+          "denominator": 7183,
+          "sample_size": 7183
+        }
+      },
       "heart_win_presence_rate": {
         "value": 26.32450331125828,
         "unit": "percent",
@@ -17978,6 +21957,45 @@
           "sample_size": 18754
         }
       },
+      "first_acquisition": {
+        "sample_size": 7097,
+        "final_presence_runs": 8723,
+        "coverage_rate": {
+          "value": 81.3596239825748,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 7097,
+          "denominator": 8723,
+          "sample_size": 8723
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 55.88276736649288,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3966,
+          "denominator": 7097,
+          "sample_size": 7097
+        },
+        "act2_rate": {
+          "value": 27.405946174439904,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1945,
+          "denominator": 7097,
+          "sample_size": 7097
+        },
+        "act3_rate": {
+          "value": 16.711286459067214,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1186,
+          "denominator": 7097,
+          "sample_size": 7097
+        }
+      },
       "heart_win_presence_rate": {
         "value": 22.88907284768212,
         "unit": "percent",
@@ -18076,6 +22094,45 @@
           "numerator": 1245,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 6082,
+        "final_presence_runs": 7215,
+        "coverage_rate": {
+          "value": 84.2966042966043,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 6082,
+          "denominator": 7215,
+          "sample_size": 7215
+        },
+        "median_floor": 13.0,
+        "p25_floor": 9.0,
+        "p75_floor": 26.0,
+        "act1_rate": {
+          "value": 54.89970404472213,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 3339,
+          "denominator": 6082,
+          "sample_size": 6082
+        },
+        "act2_rate": {
+          "value": 29.250246629398223,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1779,
+          "denominator": 6082,
+          "sample_size": 6082
+        },
+        "act3_rate": {
+          "value": 15.850049325879645,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 964,
+          "denominator": 6082,
+          "sample_size": 6082
         }
       },
       "heart_win_presence_rate": {
@@ -18192,6 +22249,45 @@
           "numerator": 572,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 2461,
+        "final_presence_runs": 3167,
+        "coverage_rate": {
+          "value": 77.70760972529207,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 2461,
+          "denominator": 3167,
+          "sample_size": 3167
+        },
+        "median_floor": 14.0,
+        "p25_floor": 9.0,
+        "p75_floor": 27.0,
+        "act1_rate": {
+          "value": 50.30475416497359,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 1238,
+          "denominator": 2461,
+          "sample_size": 2461
+        },
+        "act2_rate": {
+          "value": 33.68549370174726,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 829,
+          "denominator": 2461,
+          "sample_size": 2461
+        },
+        "act3_rate": {
+          "value": 16.009752133279154,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 394,
+          "denominator": 2461,
+          "sample_size": 2461
         }
       },
       "heart_win_presence_rate": {
@@ -18396,6 +22492,45 @@
           "numerator": 842,
           "denominator": 18754,
           "sample_size": 18754
+        }
+      },
+      "first_acquisition": {
+        "sample_size": 664,
+        "final_presence_runs": 842,
+        "coverage_rate": {
+          "value": 78.85985748218528,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 664,
+          "denominator": 842,
+          "sample_size": 842
+        },
+        "median_floor": 14.0,
+        "p25_floor": 9.0,
+        "p75_floor": 29.0,
+        "act1_rate": {
+          "value": 51.05421686746988,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 339,
+          "denominator": 664,
+          "sample_size": 664
+        },
+        "act2_rate": {
+          "value": 27.710843373493976,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 184,
+          "denominator": 664,
+          "sample_size": 664
+        },
+        "act3_rate": {
+          "value": 21.234939759036145,
+          "unit": "percent",
+          "provenance": "computed",
+          "numerator": 141,
+          "denominator": 664,
+          "sample_size": 664
         }
       },
       "heart_win_presence_rate": {

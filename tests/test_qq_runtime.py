@@ -392,3 +392,51 @@ def test_logging_does_not_include_token(caplog):
             ))
 
     assert "super-secret-token" not in caplog.text
+
+
+# Single-instance guard: two live bot processes would answer every relic query
+# twice (old code + new code).  A second runtime start must refuse to run while
+# the first instance still holds the lock.
+
+def test_single_instance_lock_rejects_second_acquire(tmp_path):
+    lock_path = tmp_path / "runtime" / "bot.lock"
+    first = runtime.acquire_single_instance_lock(lock_path)
+    try:
+        with pytest.raises(RuntimeError):
+            runtime.acquire_single_instance_lock(lock_path)
+    finally:
+        first.release()
+
+
+def test_single_instance_lock_can_be_reacquired_after_release(tmp_path):
+    lock_path = tmp_path / "runtime" / "bot.lock"
+    first = runtime.acquire_single_instance_lock(lock_path)
+    first.release()
+
+    second = runtime.acquire_single_instance_lock(lock_path)
+    second.release()
+
+
+def test_main_refuses_to_start_second_instance(monkeypatch, tmp_path):
+    lock_path = tmp_path / "runtime" / "bot.lock"
+    first = runtime.acquire_single_instance_lock(lock_path)
+    try:
+        monkeypatch.setattr(runtime, "SINGLE_INSTANCE_LOCK_PATH", lock_path, raising=False)
+        monkeypatch.setattr(
+            runtime,
+            "load_config",
+            lambda env=None: {"token": "test-token", "ws_url": "ws://127.0.0.1:3001"},
+        )
+        started = []
+
+        async def fake_run_forever(config):
+            started.append(config)
+
+        monkeypatch.setattr(runtime, "run_forever", fake_run_forever)
+
+        with pytest.raises(RuntimeError):
+            runtime.main()
+
+        assert started == []
+    finally:
+        first.release()

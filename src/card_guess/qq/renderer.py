@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 from pathlib import Path
 
@@ -77,6 +78,24 @@ def resolve_local_upgraded_card_image(card):
         return None
 
     image_path = REPO_ROOT / "data" / "images" / game / "upgraded" / f"{card_id}.png"
+    if image_path.exists():
+        return image_path
+
+    return None
+
+
+def resolve_local_relic_image(relic):
+    """返回遗物本地图片路径；本地无图时返回 None（不触发任何下载）。"""
+    if not isinstance(relic, dict):
+        return None
+
+    game = str(relic.get("game") or "").strip()
+    relic_id = str(relic.get("id") or "").strip()
+
+    if not game or not relic_id:
+        return None
+
+    image_path = REPO_ROOT / "data" / "images" / "relics" / game / f"{relic_id}.png"
     if image_path.exists():
         return image_path
 
@@ -311,7 +330,7 @@ def _relic_metric_value(metric):
 
 
 def _format_relic_percent(value):
-    return f"{value:.2f}%"
+    return f"{value:.1f}%"
 
 
 def _relic_tier_display(relic):
@@ -324,6 +343,17 @@ def _relic_tier_display(relic):
 RELIC_ACT_LABELS = (("act1", "第一幕"), ("act2", "第二幕"))
 RELIC_SPREAD_MIN_RATIO = 2.0
 RELIC_SPREAD_MIN_GAP = 1.0
+
+# R5B acquisition-timing display policy.  The coverage floor is grounded in the
+# real C/U/R audit (observed minimum ~62%, per relic), leaving a small guard
+# band; relics whose recorded-acquisition coverage is lower never show timing.
+RELIC_ACQUISITION_MIN_COVERAGE_PERCENT = 60.0
+RELIC_ACQUISITION_DOMINANT_SHARE = 50.0
+RELIC_ACQUISITION_ACTS = (
+    ("act1_rate", "第一幕"),
+    ("act2_rate", "第二幕"),
+    ("act3_rate", "第三幕"),
+)
 
 
 def _metric_count(metric, key):
@@ -343,10 +373,7 @@ def _overall_hold_sentence(metric):
     denominator = _metric_count(metric, "denominator")
     if value is None or numerator is None or denominator is None or numerator < 1:
         return None
-    return (
-        f"在本次{denominator}场对局统计中，有{numerator}场结束时仍然携带它"
-        f"（{_format_relic_percent(value)}）。"
-    )
+    return f"约{_format_relic_percent(value)}的对局最后带着它。"
 
 
 def _heart_hold_sentence(metric):
@@ -356,28 +383,17 @@ def _heart_hold_sentence(metric):
     denominator = _metric_count(metric, "denominator")
     if value is None or numerator is None or denominator is None or numerator < 1:
         return None
-    return (
-        f"在本次统计中，共有{denominator}场对局成功击败心脏。\n"
-        f"其中{numerator}场结束时携带它（{_format_relic_percent(value)}）。"
-    )
+    return f"击败心脏的对局中约{_format_relic_percent(value)}带着它。"
 
 
-def _single_role_hold_sentence(role_label, per_character_metric, overall_metric):
+def _single_role_hold_sentence(role_label, per_character_metric):
     """Explain the hold rate for a relic that only one character supports."""
     value = _relic_metric_value(per_character_metric)
     if value is None:
         return None
-    hold = _metric_count(per_character_metric, "numerator")
-    if hold is None:
-        hold = _metric_count(overall_metric, "numerator")
-    if hold is None or hold < 1:
-        return (
-            f"它几乎只出现在{role_label}对局，该职业携带比例约"
-            f"{_format_relic_percent(value)}。"
-        )
     return (
-        f"它几乎只出现在{role_label}对局：{hold}场结束时仍然携带它"
-        f"（{_format_relic_percent(value)}）。"
+        f"它几乎只出现在{role_label}对局，约"
+        f"{_format_relic_percent(value)}会带着它。"
     )
 
 
@@ -389,14 +405,14 @@ def _role_spread_sentence(role_rates):
     low = min(values)
     high = max(values)
     if low <= 0:
-        return "各职业携带比例接近，没有明显职业偏好。"
+        return "各职业使用比例接近。"
     if high >= low * RELIC_SPREAD_MIN_RATIO and high - low >= RELIC_SPREAD_MIN_GAP:
         label, _ = max(role_rates, key=lambda item: item[1])
         return (
-            f"{label}携带比例最高（{_format_relic_percent(high)}），"
+            f"{label}使用比例最高（{_format_relic_percent(high)}），"
             f"职业差异比较明显。"
         )
-    return "各职业携带比例接近，没有明显职业偏好。"
+    return "各职业使用比例接近。"
 
 
 def _boss_choice_paragraph(entry):
@@ -413,13 +429,10 @@ def _boss_choice_paragraph(entry):
             else None
         )
         if value is not None:
-            lines.append(
-                f"{act_label} Boss 奖励出现它时，约{_format_relic_percent(value)}"
-                "的玩家会选择。"
-            )
+            lines.append(f"{act_label}约{_format_relic_percent(value)}会选")
     if not lines:
         return None
-    return "\n".join(["Boss奖励："] + lines)
+    return "\n".join(["Boss奖励出现时："] + lines)
 
 
 def _starter_explanation(role_label):
@@ -428,6 +441,51 @@ def _starter_explanation(role_label):
         f"作为初始遗物，它通常会陪伴{role_label}走完全程。\n"
         "部分路线会替换初始遗物，所以不会达到100%。"
     )
+
+
+def _display_floor(value):
+    """Round a recorded floor to the nearest integer, half-up (locked by tests)."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return int(math.floor(float(value) + 0.5))
+
+
+def _first_acquisition_paragraph(relic, entry):
+    """Explain recorded first-acquisition timing in natural language.
+
+    Returns None when the relic tier is ineligible, the snapshot has no
+    ``first_acquisition`` section, the coverage is below the locked floor, or
+    any numeric field is unusable.
+    """
+    tier = str(relic.get("tier") or "").strip().lower()
+    if tier not in ("common", "uncommon", "rare"):
+        return None
+    fa = entry.get("first_acquisition")
+    if not isinstance(fa, dict):
+        return None
+    coverage = _relic_metric_value(fa.get("coverage_rate"))
+    if coverage is None or coverage < RELIC_ACQUISITION_MIN_COVERAGE_PERCENT:
+        return None
+    median = _display_floor(fa.get("median_floor"))
+    p25 = _display_floor(fa.get("p25_floor"))
+    p75 = _display_floor(fa.get("p75_floor"))
+    if median is None or p25 is None or p75 is None:
+        return None
+    lines = [f"通常在第{median}层左右拿到，"]
+    dominant_act = None
+    for act_key, act_label in RELIC_ACQUISITION_ACTS:
+        act_value = _relic_metric_value(fa.get(act_key))
+        if act_value is not None and act_value > RELIC_ACQUISITION_DOMINANT_SHARE:
+            dominant_act = act_label
+            break
+    if dominant_act is not None:
+        lines.append(
+            f"约一半集中在第{p25}～{p75}层，超过一半来自{dominant_act}。"
+        )
+    else:
+        lines.append(f"约一半集中在第{p25}～{p75}层。")
+        lines.append("获取时间比较分散，三幕都有不少记录。")
+    return "\n".join(lines)
 
 
 def render_relic_stats(relic, snapshot):
@@ -473,7 +531,7 @@ def render_relic_stats(relic, snapshot):
     if len(role_rates) == 1:
         label, value = role_rates[0]
         sentence = _single_role_hold_sentence(
-            label, per_character.get(supported[0]), overall_metric
+            label, per_character.get(supported[0])
         )
         if sentence is not None:
             paragraphs.append(sentence)
@@ -493,6 +551,10 @@ def render_relic_stats(relic, snapshot):
         heart_sentence = _heart_hold_sentence(heart_metric)
         if heart_sentence is not None:
             paragraphs.append(heart_sentence)
+
+    acquisition_paragraph = _first_acquisition_paragraph(relic, entry)
+    if acquisition_paragraph is not None:
+        paragraphs.append(acquisition_paragraph)
 
     return "\n\n".join(paragraphs)
 
@@ -532,13 +594,14 @@ def render_relic_query_reply(relics):
         parts = [
             f"=== {name} · {tag} ===",
             f"效果：\n{_render_relic_description(relic)}",
-            f"稀有度：\n{_relic_tier_display(relic)}",
+            _relic_tier_display(relic),
         ]
         if game == "sts1":
             stats_body = render_relic_stats(relic, load_sts1_relic_stats())
             if stats_body:
-                parts.append(f"统计：\n{stats_body}")
-        return RenderedReply("\n\n".join(parts))
+                parts.append(stats_body)
+        text = "\n\n".join(parts)
+        return RenderedReply(text, image_path=resolve_local_relic_image(relic))
 
     return RenderedReply(
         render_relic_candidates(relics[0].get("name", ""), relics),
