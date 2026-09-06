@@ -189,16 +189,15 @@ def test_image_relic_query_sends_text_and_image_together_once(monkeypatch, tmp_p
     )
 
 
-def test_first_acquisition_relic_query_sends_text_once(monkeypatch, tmp_path):
+def test_first_acquisition_data_keeps_single_identity_text(monkeypatch, tmp_path):
     relic = make_relic("赤牛", "AKABEKO", tier="Common")
     entry = base_entry()
     entry["first_acquisition"] = acquisition()
     ws = query_once(monkeypatch, tmp_path, relic, snapshot("AKABEKO", entry))
-    payload = assert_single_reply(
-        ws,
-        "=== 赤牛 · STS1 ===",
-        extra_text="通常在第13层左右拿到，",
-    )
+    payload = assert_single_reply(ws, "=== 赤牛 · STS1 ===")
+    text = text_segments(payload)[0]
+    assert "通常在第" not in text
+    assert "普通遗物" in text
     assert image_segments(payload) == []
 
 

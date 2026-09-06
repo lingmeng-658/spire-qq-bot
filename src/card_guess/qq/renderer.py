@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import math
 import re
 from pathlib import Path
 
@@ -13,6 +12,7 @@ from card_guess.cards import (
 )
 from card_guess.leaderboard import is_win_delta_eligible
 from card_guess.puzzle import format_pool, format_rarity, format_type
+from card_guess.relic_stats import boss_choice_rank_contexts
 from card_guess.sts1_card_stats import SOURCE_ID as STS1_SOURCE_ID
 from card_guess.sts1_snapshot import COHORT_ASC7PLUS
 from card_guess.sts2_ancient_choice import (
@@ -353,20 +353,6 @@ _RELIC_TIER_LABELS = {
 }
 
 
-def _relic_metric_value(metric):
-    """Return a numeric rate value from a snapshot metric dict, or None."""
-    if not isinstance(metric, dict):
-        return None
-    value = metric.get("value")
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        return None
-    return value
-
-
-def _format_relic_percent(value):
-    return f"{value:.1f}%"
-
-
 def _relic_tier_display(relic):
     tier = str(relic.get("tier") or "").strip()
     if not tier or tier.lower() == "none":
@@ -375,161 +361,33 @@ def _relic_tier_display(relic):
 
 
 RELIC_ACT_LABELS = (("act1", "第一幕"), ("act2", "第二幕"))
-RELIC_SPREAD_MIN_RATIO = 2.0
-RELIC_SPREAD_MIN_GAP = 1.0
-
-# R5B acquisition-timing display policy.  The coverage floor is grounded in the
-# real C/U/R audit (observed minimum ~62%, per relic), leaving a small guard
-# band; relics whose recorded-acquisition coverage is lower never show timing.
-RELIC_ACQUISITION_MIN_COVERAGE_PERCENT = 60.0
-RELIC_ACQUISITION_DOMINANT_SHARE = 50.0
-RELIC_ACQUISITION_ACTS = (
-    ("act1_rate", "第一幕"),
-    ("act2_rate", "第二幕"),
-    ("act3_rate", "第三幕"),
-)
 
 
-def _metric_count(metric, key):
-    """Return an integer count field from a metric dict, or None."""
-    if not isinstance(metric, dict):
-        return None
-    value = metric.get(key)
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        return None
-    return int(value)
-
-
-def _overall_hold_sentence(metric):
-    """Explain how many runs ended while still carrying the relic."""
-    value = _relic_metric_value(metric)
-    numerator = _metric_count(metric, "numerator")
-    denominator = _metric_count(metric, "denominator")
-    if value is None or numerator is None or denominator is None or numerator < 1:
-        return None
-    return f"约{_format_relic_percent(value)}的对局最后带着它。"
-
-
-def _heart_hold_sentence(metric):
-    """Explain heart-win presence with an explicit beaten-heart denominator."""
-    value = _relic_metric_value(metric)
-    numerator = _metric_count(metric, "numerator")
-    denominator = _metric_count(metric, "denominator")
-    if value is None or numerator is None or denominator is None or numerator < 1:
-        return None
-    return f"击败心脏的对局中约{_format_relic_percent(value)}带着它。"
-
-
-def _single_role_hold_sentence(role_label, per_character_metric):
-    """Explain the hold rate for a relic that only one character supports."""
-    value = _relic_metric_value(per_character_metric)
-    if value is None:
-        return None
+def _boss_act_choice_paragraph(context, act_label):
+    """Format one rankable act's choice rate together with its same-act rank."""
     return (
-        f"它几乎只出现在{role_label}对局，约"
-        f"{_format_relic_percent(value)}会带着它。"
+        f"{act_label} Boss 奖励：\n"
+        f"约{context['pick_rate']:.1f}%会选，"
+        f"选择率第 {context['rank']} / {context['cohort_size']}。"
     )
-
-
-def _role_spread_sentence(role_rates):
-    """Summarize per-character spread, or state that no preference stands out."""
-    values = [value for _, value in role_rates]
-    if len(values) < 2:
-        return None
-    low = min(values)
-    high = max(values)
-    if low <= 0:
-        return "各职业使用比例接近。"
-    if high >= low * RELIC_SPREAD_MIN_RATIO and high - low >= RELIC_SPREAD_MIN_GAP:
-        label, _ = max(role_rates, key=lambda item: item[1])
-        return (
-            f"{label}使用比例最高（{_format_relic_percent(high)}），"
-            f"职业差异比较明显。"
-        )
-    return "各职业使用比例接近。"
-
-
-def _boss_choice_paragraph(entry):
-    """Explain boss-relic three-choice offers and act pick rates."""
-    boss_choice = entry.get("boss_choice")
-    if not isinstance(boss_choice, dict):
-        return None
-    lines = []
-    for act_key, act_label in RELIC_ACT_LABELS:
-        act_data = boss_choice.get(act_key)
-        value = (
-            _relic_metric_value(act_data.get("pick_rate"))
-            if isinstance(act_data, dict)
-            else None
-        )
-        if value is not None:
-            lines.append(f"{act_label}约{_format_relic_percent(value)}会选")
-    if not lines:
-        return None
-    return "\n".join(["Boss奖励出现时："] + lines)
-
-
-def _starter_explanation(role_label):
-    """Explain starter-relic persistence without inventing replacement stats."""
-    return (
-        f"作为初始遗物，它通常会陪伴{role_label}走完全程。\n"
-        "部分路线会替换初始遗物，所以不会达到100%。"
-    )
-
-
-def _display_floor(value):
-    """Round a recorded floor to the nearest integer, half-up (locked by tests)."""
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        return None
-    return int(math.floor(float(value) + 0.5))
-
-
-def _first_acquisition_paragraph(relic, entry):
-    """Explain recorded first-acquisition timing in natural language.
-
-    Returns None when the relic tier is ineligible, the snapshot has no
-    ``first_acquisition`` section, the coverage is below the locked floor, or
-    any numeric field is unusable.
-    """
-    tier = str(relic.get("tier") or "").strip().lower()
-    if tier not in ("common", "uncommon", "rare"):
-        return None
-    fa = entry.get("first_acquisition")
-    if not isinstance(fa, dict):
-        return None
-    coverage = _relic_metric_value(fa.get("coverage_rate"))
-    if coverage is None or coverage < RELIC_ACQUISITION_MIN_COVERAGE_PERCENT:
-        return None
-    median = _display_floor(fa.get("median_floor"))
-    p25 = _display_floor(fa.get("p25_floor"))
-    p75 = _display_floor(fa.get("p75_floor"))
-    if median is None or p25 is None or p75 is None:
-        return None
-    lines = [f"通常在第{median}层左右拿到，"]
-    dominant_act = None
-    for act_key, act_label in RELIC_ACQUISITION_ACTS:
-        act_value = _relic_metric_value(fa.get(act_key))
-        if act_value is not None and act_value > RELIC_ACQUISITION_DOMINANT_SHARE:
-            dominant_act = act_label
-            break
-    if dominant_act is not None:
-        lines.append(
-            f"约一半集中在第{p25}～{p75}层，超过一半来自{dominant_act}。"
-        )
-    else:
-        lines.append(f"约一半集中在第{p25}～{p75}层。")
-        lines.append("获取时间比较分散，三幕都有不少记录。")
-    return "\n".join(lines)
 
 
 def render_relic_stats(relic, snapshot):
-    """Render audited STS1 relic stats as natural-language sentences."""
+    """Render audited STS1 relic stats as natural-language sentences.
+
+    Default QQ output keeps only decision value: Boss relics show each act's
+    choice rate together with its same-act rank, and single-role relics keep a
+    plain role-restriction identity note.  Overall presence, Heart presence,
+    role spread and acquisition-timing copy stay hidden by default; the
+    statistics remain available in the snapshot.
+    """
     if not isinstance(snapshot, dict):
         return ""
     relic_stats = snapshot.get("relics")
     if not isinstance(relic_stats, dict):
         return ""
-    entry = relic_stats.get(str(relic.get("id") or ""))
+    relic_id = str(relic.get("id") or "")
+    entry = relic_stats.get(relic_id)
     if not isinstance(entry, dict):
         return ""
 
@@ -540,57 +398,29 @@ def render_relic_stats(relic, snapshot):
         if isinstance(supported, list)
         else []
     )
-    per_character = entry.get("per_character")
-    if not isinstance(per_character, dict):
-        per_character = {}
-    overall_metric = entry.get("overall")
-    if not isinstance(overall_metric, dict):
-        overall_metric = None
-
-    role_rates = []
-    for role in supported:
-        label = STS1_RELIC_ROLE_LABELS.get(role)
-        metric = per_character.get(role)
-        value = _relic_metric_value(metric)
-        if label is None or value is None:
-            continue
-        role_rates.append((label, value))
 
     paragraphs = []
+    if len(supported) == 1:
+        role_label = STS1_RELIC_ROLE_LABELS.get(supported[0])
+        if role_label is not None:
+            if tier == "starter":
+                paragraphs.append(
+                    f"{role_label}的初始遗物。\n"
+                    "部分路线会将它替换。"
+                )
+            else:
+                paragraphs.append(f"{role_label}专属遗物。")
+
     if tier == "boss":
-        boss_paragraph = _boss_choice_paragraph(entry)
-        if boss_paragraph is not None:
-            paragraphs.append(boss_paragraph)
-
-    if len(role_rates) == 1:
-        label, value = role_rates[0]
-        sentence = _single_role_hold_sentence(
-            label, per_character.get(supported[0])
-        )
-        if sentence is not None:
-            paragraphs.append(sentence)
-        if tier == "starter" and value < 100:
-            paragraphs.append(_starter_explanation(label))
-    else:
-        overall_sentence = _overall_hold_sentence(overall_metric)
-        if overall_sentence is not None:
-            paragraphs.append(overall_sentence)
-        if len(role_rates) >= 2 and tier != "boss":
-            spread_sentence = _role_spread_sentence(role_rates)
-            if spread_sentence is not None:
-                paragraphs.append(spread_sentence)
-
-    heart_metric = entry.get("heart_win_presence_rate")
-    if isinstance(heart_metric, dict):
-        heart_sentence = _heart_hold_sentence(heart_metric)
-        if heart_sentence is not None:
-            paragraphs.append(heart_sentence)
-
-    acquisition_paragraph = _first_acquisition_paragraph(relic, entry)
-    if acquisition_paragraph is not None:
-        paragraphs.append(acquisition_paragraph)
+        act_labels = dict(RELIC_ACT_LABELS)
+        for context in boss_choice_rank_contexts(snapshot, relic_id):
+            act_label = act_labels.get(context["act"])
+            if act_label is None:
+                continue
+            paragraphs.append(_boss_act_choice_paragraph(context, act_label))
 
     return "\n\n".join(paragraphs)
+
 
 
 # STS2 Ancient choice (offer -> pick) display.

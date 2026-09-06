@@ -512,3 +512,127 @@ def _integer(value: Any, path: str, *, minimum: int) -> None:
 
 def _fail(path: str, message: str) -> None:
     raise ValueError(f"{path}: {message}")
+
+
+
+# R9B: per-act boss-reward ranking for the STS1 relic snapshot.
+#
+# Each act forms its own cohort; ranks never merge the two boss acts.  A relic
+# joins a cohort only after it has been offered enough times (STS1 keeps its
+# own independent 1000-offer sample floor).  Rows are ranked by the real
+# picked_count / offered_count ratio with competition ties: only relics whose
+# real ratios match keep the same rank, and the next distinct ratio leaves the
+# gap.  Display rounding never influences rank; offered_count and relic_id only
+# stabilise the output order.
+BOSS_CHOICE_MIN_OFFERED = 1000
+
+
+def _metric_value(metric):
+    """Return a numeric metric value, or None when unusable."""
+    if not isinstance(metric, dict):
+        return None
+    value = metric.get("value")
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return value
+
+
+def _boss_act_row(relic_id, act_data):
+    """Return one rankable boss-choice row for an act, or None."""
+    if not isinstance(act_data, dict):
+        return None
+    offered = _metric_value(act_data.get("offered_count"))
+    picked = _metric_value(act_data.get("picked_count"))
+    if not isinstance(offered, int) or not isinstance(picked, int):
+        return None
+    if offered < BOSS_CHOICE_MIN_OFFERED:
+        return None
+    rate = _metric_value(act_data.get("pick_rate"))
+    if not isinstance(rate, (int, float)):
+        rate = picked / offered * 100.0
+    return {
+        "relic_id": relic_id,
+        "offered_count": offered,
+        "picked_count": picked,
+        "pick_rate": float(rate),
+    }
+
+
+def boss_choice_act_rows(snapshot, act):
+    """Return one act's boss-choice cohort ranked by pick rate (top first)."""
+    if act not in BOSS_ACT_KEYS:
+        return []
+    relic_stats = snapshot.get("relics") if isinstance(snapshot, dict) else None
+    if not isinstance(relic_stats, dict):
+        return []
+    rows = []
+    for relic_id, entry in relic_stats.items():
+        if not isinstance(entry, dict):
+            continue
+        choice = entry.get(BOSS_CHOICE_KEY)
+        if not isinstance(choice, dict):
+            continue
+        row = _boss_act_row(str(relic_id), choice.get(act))
+        if row is not None:
+            rows.append(row)
+    rows.sort(
+        key=lambda row: (
+            -(row["picked_count"] / row["offered_count"]),
+            -row["offered_count"],
+            row["relic_id"],
+        )
+    )
+    previous_ratio = None
+    rank_by_id = {}
+    for index, row in enumerate(rows, start=1):
+        ratio = row["picked_count"] / row["offered_count"]
+        if ratio != previous_ratio:
+            previous_ratio = ratio
+            expected_rank = index
+        rank_by_id[row["relic_id"]] = expected_rank
+    cohort_size = len(rows)
+    ranked = []
+    for row in rows:
+        ranked.append(
+            {
+                "relic_id": row["relic_id"],
+                "offered_count": row["offered_count"],
+                "picked_count": row["picked_count"],
+                "pick_rate": row["pick_rate"],
+                "rank": rank_by_id[row["relic_id"]],
+                "cohort_size": cohort_size,
+            }
+        )
+    return ranked
+
+
+def boss_choice_rank_contexts(snapshot, relic_id):
+    """Return per-act ranked choice contexts for one relic.
+
+    A context exists only for acts where the relic itself meets the offer
+    floor, so the QQ layer never shows a misleading rank for low samples.
+    """
+    relic_id = str(relic_id or "")
+    if not relic_id:
+        return []
+    contexts = []
+    for act in BOSS_ACT_KEYS:
+        row = next(
+            (
+                item
+                for item in boss_choice_act_rows(snapshot, act)
+                if item["relic_id"] == relic_id
+            ),
+            None,
+        )
+        if row is None:
+            continue
+        contexts.append(
+            {
+                "act": act,
+                "pick_rate": row["pick_rate"],
+                "rank": row["rank"],
+                "cohort_size": row["cohort_size"],
+            }
+        )
+    return contexts
