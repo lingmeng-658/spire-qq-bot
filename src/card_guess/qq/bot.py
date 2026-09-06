@@ -30,6 +30,7 @@ from card_guess.qq.renderer import (
 logger = logging.getLogger("card_guess.qq.bot")
 
 START_WORDS = {"猜词", "猜谜", "开始", "开局", "开始游戏"}
+ANCIENT_OVERVIEW_COMMAND = "先古遗民"
 START_SUFFIX_MODES = {"": "mixed", "1": "sts1", "2": "sts2"}
 END_COMMANDS = {"结束", "end"}
 HELP_TEXT = """=== 帮助 ===
@@ -468,9 +469,14 @@ def _render_ancient_choice_leaderboard_reply(command):
         request["act"],
         snapshot=snapshot,
     )
-    if board is not None:
-        return board
-    return f"{request['npc_zh']}还没有可用的选择数据。"
+    if board is None:
+        board = f"{request['npc_zh']}还没有可用的选择数据。"
+    image_path = None
+    if request["act"] is None:
+        image_path = qq_renderer.resolve_local_ancient_npc_image(
+            request["npc_id"]
+        )
+    return RenderedReply(board, image_path=image_path)
 
 def _load_query_cards():
     return load_cards("sts1") + load_cards("sts2")
@@ -735,6 +741,8 @@ def _command_kind(text):
         return 0
     if text.split(None, 1)[0].lower() in HELP_COMMANDS:
         return 2
+    if text == ANCIENT_OVERVIEW_COMMAND:
+        return 2
     if text.startswith("榜单"):
         return 2 if re.fullmatch(r"榜单([12])(?:\s+.*)?", text) is not None else 0
     if _parse_boss_board_request(text) is not None:
@@ -777,6 +785,9 @@ def route_group_command(group_id, text):
     if command.startswith("榜单"):
         return RenderedReply(_render_leaderboard_reply(command))
 
+    if command == ANCIENT_OVERVIEW_COMMAND:
+        return RenderedReply(qq_renderer.render_ancient_npc_overview())
+
     boss_board = _render_boss_board_reply(command)
     if boss_board is not None:
         return RenderedReply(boss_board)
@@ -791,7 +802,7 @@ def route_group_command(group_id, text):
 
     ancient_board = _render_ancient_choice_leaderboard_reply(command)
     if ancient_board is not None:
-        return RenderedReply(ancient_board)
+        return ancient_board
 
     start_mode, start_character = _parse_start_request(command)
 

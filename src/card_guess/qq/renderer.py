@@ -20,6 +20,7 @@ from card_guess.sts1_card_stats import (
 )
 from card_guess.sts1_snapshot import COHORT_ASC7PLUS
 from card_guess.sts2_ancient_choice import (
+    OFFICIAL_ANCIENT_NPC_ZH,
     leaderboard_contexts,
     leaderboard_npc_acts,
     rankable_contexts_for_relic,
@@ -113,6 +114,28 @@ def resolve_local_relic_image(relic):
         return image_path
 
     return None
+
+
+def resolve_local_ancient_npc_image(npc_id):
+    """Return the local STS2 Ancient NPC image path or None."""
+    key = str(npc_id or "").strip()
+    if key not in OFFICIAL_ANCIENT_NPC_ZH:
+        return None
+    image_path = REPO_ROOT / "data" / "images" / "ancients" / "sts2" / f"{key}.png"
+    if image_path.exists():
+        return image_path
+    return None
+
+
+def render_ancient_npc_overview():
+    """Render the concise official-ZH overview of all 8 Ancient NPCs."""
+    lines = [name for name in OFFICIAL_ANCIENT_NPC_ZH.values() if name]
+    body = "\n".join(lines)
+    return (
+        "先古遗民\n\n"
+        f"{body}\n\n"
+        "发送名字可查看对应图片与可查询层。"
+    )
 
 
 def load_sts2_card_stats():
