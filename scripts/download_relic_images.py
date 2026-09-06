@@ -4,8 +4,9 @@ import json
 from pathlib import Path
 from urllib import request
 
-# 本阶段只接入 STS1 遗物图片；STS2 遗物不在范围内。
-RELIC_GAMES = ("sts1",)
+# STS1 图床使用 catalog icon；STS2 图床固定使用小写 id。
+# 本脚本仅供数据维护使用；QQ runtime 只读本地图片，禁止联网下载。
+RELIC_GAMES = ("sts1", "sts2")
 RELIC_IMAGE_BASE = "https://spire-archive.com/images"
 
 
@@ -17,11 +18,20 @@ def stable_relic_id(relic):
 
 
 def relic_icon_file(relic):
-    """从 catalog 读取稳定 icon 文件名（如 akabeko.png），缺失时退回 id。"""
+    """从 catalog 读取稳定 icon 文件名；缺失时按图床规则退回。
+
+    STS1 使用 catalog icon（可能保留混合大小写，如 artOfWar.png）；
+    STS2 raw 无 icon 字段，图床固定规则为小写 id。
+    """
     icon = str(relic.get("icon") or "").strip()
     if icon:
         return Path(icon).name
-    return f"{stable_relic_id(relic)}.png"
+
+    game = str(relic.get("game") or "sts1").strip()
+    relic_id = stable_relic_id(relic)
+    if game == "sts2":
+        return f"{relic_id.lower()}.png"
+    return f"{relic_id}.png"
 
 
 def build_relic_image_url(relic):
@@ -67,7 +77,7 @@ def fetch_url_bytes(url):
 
 
 def download_relic_images(relics=None, output_root=None, fetcher=None):
-    """下载 STS1 遗物图标到本地；已存在跳过，单张失败不中断其余下载。
+    """下载 STS1/STS2 遗物图标到本地；已存在跳过，单张失败不中断其余下载。
 
     下载逻辑与 QQ 运行时完全分离：bot 查询只读本地文件，不调用本函数。
     """
