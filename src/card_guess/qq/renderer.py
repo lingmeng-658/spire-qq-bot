@@ -25,6 +25,7 @@ from card_guess.sts2_ancient_choice import (
     leaderboard_npc_acts,
     rankable_contexts_for_relic,
 )
+from card_guess.qq.relic_short_summary import short_relic_effect
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 STS1_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts1_card_stats.json"
@@ -125,6 +126,19 @@ def resolve_local_ancient_npc_image(npc_id):
     if image_path.exists():
         return image_path
     return None
+
+
+def resolve_local_ancient_overview_image():
+    """Return the local 8-NPC overview collage path or None."""
+    image_path = (
+        REPO_ROOT
+        / "data"
+        / "images"
+        / "ancients"
+        / "sts2"
+        / "ancient_overview.png"
+    )
+    return image_path if image_path.exists() else None
 
 
 def render_ancient_npc_overview():
@@ -381,6 +395,40 @@ def load_sts1_relic_zh_names():
     return names
 
 
+def _relic_short_summary_map(game):
+    """Map local relic ids to short summaries for one game's boards."""
+    summaries = {}
+    for relic in load_relics(game):
+        relic_id = str(relic.get("id") or "").strip()
+        description = str(relic.get("description") or "").strip()
+        if not relic_id or not description:
+            continue
+        summary = short_relic_effect(
+            description,
+            relic_id=relic_id,
+            game=game,
+        )
+        if summary:
+            summaries[relic_id] = summary
+    return summaries
+
+
+_LEADERBOARD_ONE_LINE_MAX = 44
+
+
+def _append_leaderboard_line(lines, base_line, summary):
+    """Keep boards scannable by folding only overlong summaries to next line."""
+    if not summary:
+        lines.append(base_line)
+        return
+    inline = f"{base_line}｜{summary}"
+    if len(inline) <= _LEADERBOARD_ONE_LINE_MAX:
+        lines.append(inline)
+    else:
+        lines.append(base_line)
+        lines.append(f"  {summary}")
+
+
 def render_sts1_boss_leaderboard(act, snapshot=None):
     """Render one STS1 act's complete Boss-relic choice-rate board.
 
@@ -395,12 +443,18 @@ def render_sts1_boss_leaderboard(act, snapshot=None):
     act_zh = {1: "第一层", 2: "第二层"}[act]
     rows = boss_choice_act_rows(snapshot, act_key)
     names = load_sts1_relic_zh_names()
+    summaries = _relic_short_summary_map("sts1")
     lines = [f"{act_zh} Boss 遗物选择率排行"]
     for row in rows:
         name = names.get(str(row.get("relic_id") or ""))
         if not name:
             continue
-        lines.append(f"{row['rank']}. {name} —— {row['pick_rate']:.1f}%")
+        summary = summaries.get(str(row.get("relic_id") or ""))
+        _append_leaderboard_line(
+            lines,
+            f"{row['rank']}. {name} —— {row['pick_rate']:.1f}%",
+            summary,
+        )
     if len(lines) == 1:
         lines.append("（该层暂无可排名的 Boss 遗物）")
     return "\n".join(lines)
@@ -548,14 +602,18 @@ def render_ancient_choice_leaderboard(npc_name_or_zh, act, kind="full", snapshot
     relic_names = choice.get("relic_names_zh")
     relic_names = relic_names if isinstance(relic_names, dict) else {}
     act_label = RELIC_COHORT_ACT_ZH[act]
+    summaries = _relic_short_summary_map("sts2")
     header = f"{npc_zh} · {act_label} Ancient 遗物选择率排行"
     body = []
     for context in contexts:
         relic_zh = relic_names.get(context.get("relic_id"))
         if not isinstance(relic_zh, str) or not relic_zh:
             continue
-        body.append(
-            f"{context['rank']}. {relic_zh} —— {context['picked_rate']}%"
+        summary = summaries.get(str(context.get("relic_id") or ""))
+        _append_leaderboard_line(
+            body,
+            f"{context['rank']}. {relic_zh} —— {context['picked_rate']}%",
+            summary,
         )
     if not body:
         return None

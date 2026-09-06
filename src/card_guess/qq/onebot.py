@@ -34,6 +34,34 @@ def extract_mentioned_text(event: dict) -> str | None:
     return "".join(text_parts).strip()
 
 
+def _collect_text(message):
+    if not isinstance(message, list):
+        return []
+    parts = []
+    for segment in message:
+        if not isinstance(segment, dict):
+            continue
+        if segment.get("type") != "text":
+            continue
+        data = segment.get("data")
+        if not isinstance(data, dict):
+            continue
+        text = data.get("text", "")
+        if isinstance(text, str):
+            parts.append(text)
+    return parts
+
+
+def extract_private_text(event: dict) -> str | None:
+    """Extract private-message text; private chat needs no mention gate."""
+    if event.get("post_type") != "message":
+        return None
+    if event.get("message_type") != "private":
+        return None
+    text = "".join(_collect_text(event.get("message", []))).strip()
+    return text or None
+
+
 def build_message_segments(text: str, image_path=None, image_paths=None):
     segments = [{"type": "text", "data": {"text": text}}]
 

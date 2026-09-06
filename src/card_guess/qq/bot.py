@@ -16,6 +16,7 @@ from card_guess.qq.onebot import (
     build_group_add_request_action,
     build_message_segments,
     extract_mentioned_text,
+    extract_private_text,
     send_action,
 )
 from card_guess.qq.renderer import (
@@ -786,7 +787,10 @@ def route_group_command(group_id, text):
         return RenderedReply(_render_leaderboard_reply(command))
 
     if command == ANCIENT_OVERVIEW_COMMAND:
-        return RenderedReply(qq_renderer.render_ancient_npc_overview())
+        return RenderedReply(
+            qq_renderer.render_ancient_npc_overview(),
+            image_path=qq_renderer.resolve_local_ancient_overview_image(),
+        )
 
     boss_board = _render_boss_board_reply(command)
     if boss_board is not None:
@@ -930,6 +934,44 @@ async def _send_group_reply(websocket, group_id: int, reply):
     await send_group_message(websocket, group_id, str(reply))
 
 
+async def send_private_message(websocket, user_id: int, payload):
+    from card_guess.qq import runtime
+
+    request = {
+        "action": "send_private_msg",
+        "params": {
+            "user_id": user_id,
+            "message": payload,
+        },
+        "echo": "ping-reply",
+    }
+
+    timeout = getattr(runtime, "WS_SEND_TIMEOUT_SECONDS", 10.0)
+    try:
+        await asyncio.wait_for(websocket.send(json.dumps(request)), timeout=timeout)
+    except asyncio.TimeoutError:
+        logger.warning("private message send timeout: %.1f seconds", timeout)
+        raise
+
+
+async def _send_private_reply(websocket, user_id: int, reply):
+    if isinstance(reply, RenderedReply):
+        image_paths = getattr(reply, "image_paths", None)
+        if image_paths:
+            await send_private_message(
+                websocket,
+                user_id,
+                build_message_segments(reply.text, image_paths=image_paths),
+            )
+            return
+        if reply.image_path is not None:
+            await send_private_message(
+                websocket, user_id, build_message_segments(reply.text, reply.image_path)
+            )
+            return
+    await send_private_message(websocket, user_id, str(reply))
+
+
 async def handle_event(websocket, event: dict):
     if event.get("post_type") == "request":
         request_type = event.get("request_type")
@@ -951,17 +993,30 @@ async def handle_event(websocket, event: dict):
 
         return
 
-    text = extract_mentioned_text(event)
-
-    if text is None:
+    message_type = event.get("message_type")
+    if message_type == "group":
+        text = extract_mentioned_text(event)
+        if text is None:
+            return
+        target_id = event["group_id"]
+        send_message = send_group_message
+        send_reply = _send_group_reply
+    elif message_type == "private":
+        text = extract_private_text(event)
+        if text is None:
+            return
+        target_id = event.get("user_id")
+        if target_id is None:
+            return
+        send_message = send_private_message
+        send_reply = _send_private_reply
+    else:
         return
-
-    group_id = event["group_id"]
 
     if text == "ping":
-        await send_group_message(websocket, group_id, "pong")
+        await send_message(websocket, target_id, "pong")
         return
 
-    reply = route_group_command(group_id, text)
+    reply = route_group_command(target_id, text)
     if reply:
-        await _send_group_reply(websocket, group_id, reply)
+        await send_reply(websocket, target_id, reply)
