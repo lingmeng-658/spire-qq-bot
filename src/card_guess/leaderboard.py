@@ -25,7 +25,7 @@ from card_guess.card_stats import adapt_sts2_snapshot
 from card_guess.cards import load_cards
 from card_guess.puzzle import POOL_NAMES
 from card_guess.qq.sessions import resolve_character
-from card_guess.sts1_card_stats import SOURCE_ID as STS1_SOURCE_ID
+from card_guess.sts1_card_stats import SOURCE_ID as STS1_SOURCE_ID, character_pick_act_rows
 from card_guess.sts1_snapshot import COHORT_ASC7PLUS
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -356,3 +356,94 @@ def build_leaderboard_reply(
         role_pool=role_pool,
         act=act,
     )
+# ---------------------------------------------------------------------------
+# STS1 character x layer x rarity card cohort board (main Card rank entry)
+# ---------------------------------------------------------------------------
+# Fair cohort: character x act(layer) x rarity Card Reward pick decisions.
+# Complete cohort only - never a Top N / Bottom N truncation.  Low-sample
+# cards are excluded by the shared character_pick_act_rows floor.
+
+CARD_COHORT_ACT_ZH = {1: "第一层", 2: "第二层", 3: "第三层"}
+CARD_COHORT_ACT_KEY = {1: "act_1", 2: "act_2", 3: "act_3"}
+CARD_COHORT_RARITY_ZH = {"普通": "Common", "罕见": "Uncommon", "稀有": "Rare"}
+CARD_COHORT_STS1_CHARACTERS = CHARACTER_POOLS["sts1"]
+STS2_CARD_COHORT_NOTICE = "二代目前暂无可靠的同类卡牌排行榜。"
+
+
+def _card_cohort_character_zh(pool: str) -> str:
+    return POOL_NAMES.get(pool, pool or "")
+
+
+def _card_cohort_rows(
+    snapshot: Mapping[str, Any],
+    *,
+    character: str,
+    act: int,
+    rarity: str,
+) -> list[dict[str, Any]]:
+    """Full one-cohort rows decorated with the snapshot's official zh names."""
+    rows = character_pick_act_rows(
+        snapshot,
+        source_id=STS1_ASC7PLUS_SOURCE_ID,
+        character=character,
+        act=CARD_COHORT_ACT_KEY[act],
+        rarity=rarity,
+    )
+    card_entries = snapshot.get("cards") if isinstance(snapshot, Mapping) else None
+    named: list[dict[str, Any]] = []
+    for row in rows:
+        entry = card_entries.get(row["card_id"]) if isinstance(card_entries, Mapping) else None
+        name = entry.get("name") if isinstance(entry, Mapping) else None
+        if not isinstance(name, str) or not name.strip():
+            continue
+        named.append({**row, "name": name.strip()})
+    return named
+
+
+def render_card_layer_prompt(pool: str, act: int) -> str:
+    """Layer prompt without guessing a rarity; never returns a mixed board."""
+    pool_zh = _card_cohort_character_zh(pool)
+    options = "\n".join(f"{pool_zh}{act}{zh}" for zh in ("普通", "罕见", "稀有"))
+    return f"{pool_zh} · {CARD_COHORT_ACT_ZH[act]}\n\n请选择稀有度：\n{options}"
+
+
+def format_card_cohort_board(
+    pool: str,
+    act: int,
+    rarity_zh: str,
+    rows: Sequence[Mapping[str, Any]],
+) -> str:
+    """Render the complete cohort board (real ranks, player-facing copy)."""
+    heading = (
+        f"{_card_cohort_character_zh(pool)} · {CARD_COHORT_ACT_ZH[act]}"
+        f" · {rarity_zh}卡选择率排行"
+    )
+    if not rows:
+        return f"{heading}\n（该范围暂无可排名的卡牌）"
+    lines = "\n".join(
+        f"{row['rank']}. {row['name']} —— {row['pick_rate'] * 100:.1f}%"
+        for row in rows
+    )
+    return f"{heading}\n{lines}"
+
+
+def render_card_layer_cohort_board(alias: str, act: int, rarity_zh: str | None = None) -> str:
+    """One reply for the 角色+层+稀有度 Card cohort entry (STS1 main board).
+
+    STS2-only pools and special pools never fabricate a ranking; unknown
+    rarities fall back to the layer rarity prompt.
+    """
+    try:
+        pool = resolve_character(alias)
+    except ValueError:
+        return f"无法识别角色“{alias}”。"
+    if pool in CHARACTER_POOLS["sts2"] and pool not in CARD_COHORT_STS1_CHARACTERS:
+        return STS2_CARD_COHORT_NOTICE
+    if pool not in CARD_COHORT_STS1_CHARACTERS:
+        return f"{_card_cohort_character_zh(pool)}暂不参与卡牌同稀有度排行。"
+    if rarity_zh is None or rarity_zh not in CARD_COHORT_RARITY_ZH:
+        return render_card_layer_prompt(pool, act)
+    rarity = CARD_COHORT_RARITY_ZH[rarity_zh]
+    snapshot = _load_unified_snapshot("sts1")
+    rows = _card_cohort_rows(snapshot, character=pool, act=act, rarity=rarity)
+    return format_card_cohort_board(pool, act, rarity_zh, rows)

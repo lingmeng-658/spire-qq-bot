@@ -51,10 +51,15 @@ HELP_TEXT = """=== 帮助 ===
 跨代同名：卡名1 / 卡名2
 
 榜单/数据排行：
+
+同稀有度完整榜（新主入口）：观者1普通 / 观者1罕见 / 观者1稀有
+只写观者1 = 先选稀有度；旧抓取/胜率榜仍兼容
 猎宝1 抓取    猎宝1 抓取2
 战士1 胜率3    骨妹2 抓取1
 STS1 无数字 = 全局；STS2 仅 1/2/3 幕
 心脏 = 打赢心脏的牌组出现率，仅 STS1（示例：猎宝1 心脏）
+
+
 
 更多：
 帮助 猜卡 / 帮助 查卡 / 帮助 题库 / 帮助 榜单"""
@@ -123,7 +128,13 @@ STS2：
 开始1猎宝 / 开始 1 猎宝 / 开始   2   无色""",
         "榜单": """=== 帮助 榜单 ===
 
-数据排行（角色别名 + 版本 + 指标）：
+同稀有度完整榜（主入口）：
+观者1普通 / 观者1罕见 / 观者1稀有
+= 角色 × 层（第一/二/三层）× 稀有度的完整选择率榜
+只写观者1 = 先选稀有度（空格随意，如：观者 1 普通）
+
+旧抓取/胜率榜（兼容旧入口，跨稀有度 Top 10）：
+
 猎宝1 抓取    猎宝1 抓取2
 战士1 胜率3    骨妹2 抓取1
 猎宝1 心脏
@@ -318,6 +329,46 @@ def _render_leaderboard_reply(command):
     role = " ".join(tokens[:-1]).strip() or None
     return lb.build_leaderboard_reply(tag, keyword, role)
 
+
+
+
+def _card_layer_alias_pattern():
+    pattern = getattr(_card_layer_alias_pattern, "pattern", None)
+    if pattern is None:
+        aliases = sorted(sessions.CHARACTER_ALIASES, key=len, reverse=True)
+        pattern = "|".join(re.escape(alias) for alias in aliases)
+        _card_layer_alias_pattern.pattern = pattern
+    return pattern
+
+
+def _parse_card_layer_rarity_request(command):
+    """Parse 角色+层(+稀有度) Card cohort syntax with arbitrary spacing.
+
+    Grammar: <character alias><1|2|3> or <alias><1|2|3><普通|罕见|稀有>;
+    whitespace anywhere is ignored.  Returns a request dict or ``None``.
+    """
+    text = (command or "").strip()
+    if not text:
+        return None
+    compact = re.sub(r"\s+", "", text)
+    match = re.fullmatch(
+        rf"({_card_layer_alias_pattern()})([123])(普通|罕见|稀有)?",
+        compact,
+    )
+    if match is None:
+        return None
+    alias, act, rarity_zh = match.groups()
+    return {"alias": alias, "act": int(act), "rarity_zh": rarity_zh}
+
+
+def _render_card_layer_board_reply(command):
+    """Full-match Card cohort command -> reply text; not a board -> None."""
+    request = _parse_card_layer_rarity_request(command)
+    if request is None:
+        return None
+    return lb.render_card_layer_cohort_board(
+        request["alias"], request["act"], request["rarity_zh"]
+    )
 
 _ANCIENT_BOARD_KEYWORDS = ("\u6392\u884c", "\u6700\u9ad8", "\u6700\u4f4e")
 
@@ -632,13 +683,97 @@ def _render_generation_query(name, generation, role=None):
 
 
 
-def route_group_command(group_id, text):
+
+
+_ROUTE_WS_RE = re.compile(r"\s+")
+
+
+def _short_leaderboard_shape(text):
+    """Shape-only mirror of ``_render_short_leaderboard_reply`` resolution."""
+    full_re, no_gen_re, prefix_re = _short_leaderboard_matchers()
+    if full_re.fullmatch(text) is not None:
+        return True
+    no_gen = no_gen_re.fullmatch(text)
+    if no_gen is not None:
+        alias, _keyword = no_gen.groups()
+        try:
+            pool = sessions.resolve_character(alias)
+        except ValueError:
+            return False
+        return bool(lb.pool_generations(pool))
+    prefix = prefix_re.match(text)
+    if prefix is None:
+        return False
+    _alias, _generation, tail = prefix.groups()
+    tail = tail.strip()
+    if tail == "心脏":
+        return True
+    return any(tail.startswith(root) for root in ("抓取", "胜率"))
+
+
+def _ancient_board_shape(text):
+    if not any(keyword in text for keyword in _ANCIENT_BOARD_KEYWORDS):
+        return False
+    snapshot = qq_renderer.load_sts2_ancient_choice_stats()
+    return _parse_ancient_choice_request(snapshot, text) is not None
+
+
+def _command_kind(text):
+    """Recognized-command priority used for whitespace normalization.
+
+    2 = pre-game families that own the reply (help / 榜单 / card layer
+    boards / short boards / ancient boards / start / end); 1 = generic
+    name+generation query shape (idle unknown fallback); 0 = not a command.
+    Mirrors the router's real precedence so a spaced spelling is never
+    captured by a lower-priority fallback when its compact form is a board.
+    """
+    if not isinstance(text, str) or not text.strip():
+        return 0
+    if text.split(None, 1)[0].lower() in HELP_COMMANDS:
+        return 2
+    if text.startswith("榜单"):
+        return 2 if re.fullmatch(r"榜单([12])(?:\s+.*)?", text) is not None else 0
+    if _parse_card_layer_rarity_request(text) is not None:
+        return 2
+    if _short_leaderboard_shape(text):
+        return 2
+    if _ancient_board_shape(text):
+        return 2
+    if _parse_start_request(text)[0] is not None:
+        return 2
+    if text in END_COMMANDS or text.lower() == "end":
+        return 2
+    _name, generation, _role = _parse_generation_selector(text)
+    return 1 if generation is not None else 0
+
+
+def _route_command_text(text):
+    """Whitespace-normalised command text before the existing parser/router.
+
+    Choose the highest-priority recognised spelling; on a tie the original
+    text wins so bodies that rely on spaces (help subcommands, name+role
+    queries) keep their exact behaviour.  When removing whitespace still
+    hits a legal command, that compact spelling is treated as equivalent.
+    """
     command = (text or "").strip()
+    compact = _ROUTE_WS_RE.sub("", command)
+    if compact == command:
+        return command
+    if _command_kind(compact) > _command_kind(command):
+        return compact
+    return command
+
+def route_group_command(group_id, text):
+    command = _route_command_text(text)
     if command.split(None, 1)[0].lower() in HELP_COMMANDS:
         return render_help(command)
 
     if command.startswith("榜单"):
         return RenderedReply(_render_leaderboard_reply(command))
+
+    layer_board = _render_card_layer_board_reply(command)
+    if layer_board is not None:
+        return RenderedReply(layer_board)
 
     short_board = _render_short_leaderboard_reply(command)
     if short_board is not None:

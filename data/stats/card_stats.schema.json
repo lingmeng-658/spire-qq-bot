@@ -36,6 +36,14 @@
         "character": {
           "type": "string"
         },
+        "color": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rarity": {
+          "type": "string",
+          "minLength": 1
+        },
         "metrics": {
           "type": "object",
           "propertyNames": {
@@ -565,6 +573,31 @@
         },
         "win_delta": {
           "$ref": "#/$defs/deltaMetric"
+        },
+        "character_pick_contexts": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "offered_count",
+                "picked_count"
+              ],
+              "properties": {
+                "offered_count": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "picked_count": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
         }
       },
       "anyOf": [

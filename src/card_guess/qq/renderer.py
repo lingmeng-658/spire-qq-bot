@@ -13,7 +13,10 @@ from card_guess.cards import (
 from card_guess.leaderboard import is_win_delta_eligible
 from card_guess.puzzle import format_pool, format_rarity, format_type
 from card_guess.relic_stats import boss_choice_rank_contexts
-from card_guess.sts1_card_stats import SOURCE_ID as STS1_SOURCE_ID
+from card_guess.sts1_card_stats import (
+    SOURCE_ID as STS1_SOURCE_ID,
+    character_pick_rank_contexts,
+)
 from card_guess.sts1_snapshot import COHORT_ASC7PLUS
 from card_guess.sts2_ancient_choice import (
     ACT_ZH,
@@ -203,51 +206,15 @@ def render_sts2_stats(card, snapshot):
 
     untapped = entry.get("untapped")
     reward = untapped.get("card_reward") if isinstance(untapped, dict) else None
-    shop = untapped.get("shop") if isinstance(untapped, dict) else None
-    smith = untapped.get("smith") if isinstance(untapped, dict) else None
-
-    sections = []
 
     pick_row = _format_metric_row(reward, "pick_rate", lambda v: f"{v:.0f}%")
-    if pick_row is not None:
-        sections.append(("第一/二/三幕抓取率", pick_row))
-
-    purchase_row = _format_metric_row(shop, "purchase_rate", lambda v: f"{v:.0f}%")
-    if purchase_row is not None:
-        sections.append(("第一/二/三幕商店购买率", purchase_row))
-
-    upgrade_row = _format_metric_row(smith, "upgrade_rate", lambda v: f"{v:.0f}%")
-    if upgrade_row is not None:
-        sections.append(("第一/二/三幕升级率", upgrade_row))
-
-    delta_row = _format_metric_row(reward, "run_win_rate_impact", lambda v: f"{v:+.1f}")
-    if delta_row is not None:
-        sections.append(("第一/二/三幕胜率差", f"{delta_row} 个百分点"))
-
-    spire_codex = entry.get("spire_codex")
-    presence_line = None
-    if isinstance(spire_codex, dict):
-        presence = _metric_value(spire_codex, "final_deck_presence_rate")
-        if presence is not None:
-            presence_line = f"对局结束时持有率：{presence:.2f}%"
-
-    if not sections and presence_line is None:
+    if pick_row is None:
         return ""
-    parts = [f"{label}\n{line}" for label, line in sections]
-    if presence_line is not None:
-        parts.append(presence_line)
-    body = "\n\n".join(parts)
-    return body
-
-
-def _scalar_metric_value(source, name):
-    metric = source.get(name)
-    if not isinstance(metric, dict):
-        return None
-    value = metric.get("value")
-    if not isinstance(value, (int, float)) or isinstance(value, bool):
-        return None
-    return value
+    return (
+        "卡牌奖励出现时：\n"
+        f"第一/二/三幕：{pick_row} 会选\n\n"
+        "数据来源：Untapped"
+    )
 
 
 def _act_row_value(source, name, formatter):
@@ -285,6 +252,31 @@ def _sts1_win_delta_row(source):
     return " / ".join(cells)
 
 
+def _sts1_same_rarity_rank_row(snapshot, card):
+    """Same-rarity selection-rate rank row (rank/cohort per act) or None."""
+    if not isinstance(snapshot, dict):
+        return None
+    card_id = str(card.get("id") or "")
+    if not card_id:
+        return None
+    contexts = character_pick_rank_contexts(
+        snapshot,
+        source_id=STS1_ASC7PLUS_SOURCE_ID,
+        card_id=card_id,
+    )
+    by_act = {context["act"]: context for context in contexts}
+    if not by_act:
+        return None
+    cells = []
+    for act in _ACTS:
+        context = by_act.get(act)
+        if context is None:
+            cells.append("-")
+            continue
+        cells.append(f"{context['rank']}/{context['cohort_size']}")
+    return " · ".join(cells)
+
+
 def render_sts1_stats(card, snapshot):
     """STS1 stats for the default asc7plus cohort; missing values render '-'."""
     if not isinstance(snapshot, dict):
@@ -303,34 +295,24 @@ def render_sts1_stats(card, snapshot):
     delta_row = _sts1_win_delta_row(source)
     if delta_row is not None:
         delta_row = f"{delta_row} 个百分点"
-    first_floor = _scalar_metric_value(source, "first_pick_floor_mean")
-    repick = _scalar_metric_value(source, "repick_rate")
-    presence = _scalar_metric_value(source, "final_deck_presence_rate")
-    copy_mean = _scalar_metric_value(source, "final_deck_copy_mean")
-    upgrade = _scalar_metric_value(source, "final_upgrade_rate")
-    heart_presence = _scalar_metric_value(source, "heart_win_deck_presence_rate")
 
-    lines = [
-        f"第一/二/三幕抓取率\n{pick_row if pick_row is not None else '-'}",
-        f"第一/二/三幕胜率差\n{delta_row if delta_row is not None else '-'}",
-    ]
-
-    def inline(stem: str, value: float | None, formatter) -> str:
-        if value is None:
-            return f"{stem}：-"
-        return f"{stem}：{formatter(value)}"
-
-    if first_floor is None:
-        lines.append("第一次拿到：-")
-    else:
-        lines.append(f"第一次拿到：平均第 {first_floor:.1f} 层")
-    lines.append(inline("再次选择率", repick, lambda v: f"{v:.1f}%"))
-    lines.append(inline("对局结束时持有率", presence, lambda v: f"{v:.2f}%"))
-    lines.append(inline("结束时平均持有", copy_mean, lambda v: f"{v:.2f} 张"))
-    lines.append(inline("结束时升级比例", upgrade, lambda v: f"{v:.1f}%"))
-    lines.append(inline("心脏胜利卡组出现率", heart_presence, lambda v: f"{v:.2f}%"))
-    body = "\n\n".join(lines)
-    return body
+    pick_line = (
+        f"第一/二/三幕：{pick_row} 会选" if pick_row is not None else "第一/二/三幕：-"
+    )
+    delta_line = (
+        f"第一/二/三幕：{delta_row}" if delta_row is not None else "第一/二/三幕：-"
+    )
+    rank_row = _sts1_same_rarity_rank_row(snapshot, card)
+    blocks = [f"卡牌奖励出现时：\n{pick_line}"]
+    if rank_row is not None:
+        blocks.append(f"同稀有度选择率排名：\n第一/二/三幕：{rank_row}")
+    blocks.extend(
+        [
+            f"胜率关联：\n{delta_line}",
+            "胜率差仅代表统计关联。",
+        ]
+    )
+    return "\n\n".join(blocks)
 
 
 STS1_RELIC_ROLE_LABELS = {

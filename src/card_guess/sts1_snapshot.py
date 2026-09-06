@@ -94,6 +94,7 @@ def build_sts1_snapshot(
     source_id: str = SOURCE_ID,
     source: str = SOURCE_URL,
     card_names: Mapping[str, str] | None = None,
+    card_attributes: Mapping[str, tuple[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Build one unified snapshot with one scoped source per cohort.
 
@@ -142,6 +143,7 @@ def build_sts1_snapshot(
             collected_at=collected_at,
             source_id=source_for_cohort,
             source=source,
+            card_attributes=card_attributes,
         )
         for card_id, card in result["snapshot"]["cards"].items():
             record = card["metrics"][source_for_cohort]
@@ -157,6 +159,12 @@ def build_sts1_snapshot(
                 output_card = {"metrics": {}}
                 if card_id in names:
                     output_card["name"] = names[card_id]
+                if card_attributes is not None:
+                    attributes = card_attributes.get(card_id)
+                    if attributes is not None:
+                        color, rarity = attributes
+                        output_card["color"] = color
+                        output_card["rarity"] = rarity
                 snapshot["cards"][card_id] = output_card
             output_card["metrics"][source_for_cohort] = final_record
 

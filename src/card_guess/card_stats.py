@@ -132,8 +132,13 @@ def validate_card_stats_snapshot(snapshot: Mapping[str, Any]) -> None:
             _fail("snapshot.cards", "card IDs must be non-empty strings")
         card_path = f"snapshot.cards[{card_id!r}]"
         card = _mapping(raw_card, card_path)
-        _exact_keys(card, {"metrics"}, card_path, optional={"name", "character"})
-        for optional_name in ("name", "character"):
+        _exact_keys(
+            card,
+            {"metrics"},
+            card_path,
+            optional={"name", "character", "color", "rarity"},
+        )
+        for optional_name in ("name", "character", "color", "rarity"):
             if optional_name in card and not isinstance(card[optional_name], str):
                 _fail(f"{card_path}.{optional_name}", "must be a string")
 
@@ -289,7 +294,7 @@ def _validate_source_metrics(raw: Any, path: str) -> None:
         source,
         SOURCE_METADATA_FIELDS,
         path,
-        optional=METRIC_FIELDS,
+        optional=METRIC_FIELDS | {"character_pick_contexts"},
     )
     if not isinstance(source.get("source"), str) or not source["source"]:
         _fail(f"{path}.source", "must be a non-empty string")
@@ -298,6 +303,11 @@ def _validate_source_metrics(raw: Any, path: str) -> None:
     if not version:
         _fail(f"{path}.version", "must not be empty")
     _validate_datetime(source.get("collected_at"), f"{path}.collected_at")
+
+    if "character_pick_contexts" in source:
+        _validate_character_pick_contexts(
+            source["character_pick_contexts"], f"{path}.character_pick_contexts"
+        )
 
     present_metrics = set(source) & METRIC_FIELDS
     if not present_metrics:
@@ -339,6 +349,37 @@ def _validate_source_metrics(raw: Any, path: str) -> None:
                 source[name],
                 f"{path}.{name}",
                 expected_unit=SCALAR_UNITS[name],
+            )
+
+
+def _validate_character_pick_contexts(raw: Any, path: str) -> None:
+    """Optional per-character Card Reward offer/pick counts.
+
+    The container is additive data, not a metric: it carries no
+    ``metric_definitions`` entry and never satisfies the at-least-one-metric
+    requirement on its own.
+    """
+    characters = _mapping(raw, path)
+    for character, acts in characters.items():
+        if not isinstance(character, str) or not character:
+            _fail(f"{path}[{character!r}]", "character keys must be non-empty strings")
+        acts_path = f"{path}[{character!r}]"
+        acts_map = _mapping(acts, acts_path)
+        for act, cell in acts_map.items():
+            if act not in ACT_KEYS:
+                _fail(f"{acts_path}[{act!r}]", f"unknown act {act!r}")
+            cell_path = f"{acts_path}[{act!r}]"
+            cell_map = _mapping(cell, cell_path)
+            _exact_keys(cell_map, {"offered_count", "picked_count"}, cell_path)
+            _positive_integer(
+                cell_map["offered_count"],
+                f"{cell_path}.offered_count",
+                allow_zero=True,
+            )
+            _positive_integer(
+                cell_map["picked_count"],
+                f"{cell_path}.picked_count",
+                allow_zero=True,
             )
 
 

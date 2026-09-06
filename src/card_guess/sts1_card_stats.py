@@ -46,6 +46,30 @@ EVENT_WRAP_KEY = "event"
 # Non-card entity that appears inside card_choices (relic reward option string).
 SINGING_BOWL_ENTITY = "Singing Bowl"
 
+# Run ``character_chosen`` values mapped to the lower-case pool keys used by
+# per-character Card Reward pick contexts and same-rarity rank cohorts.
+CHARACTER_KEY_BY_RUN_VALUE = {
+    "IRONCLAD": "ironclad",
+    "THE_SILENT": "silent",
+    "DEFECT": "defect",
+    "WATCHER": "watcher",
+}
+
+# Character-colored pools.  Colorless/shared cards keep their real
+# cross-character distribution but never enter a single-character cohort.
+CHARACTER_KEYS = frozenset(CHARACTER_KEY_BY_RUN_VALUE.values())
+
+# Reward-pool rarities; starters/status/curse cards are never ranked.
+RANKABLE_RARITIES = frozenset({"Common", "Uncommon", "Rare"})
+
+# Minimum Card Reward offers for a card to be ranked inside its
+# character x act x rarity cohort.  Chosen from the real A7+ distribution
+# (44,953 valid runs): every character-pool card clears 50 offers in nearly
+# every act cell, while act-3 Rare stragglers can sit below it (e.g. WATCHER
+# Alpha, 39 offers) and sub-50 colorless/event-trace strays stay out of the
+# character cohorts.
+CARD_PICK_RANK_MIN_OFFERED = 50
+
 # Card+N (N >= 1) upgrade suffix; only a trailing "+<digits>" counts as an upgrade.
 CARD_UPGRADE_RE = re.compile(r"^(?P<base>.+)\+(?P<level>[1-9][0-9]*)$")
 
@@ -180,6 +204,10 @@ class _CardAccumulator:
     # Heart-win runs (valid cohort runs that beat The Heart) whose final
     # master deck contains this card; a card counts at most once per run.
     heart_deck_runs: int = 0
+    # Optional per-character Card Reward offer/pick counts keyed by
+    # character -> act; only populated when ``card_attributes`` is supplied.
+    character_offered: dict[str, Counter[str]] = field(default_factory=dict)
+    character_picked: dict[str, Counter[str]] = field(default_factory=dict)
 
 
 def iter_sts1_runs(path: str | Path, *, chunk_size: int = 1024 * 1024) -> Iterator[Mapping[str, Any]]:
@@ -270,11 +298,13 @@ def aggregate_sts1_runs(
     collected_at: str,
     source_id: str = SOURCE_ID,
     source: str = SOURCE_URL,
+    card_attributes: Mapping[str, tuple[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Aggregate STS1 card statistics and an acceptance report in one pass."""
     resolver = _make_card_resolver(card_ids)
     accumulators = {card_id: _CardAccumulator() for card_id in resolver.values()}
     report = _new_report()
+    track_character_contexts = card_attributes is not None
     seen_play_ids: set[str] = set()
 
     for raw_run in runs:
@@ -298,7 +328,18 @@ def aggregate_sts1_runs(
         report["valid_runs"] += 1
         _normalize_run_floors(raw_run)
         _record_run_metadata(raw_run, report)
-        _record_card_choices(raw_run, resolver, accumulators, report)
+        character_key = None
+        if track_character_contexts:
+            chosen = raw_run.get("character_chosen")
+            if isinstance(chosen, str):
+                character_key = CHARACTER_KEY_BY_RUN_VALUE.get(chosen)
+        _record_card_choices(
+            raw_run,
+            resolver,
+            accumulators,
+            report,
+            character_key=character_key,
+        )
         _record_terminal_deck(raw_run, resolver, accumulators, report)
         _record_campfire_choices(raw_run, resolver, accumulators, report)
         if heart_encounter_floor(raw_run) is not None:
@@ -313,6 +354,7 @@ def aggregate_sts1_runs(
         collected_at=collected_at,
         source_id=source_id,
         source=source,
+        card_attributes=card_attributes,
     )
     clean_report = _finalize_report(report)
     validate_card_stats_snapshot(snapshot)
@@ -371,6 +413,8 @@ def _record_card_choices(
     resolver: Mapping[str, str],
     accumulators: Mapping[str, _CardAccumulator],
     report: dict[str, Any],
+    *,
+    character_key: str | None = None,
 ) -> None:
     choices = run.get("card_choices")
     if not isinstance(choices, list):
@@ -434,6 +478,8 @@ def _record_card_choices(
             card.offered += 1
             card.act_offered[act] += 1
             offered_by_act[act].add(card_id)
+            if character_key is not None:
+                card.character_offered.setdefault(character_key, Counter())[act] += 1
             if card_id in history:
                 card.repick_denominator += 1
                 if card_id == picked_id:
@@ -446,6 +492,8 @@ def _record_card_choices(
             card.picked += 1
             card.act_picked[act] += 1
             picked_by_act[act].add(picked_id)
+            if character_key is not None:
+                card.character_picked.setdefault(character_key, Counter())[act] += 1
             picked_this_run.setdefault(picked_id, floor)
             history.add(picked_id)
 
@@ -610,6 +658,7 @@ def _build_snapshot(
     collected_at: str,
     source_id: str,
     source: str,
+    card_attributes: Mapping[str, tuple[str, str]] | None = None,
 ) -> dict[str, Any]:
     builds = sorted(report["build_versions"])
     ascensions = sorted(int(value) for value in report["ascensions"])
@@ -655,8 +704,39 @@ def _build_snapshot(
             },
             **metrics,
         }
-        snapshot["cards"][card_id] = {"metrics": {source_id: source_metrics}}
+        entry: dict[str, Any] = {"metrics": {source_id: source_metrics}}
+        if card_attributes is not None:
+            attributes = card_attributes.get(card_id)
+            if attributes is not None:
+                color, rarity = attributes
+                entry["color"] = color
+                entry["rarity"] = rarity
+                contexts = _build_character_pick_contexts(accumulators[card_id])
+                if contexts:
+                    source_metrics["character_pick_contexts"] = contexts
+        snapshot["cards"][card_id] = entry
     return snapshot
+
+
+def _build_character_pick_contexts(
+    card: _CardAccumulator,
+) -> dict[str, dict[str, dict[str, int]]]:
+    """Optional per-character offer/pick counts keyed by character -> act."""
+    if not card.character_offered:
+        return {}
+    offered = card.character_offered
+    picked = card.character_picked
+    return {
+        character: {
+            act: {
+                "offered_count": offered[character][act],
+                "picked_count": picked.get(character, {}).get(act, 0),
+            }
+            for act in ACTS
+            if offered[character][act]
+        }
+        for character in sorted(offered)
+    }
 
 
 def _card_metrics(
@@ -892,6 +972,125 @@ def _coverage(present: int, eligible: int) -> dict[str, int | float]:
         "eligible_runs": eligible,
         "rate_percent": present / eligible * 100 if eligible else 0.0,
     }
+
+
+def _source_character_contexts(
+    entry: Mapping[str, Any],
+    source_id: str,
+) -> Mapping[str, Any]:
+    """Optional ``character_pick_contexts`` container of a snapshot card."""
+    sources = entry.get("metrics")
+    if not isinstance(sources, Mapping):
+        return {}
+    record = sources.get(source_id)
+    if not isinstance(record, Mapping):
+        return {}
+    contexts = record.get("character_pick_contexts")
+    if isinstance(contexts, Mapping):
+        return contexts
+    return {}
+
+
+def character_pick_act_rows(
+    cards: Mapping[str, Any],
+    *,
+    source_id: str,
+    character: str,
+    act: str,
+    rarity: str,
+    min_offered: int = CARD_PICK_RANK_MIN_OFFERED,
+) -> list[dict[str, Any]]:
+    """Rank one character x act x rarity Card Reward cohort.
+
+    Only character-pool cards whose act cell recorded at least ``min_offered``
+    offers are ranked (default ``CARD_PICK_RANK_MIN_OFFERED``).  Rows sort by
+    true pick rate (then offered count and card id for stable output).
+    Competition ranks tie only on identical true ratios and skip ahead after
+    a tie.
+    """
+    card_entries = cards.get("cards") if isinstance(cards, Mapping) else None
+    if not isinstance(card_entries, Mapping):
+        return []
+    rows: list[dict[str, Any]] = []
+    for card_id, entry in card_entries.items():
+        if not isinstance(entry, Mapping):
+            continue
+        if entry.get("color") != character or entry.get("rarity") != rarity:
+            continue
+        contexts = _source_character_contexts(entry, source_id)
+        cell = contexts.get(character, {}).get(act)
+        if not isinstance(cell, Mapping):
+            continue
+        offered = cell.get("offered_count")
+        picked = cell.get("picked_count")
+        if not isinstance(offered, int) or not isinstance(picked, int):
+            continue
+        if offered < min_offered:
+            continue
+        rows.append({
+            "card_id": card_id,
+            "offered_count": offered,
+            "picked_count": picked,
+            "pick_rate": picked / offered,
+        })
+    rows.sort(
+        key=lambda row: (-row["pick_rate"], -row["offered_count"], row["card_id"])
+    )
+    cohort_size = len(rows)
+    rank = 0
+    previous_rate = None
+    for index, row in enumerate(rows, start=1):
+        if previous_rate is None or row["pick_rate"] != previous_rate:
+            rank = index
+        row["rank"] = rank
+        row["cohort_size"] = cohort_size
+        previous_rate = row["pick_rate"]
+    return rows
+
+
+def character_pick_rank_contexts(
+    cards: Mapping[str, Any],
+    *,
+    source_id: str,
+    card_id: str,
+    character: str | None = None,
+) -> list[dict[str, Any]]:
+    """Per-act rank rows for one card inside its character cohort.
+
+    ``character`` defaults to the snapshot entry color.  Cards outside the
+    character pools (colorless/shared) or outside reward rarities never rank;
+    an act without a rankable cell is simply omitted so callers render "-".
+    """
+    card_entries = cards.get("cards") if isinstance(cards, Mapping) else None
+    if not isinstance(card_entries, Mapping):
+        return []
+    entry = card_entries.get(card_id)
+    if not isinstance(entry, Mapping):
+        return []
+    color = character or entry.get("color")
+    rarity = entry.get("rarity")
+    if color not in CHARACTER_KEYS or rarity not in RANKABLE_RARITIES:
+        return []
+    rows: list[dict[str, Any]] = []
+    for act in ACTS:
+        cohort = character_pick_act_rows(
+            cards,
+            source_id=source_id,
+            character=color,
+            act=act,
+            rarity=rarity,
+        )
+        for row in cohort:
+            if row["card_id"] == card_id:
+                rows.append({
+                    "act": act,
+                    "rank": row["rank"],
+                    "cohort_size": row["cohort_size"],
+                    "offered_count": row["offered_count"],
+                    "picked_count": row["picked_count"],
+                })
+                break
+    return rows
 
 
 def _finalize_report(report: Mapping[str, Any]) -> dict[str, Any]:
