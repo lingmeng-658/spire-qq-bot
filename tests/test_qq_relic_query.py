@@ -235,8 +235,8 @@ def test_boss_relic_query_condensed(monkeypatch):
 
     assert "=== 添水 · STS1 ===" in reply
     assert "\n\nBoss 遗物\n\n" in reply
-    assert "第一幕 Boss 奖励：\n约37.9%会选，选择率第 1 / 1。" in reply
-    assert "第二幕 Boss 奖励：\n约33.7%会选，选择率第 1 / 1。" in reply
+    assert "第一层 Boss 奖励：\n约37.9%会选，选择率第 1 / 1。" in reply
+    assert "第二层 Boss 奖励：\n约33.7%会选，选择率第 1 / 1。" in reply
     assert "带着它。" not in reply
     assert "击败心脏" not in reply
     for banned in [
@@ -244,8 +244,8 @@ def test_boss_relic_query_condensed(monkeypatch):
         "统计：",
         "37.87",
         "33.69",
-        "第一幕选择率",
-        "第二幕选择率",
+        "第一层选择率",
+        "第二层选择率",
         "选中率",
         "击败每幕 Boss",
         "终局",
@@ -280,8 +280,8 @@ def test_boss_relic_hides_first_acquisition_floor(monkeypatch):
     assert "在有获取记录的对局中" not in reply
     assert "带着它。" not in reply
     assert "Boss奖励出现时：" not in reply
-    assert "第一幕 Boss 奖励：\n约37.9%会选，选择率第 1 / 1。" in reply
-    assert "第二幕 Boss 奖励：\n约33.7%会选，选择率第 1 / 1。" in reply
+    assert "第一层 Boss 奖励：\n约37.9%会选，选择率第 1 / 1。" in reply
+    assert "第二层 Boss 奖励：\n约33.7%会选，选择率第 1 / 1。" in reply
 
 
 # 路由层：中文名直接查询走遗物路由 ---------------------------------------------

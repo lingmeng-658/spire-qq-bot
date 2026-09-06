@@ -163,9 +163,9 @@ def test_boss_relic_query_shows_per_act_choice_rate_and_rank(monkeypatch):
     assert "=== 添水 · STS1 ===" in reply
     assert "\nBoss 遗物\n" in reply
     # Act 1 ranks SOZU 3rd of 4 rankable relics.
-    assert "第一幕 Boss 奖励：\n约40.0%会选，选择率第 3 / 4。" in reply
+    assert "第一层 Boss 奖励：\n约40.0%会选，选择率第 3 / 4。" in reply
     # Act 2 ranks SOZU joint 2nd of 3 (10% ties SLAVERS_COLLAR; RING excluded).
-    assert "第二幕 Boss 奖励：\n约10.0%会选，选择率第 2 / 3。" in reply
+    assert "第二层 Boss 奖励：\n约10.0%会选，选择率第 2 / 3。" in reply
     assert "Boss奖励出现时：" not in reply
     # Presence / heart copy stays out of the default Boss display.
     assert "带着它。" not in reply
@@ -181,5 +181,5 @@ def test_boss_relic_query_hides_low_sample_act_entirely(monkeypatch):
     relic = make_boss_relic(relic_id="ECTOPLASM", name="LowSample")
     reply = str(renderer.render_relic_query_reply([relic]))
 
-    assert "第一幕 Boss 奖励：" not in reply
-    assert "第二幕 Boss 奖励：\n约90.0%会选，选择率第 1 / 1。" in reply
+    assert "第一层 Boss 奖励：" not in reply
+    assert "第二层 Boss 奖励：\n约90.0%会选，选择率第 1 / 1。" in reply

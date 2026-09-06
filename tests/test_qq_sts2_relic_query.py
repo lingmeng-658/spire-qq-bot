@@ -76,7 +76,7 @@ def test_sts2_ancient_choice_line_shows_rate_and_rank():
     body = renderer.render_sts2_ancient_choice_stats(
         relic, make_ancient_choice_snapshot()
     )
-    assert "幻灵 · 第二幕：出现时约77%会选，选择率第1 / 2。" in body
+    assert "幻灵 · 第二层：约77%会选，选择率第1 / 2。" in body
     for banned in ["同级遗物携带率", "携带率", "picks", "presence"]:
         assert banned not in body
 
@@ -120,7 +120,7 @@ def test_generation_suffix_2_renders_sts2_ancient_choice(monkeypatch, tmp_path):
     assert "=== 量子回路 · STS2 ===" in reply
     assert "效果：\n在每回合开始时，获得⚡。" in reply
     assert "\n先古遗物\n" in reply
-    assert "幻灵 · 第二幕：出现时约77%会选，选择率第1 / 2。" in reply
+    assert "幻灵 · 第二层：约77%会选，选择率第1 / 2。" in reply
     for banned in [
         "同级遗物携带率",
         "携带率",

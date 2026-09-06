@@ -370,7 +370,32 @@ def _render_card_layer_board_reply(command):
         request["alias"], request["act"], request["rarity_zh"]
     )
 
-_ANCIENT_BOARD_KEYWORDS = ("\u6392\u884c", "\u6700\u9ad8", "\u6700\u4f4e")
+_BOSS_BOARD_RE = re.compile(r"^boss(?:遗物)?([123])$", re.IGNORECASE)
+
+
+def _parse_boss_board_request(command):
+    """Parse STS1 Boss board entries: Boss1 / Boss2 / Boss 遗物 1 / Boss3.
+
+    Spaces are handled by the global whitespace normalization, so parsing
+    only matches the compact spelling and adds no whitespace regex of its own.
+    """
+    if not isinstance(command, str):
+        return None
+    match = _BOSS_BOARD_RE.fullmatch(command.strip())
+    if match is None:
+        return None
+    return {"act": int(match.group(1))}
+
+
+def _render_boss_board_reply(command):
+    """Render an STS1 Boss choice-rate board command or ``None``."""
+    request = _parse_boss_board_request(command)
+    if request is None:
+        return None
+    if request["act"] == 3:
+        return "Boss 遗物目前只有第一层和第二层的排行数据。"
+    board = qq_renderer.render_sts1_boss_leaderboard(request["act"])
+    return board or "Boss 遗物排行暂时没有可用的数据。"
 
 
 def _ancient_choice_npc_zh(snapshot):
@@ -391,56 +416,44 @@ def _ancient_choice_npc_zh(snapshot):
 
 
 def _parse_ancient_choice_request(snapshot, command):
-    """Parse official-zh-NPC board commands ("NPC2 \u6392\u884c2" style).
+    """Parse official-zh-NPC Ancient board commands.
 
-    Keyword order must be one of: NPC[2] \u6392\u884c[2], NPC[2]
-    \u7b2cX\u5e55 \u6392\u884c, or NPC[2] \u6700\u9ad8 / \u6700\u4f4e.
-    Returns a request dict, a hint string, or None (not a board command)."""
+    Main entries are NPC + layer (达弗2) or a bare NPC (涅奥); 排行 may still
+    follow for compatibility (达弗2排行).  最高/最低 are no longer board
+    routes.  Returns a request dict or None (not a board command).
+    """
     if not command:
         return None
     zh_to_id = _ancient_choice_npc_zh(snapshot)
     if not zh_to_id:
         return None
     npc_pattern = "|".join(re.escape(zh) for zh in sorted(zh_to_id, key=len, reverse=True))
-    keyword_pattern = "|".join(re.escape(kw) for kw in _ANCIENT_BOARD_KEYWORDS)
-    act_word_pattern = "|".join(re.escape(zh) for zh in ACT_ZH.values())
     act_word_number = {zh: act for act, zh in ACT_ZH.items()}
-    keyword_kind = {"\u6392\u884c": "full", "\u6700\u9ad8": "top", "\u6700\u4f4e": "bottom"}
+    act_word_pattern = "|".join(re.escape(zh) for zh in ACT_ZH.values())
     board_form = re.compile(
-        rf"^(?P<npc>{npc_pattern})(?P<suffix>[123])?\s*"
-        rf"(?P<kw>{keyword_pattern})\s*(?P<act>[123])?$"
+        rf"^(?P<npc>{npc_pattern})(?P<suffix>[123])?(?:排行(?P<kwact>[123])?)?$"
     )
-    match = board_form.fullmatch(command)
+    match = board_form.fullmatch(command.strip())
     if match is not None:
-        act_raw = match.group("act")
+        kwact = match.group("kwact")
+        suffix = match.group("suffix")
+        act = int(kwact) if kwact else (int(suffix) if suffix else None)
         return {
             "npc_id": zh_to_id[match.group("npc")],
             "npc_zh": match.group("npc"),
-            "kind": keyword_kind[match.group("kw")],
-            "act": int(act_raw) if act_raw else None,
+            "act": act,
         }
     act_form = re.compile(
-        rf"^(?P<npc>{npc_pattern})(?P<suffix>[123])?\s*"
-        rf"(?P<actword>{act_word_pattern})\s*(?P<kw>{keyword_pattern})$"
+        rf"^(?P<npc>{npc_pattern})(?P<suffix>[123])?"
+        rf"(?P<actword>{act_word_pattern})排行$"
     )
-    match = act_form.fullmatch(command)
+    match = act_form.fullmatch(command.strip())
     if match is not None:
         return {
             "npc_id": zh_to_id[match.group("npc")],
             "npc_zh": match.group("npc"),
-            "kind": keyword_kind[match.group("kw")],
             "act": act_word_number[match.group("actword")],
         }
-    hint_form = re.compile(
-        rf"^(?P<npc>{npc_pattern})(?P<suffix>[123])?\s*"
-        rf"(?P<kw>{keyword_pattern})\s*(?P<actword>{act_word_pattern})$"
-    )
-    match = hint_form.fullmatch(command)
-    if match is not None:
-        return (
-            "\u5e55\u6570\u8bf7\u76f4\u63a5\u5199\u5728\u6307\u6807\u540e\uff1a\n"
-            f"{match.group('npc')}{match.group('suffix') or ''} {match.group('kw')}{act_word_number[match.group('actword')]}"
-        )
     return None
 
 
@@ -450,22 +463,15 @@ def _render_ancient_choice_leaderboard_reply(command):
     request = _parse_ancient_choice_request(snapshot, (command or "").strip())
     if request is None:
         return None
-    if isinstance(request, str):
-        return request
     board = qq_renderer.render_ancient_choice_leaderboard(
         request["npc_id"],
         request["act"],
-        request["kind"],
         snapshot=snapshot,
     )
     if board is not None:
         return board
-    if request["act"] is None:
-        return f"{request['npc_zh']}\u8fd8\u6ca1\u6709\u53ef\u7528\u7684\u9009\u62e9\u6570\u636e\u3002"
-    return (
-        f"{request['npc_zh']}\u8fd8\u6ca1\u6709"
-        f"{ACT_ZH[request['act']]}\u7684\u9009\u62e9\u6570\u636e\u3002"
-    )
+    return f"{request['npc_zh']}还没有可用的选择数据。"
+
 def _load_query_cards():
     return load_cards("sts1") + load_cards("sts2")
 
@@ -712,8 +718,6 @@ def _short_leaderboard_shape(text):
 
 
 def _ancient_board_shape(text):
-    if not any(keyword in text for keyword in _ANCIENT_BOARD_KEYWORDS):
-        return False
     snapshot = qq_renderer.load_sts2_ancient_choice_stats()
     return _parse_ancient_choice_request(snapshot, text) is not None
 
@@ -733,6 +737,8 @@ def _command_kind(text):
         return 2
     if text.startswith("榜单"):
         return 2 if re.fullmatch(r"榜单([12])(?:\s+.*)?", text) is not None else 0
+    if _parse_boss_board_request(text) is not None:
+        return 2
     if _parse_card_layer_rarity_request(text) is not None:
         return 2
     if _short_leaderboard_shape(text):
@@ -770,6 +776,10 @@ def route_group_command(group_id, text):
 
     if command.startswith("榜单"):
         return RenderedReply(_render_leaderboard_reply(command))
+
+    boss_board = _render_boss_board_reply(command)
+    if boss_board is not None:
+        return RenderedReply(boss_board)
 
     layer_board = _render_card_layer_board_reply(command)
     if layer_board is not None:

@@ -12,14 +12,14 @@ from card_guess.cards import (
 )
 from card_guess.leaderboard import is_win_delta_eligible
 from card_guess.puzzle import format_pool, format_rarity, format_type
-from card_guess.relic_stats import boss_choice_rank_contexts
+from card_guess.relics import load_relics
+from card_guess.relic_stats import boss_choice_act_rows, boss_choice_rank_contexts
 from card_guess.sts1_card_stats import (
     SOURCE_ID as STS1_SOURCE_ID,
     character_pick_rank_contexts,
 )
 from card_guess.sts1_snapshot import COHORT_ASC7PLUS
 from card_guess.sts2_ancient_choice import (
-    ACT_ZH,
     leaderboard_contexts,
     leaderboard_npc_acts,
     rankable_contexts_for_relic,
@@ -342,7 +342,45 @@ def _relic_tier_display(relic):
     return _RELIC_TIER_LABELS.get(tier.lower(), tier)
 
 
-RELIC_ACT_LABELS = (("act1", "第一幕"), ("act2", "第二幕"))
+RELIC_ACT_LABELS = (("act1", "第一层"), ("act2", "第二层"))
+
+RELIC_COHORT_ACT_ZH = {1: "第一层", 2: "第二层", 3: "第三层"}
+
+
+def load_sts1_relic_zh_names():
+    """Map every STS1 relic id to its official Chinese catalog name."""
+    names = {}
+    for relic in load_relics("sts1"):
+        relic_id = str(relic.get("id") or "").strip()
+        name = str(relic.get("name") or "").strip()
+        if relic_id and name:
+            names[relic_id] = name
+    return names
+
+
+def render_sts1_boss_leaderboard(act, snapshot=None):
+    """Render one STS1 act's complete Boss-relic choice-rate board.
+
+    Reuses ``boss_choice_act_rows`` (competition ranks, low-sample floor, no
+    Top N truncation) and never exposes denominator or sample fields.
+    """
+    if snapshot is None:
+        snapshot = load_sts1_relic_stats()
+    act_key = {1: "act1", 2: "act2"}.get(act)
+    if act_key is None:
+        return None
+    act_zh = {1: "第一层", 2: "第二层"}[act]
+    rows = boss_choice_act_rows(snapshot, act_key)
+    names = load_sts1_relic_zh_names()
+    lines = [f"{act_zh} Boss 遗物选择率排行"]
+    for row in rows:
+        name = names.get(str(row.get("relic_id") or ""))
+        if not name:
+            continue
+        lines.append(f"{row['rank']}. {name} —— {row['pick_rate']:.1f}%")
+    if len(lines) == 1:
+        lines.append("（该层暂无可排名的 Boss 遗物）")
+    return "\n".join(lines)
 
 
 def _boss_act_choice_paragraph(context, act_label):
@@ -441,19 +479,24 @@ def _resolve_ancient_npc_id(snapshot, npc_name_or_zh):
     return None
 
 
-def _render_ancient_act_prompt(npc_name_zh, acts):
-    options = " / ".join(ACT_ZH[act] for act in sorted(acts))
-    example_act = min(acts)
-    example = f"{npc_name_zh}{example_act} \u6392\u884c{example_act}"
-    return (
-        f"{npc_name_zh} \u5728{options}\u90fd\u6709\u9009\u62e9\u6570\u636e\uff0c"
-        f"\u8bf7\u5148\u6307\u5b9a\u5e55\u6570\u518d\u67e5\u3002\n"
-        f"\u793a\u4f8b\uff1a{example}"
-    )
+def _ancient_available_layers_text(npc_zh, acts):
+    """Short valid-layer hint for bare or invalid NPC+layer Ancient entries."""
+    if len(acts) == 1:
+        act = acts[0]
+        return (
+            f"{npc_zh}目前只有{RELIC_COHORT_ACT_ZH[act]}的数据。\n"
+            f"可发送：{npc_zh}"
+        )
+    options = "\n".join(f"{npc_zh}{act}" for act in sorted(acts))
+    return f"{npc_zh}有多个可查询层：\n{options}"
 
 
 def render_ancient_choice_leaderboard(npc_name_or_zh, act, kind="full", snapshot=None):
-    """Render one NPC x act Ancient choice board (top / bottom / full)."""
+    """Render one NPC's full Ancient choice-rate board (layer wording).
+
+    A bare NPC resolves automatically when it has exactly one rankable act;
+    multi-act NPCs without a valid requested act receive a short layer hint.
+    """
     if snapshot is None:
         snapshot = load_sts2_ancient_choice_stats()
     choice = _ancient_choice_block(snapshot)
@@ -473,32 +516,23 @@ def render_ancient_choice_leaderboard(npc_name_or_zh, act, kind="full", snapshot
         if len(acts) == 1:
             act = acts[0]
         else:
-            return _render_ancient_act_prompt(npc_zh, acts)
-    elif act not in acts and len(acts) == 1:
-        act = acts[0]
-    elif act not in acts:
-        return None
+            return _ancient_available_layers_text(npc_zh, acts)
+    if act not in acts:
+        return _ancient_available_layers_text(npc_zh, acts)
     contexts = leaderboard_contexts(snapshot, npc_id, act)
     if not contexts:
         return None
-    rows = list(contexts)
-    act_label = ACT_ZH.get(act, f"{act}")
-    header = f"{npc_zh} \u00b7 {act_label}\u9009\u62e9\u6392\u884c"
-    if kind == "top":
-        header = f"{header} \u00b7 \u6700\u9ad8 5"
-        rows = rows[:5]
-    elif kind == "bottom":
-        header = f"{header} \u00b7 \u6700\u4f4e 5"
-        rows = rows[-5:]
     relic_names = choice.get("relic_names_zh")
     relic_names = relic_names if isinstance(relic_names, dict) else {}
+    act_label = RELIC_COHORT_ACT_ZH[act]
+    header = f"{npc_zh} · {act_label} Ancient 遗物选择率排行"
     body = []
-    for context in rows:
+    for context in contexts:
         relic_zh = relic_names.get(context.get("relic_id"))
         if not isinstance(relic_zh, str) or not relic_zh:
             continue
         body.append(
-            f"{context['rank']}. {relic_zh} \u2014\u2014 {context['picked_rate']}%"
+            f"{context['rank']}. {relic_zh} —— {context['picked_rate']}%"
         )
     if not body:
         return None
@@ -520,15 +554,16 @@ def render_sts2_ancient_choice_stats(relic, snapshot):
         if not isinstance(npc_zh, str) or not npc_zh:
             continue
         act = context.get("act")
-        act_label = ACT_ZH.get(act, "") if isinstance(act, int) else ""
+        act_label = RELIC_COHORT_ACT_ZH.get(act, "") if isinstance(act, int) else ""
         if not act_label:
             continue
         lines.append(
-            f"{npc_zh} \u00b7 {act_label}\uff1a"
-            f"\u51fa\u73b0\u65f6\u7ea6{context['picked_rate']}%\u4f1a\u9009\uff0c"
-            f"\u9009\u62e9\u7387\u7b2c{context['rank']} / {context['cohort_size']}\u3002"
+            f"{npc_zh} · {act_label}：约{context['picked_rate']}%会选，"
+            f"选择率第{context['rank']} / {context['cohort_size']}。"
         )
     return "\n".join(lines)
+
+
 def render_relic_candidates(name, relics):
     lines = [f"找到 {len(relics)} 个同名遗物“{name}”："]
     for relic in relics:

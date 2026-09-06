@@ -1,16 +1,17 @@
+﻿# -*- coding: utf-8 -*-
 """QQ leaderboard & single-relic display tests for STS2 Ancient choice stats.
 
-Leaderboard command routing is exercised with the official NPC names
-(达弗/涅奥) and fictional relic ids with fictional official-style Chinese
-names; every snapshot is monkeypatched, so the tests never touch the network
-or real run data.
+The Ancient entry is now NPC + layer (达弗2 / 涅奥) with full-cohort boards;
+排行 stays as a compatibility suffix and 最高/最低 no longer route to a
+leaderboard.  All NPCs, relic ids, and Chinese names below are fictional
+fixtures so no network or real run data is touched.
 """
 
 from __future__ import annotations
 
 import pytest
 
-from card_guess.qq import bot, renderer
+from card_guess.qq import bot, renderer, sessions
 from card_guess.qq.renderer import RenderedReply
 from card_guess.sts2_ancient_choice import build_sts2_ancient_choice_snapshot
 
@@ -22,7 +23,6 @@ RELIC_ZH = {
     "F_E": "幻想遗物戊",
     "F_F": "幻想遗物己",
 }
-NPC_ZH = {"DARV": "达弗", "NEOW": "涅奥", "ZZZ": None}
 
 
 def _row(relic_id, npc_id, act, offered, picked):
@@ -83,6 +83,11 @@ def make_relic(relic_id="F_A", tier="Ancient"):
     }
 
 
+@pytest.fixture(autouse=True)
+def idle_session(monkeypatch):
+    monkeypatch.setattr(sessions, "get", lambda group_id: None)
+
+
 # Leaderboard rendering -------------------------------------------------------
 
 def test_full_leaderboard_shows_rank_zh_name_and_rate():
@@ -90,74 +95,64 @@ def test_full_leaderboard_shows_rank_zh_name_and_rate():
         "DARV", 2, "full", snapshot=_darv_snapshot()
     )
     assert board is not None
-    assert board.splitlines()[0] == "达弗 · 第二幕选择排行"
+    assert board.splitlines()[0] == "达弗 · 第二层 Ancient 遗物选择率排行"
     assert "1. 幻想遗物甲 —— 58%" in board
     assert "6. 幻想遗物己 —— 21%" in board
     for banned in ["F_A", "DARV", "relic_id", "offered", "picked_rate", "rank"]:
         assert banned not in board
 
 
-def test_top_leaderboard_defaults_to_five():
+def test_full_leaderboard_is_complete_cohort_not_top_n():
     board = renderer.render_ancient_choice_leaderboard(
-        "DARV", 2, "top", snapshot=_darv_snapshot()
-    )
-    lines = board.splitlines()
-    assert "达弗 · 第二幕选择排行 · 最高 5" in lines[0]
-    rows = [line for line in lines[1:] if line.strip()]
-    assert len(rows) == 5
-    assert rows[0] == "1. 幻想遗物甲 —— 58%"
-    assert rows[-1] == "5. 幻想遗物戊 —— 30%"
-
-
-def test_bottom_leaderboard_defaults_to_five():
-    board = renderer.render_ancient_choice_leaderboard(
-        "DARV", 2, "bottom", snapshot=_darv_snapshot()
-    )
-    lines = board.splitlines()
-    assert "达弗 · 第二幕选择排行 · 最低 5" in lines[0]
-    rows = [line for line in lines[1:] if line.strip()]
-    assert rows[0] == "2. 幻想遗物乙 —— 53%"
-    assert rows[-1] == "6. 幻想遗物己 —— 21%"
-
-
-def test_bottom_leaderboard_takes_last_five_of_full_ranking():
-    full = renderer.render_ancient_choice_leaderboard(
         "DARV", 2, "full", snapshot=_darv_snapshot()
     )
-    bottom = renderer.render_ancient_choice_leaderboard(
-        "DARV", 2, "bottom", snapshot=_darv_snapshot()
+    rows = [line for line in board.splitlines()[1:] if line.strip()]
+    assert len(rows) == 6
+    assert "Top" not in board and "最高" not in board and "最低" not in board
+
+
+def test_full_leaderboard_third_layer_cohort():
+    board = renderer.render_ancient_choice_leaderboard(
+        "DARV", 3, "full", snapshot=_darv_snapshot()
     )
-    full_rows = [line for line in full.splitlines()[1:] if line.strip()]
-    bottom_rows = [line for line in bottom.splitlines()[1:] if line.strip()]
-    assert bottom_rows == full_rows[-5:]
+    assert board.splitlines()[0] == "达弗 · 第三层 Ancient 遗物选择率排行"
+    rows = [line for line in board.splitlines()[1:] if line.strip()]
+    assert rows == ["1. 幻想遗物甲 —— 54%", "2. 幻想遗物乙 —— 53%"]
 
 
 def test_leaderboard_does_not_mix_acts():
     board = renderer.render_ancient_choice_leaderboard(
         "DARV", 2, "full", snapshot=_darv_snapshot()
     )
-    assert "第三幕" not in board
+    assert "第三层" not in board and "第三幕" not in board
     rows = [line for line in board.splitlines()[1:] if line.strip()]
     assert len(rows) == 6
 
 
 def test_leaderboard_auto_resolves_single_act_npc():
     board = renderer.render_ancient_choice_leaderboard(
-        "NEOW", None, "top", snapshot=_neow_snapshot()
+        "NEOW", None, "full", snapshot=_neow_snapshot()
     )
-    assert "涅奥 · 第一幕选择排行 · 最高 5" in board
+    assert "涅奥 · 第一层 Ancient 遗物选择率排行" in board
     assert "1. 幻想遗物甲 —— 76%" in board
 
 
-def test_leaderboard_multiact_npc_without_act_asks_for_act():
+def test_leaderboard_multiact_npc_without_act_returns_layers_hint():
     board = renderer.render_ancient_choice_leaderboard(
         "DARV", None, "full", snapshot=_darv_snapshot()
     )
-    assert "达弗" in board
-    assert "第二幕" in board and "第三幕" in board
-    assert "达弗2 排行2" in board
-    for banned in ["DARV", "F_A", "relic_id"]:
-        assert banned not in board
+    assert board == "达弗有多个可查询层：\n达弗2\n达弗3"
+
+
+def test_leaderboard_invalid_act_returns_layers_hint():
+    board = renderer.render_ancient_choice_leaderboard(
+        "DARV", 1, "full", snapshot=_darv_snapshot()
+    )
+    assert board == "达弗有多个可查询层：\n达弗2\n达弗3"
+    board = renderer.render_ancient_choice_leaderboard(
+        "NEOW", 2, "full", snapshot=_neow_snapshot()
+    )
+    assert board == "涅奥目前只有第一层的数据。\n可发送：涅奥"
 
 
 def test_leaderboard_unresolved_npc_zh_never_leaks_english_id():
@@ -178,16 +173,16 @@ def test_leaderboard_unresolved_npc_zh_never_leaks_english_id():
 def test_single_relic_choice_line_shows_rate_and_rank():
     relic = make_relic("F_E", tier="Ancient")
     text = renderer.render_sts2_ancient_choice_stats(relic, _darv_snapshot())
-    assert "达弗 · 第二幕：出现时约30%会选，选择率第5 / 6。" in text
-    for banned in ["同级遗物携带率", "携带率", "picks", "presence"]:
+    assert "达弗 · 第二层：约30%会选，选择率第5 / 6。" in text
+    for banned in ["同级遗物携带率", "携带率", "picks", "presence", "出现时"]:
         assert banned not in text
 
 
 def test_single_relic_multiact_shows_each_context():
     relic = make_relic("F_A", tier="Ancient")
     text = renderer.render_sts2_ancient_choice_stats(relic, _darv_snapshot())
-    assert "达弗 · 第二幕：出现时约58%会选，选择率第1 / 6。" in text
-    assert "达弗 · 第三幕：出现时约54%会选，选择率第1 / 2。" in text
+    assert "达弗 · 第二层：约58%会选，选择率第1 / 6。" in text
+    assert "达弗 · 第三层：约54%会选，选择率第1 / 2。" in text
 
 
 def test_single_relic_without_choice_data_returns_empty():
@@ -203,7 +198,7 @@ def test_sts2_relic_query_reply_no_longer_shows_presence_rank(monkeypatch):
     relic = make_relic("F_A", tier="Ancient")
     patch_loader(monkeypatch, _darv_snapshot())
     reply = renderer.render_relic_query_reply([relic])
-    assert "达弗 · 第二幕：出现时约58%会选，选择率第1 / 6。" in reply
+    assert "达弗 · 第二层：约58%会选，选择率第1 / 6。" in reply
     assert "=== 幻想遗物甲 · STS2 ===" in reply
     assert "先古遗物" in reply
     for banned in ["同级遗物携带率", "携带率", "picks", "presence", "sample_size"]:
@@ -224,43 +219,72 @@ def test_sts2_relic_query_non_ancient_has_no_stats_paragraph(monkeypatch):
 
 def test_bot_full_leaderboard_command(monkeypatch):
     patch_loader(monkeypatch, _darv_snapshot())
-    reply = bot.route_group_command(101, "达弗2 排行2")
+    reply = bot.route_group_command(101, "达弗2")
     assert isinstance(reply, RenderedReply)
-    assert "达弗 · 第二幕选择排行" in reply
+    assert "达弗 · 第二层 Ancient 遗物选择率排行" in reply
     assert "1. 幻想遗物甲 —— 58%" in reply
-
-
-def test_bot_top_command_auto_act_for_single_act_npc(monkeypatch):
-    patch_loader(monkeypatch, _neow_snapshot())
-    reply = bot.route_group_command(101, "涅奥2 最高")
-    assert isinstance(reply, RenderedReply)
-    assert "涅奥 · 第一幕选择排行 · 最高 5" in reply
-
-
-def test_bot_bottom_command_word_act(monkeypatch):
-    patch_loader(monkeypatch, _darv_snapshot())
-    reply = bot.route_group_command(101, "达弗 第三幕 最低")
-    assert isinstance(reply, RenderedReply)
-    assert "达弗 · 第三幕选择排行 · 最低 5" in reply
     rows = [line for line in reply.splitlines()[1:] if line.strip()]
-    assert rows == ["1. 幻想遗物甲 —— 54%", "2. 幻想遗物乙 —— 53%"]
+    assert len(rows) == 6
 
 
-def test_bot_multiact_npc_without_act_prompts_for_act(monkeypatch):
+def test_bot_third_layer_leaderboard_command(monkeypatch):
     patch_loader(monkeypatch, _darv_snapshot())
-    reply = bot.route_group_command(101, "达弗2 排行")
+    reply = bot.route_group_command(101, "达弗3")
     assert isinstance(reply, RenderedReply)
-    assert "第二幕" in reply and "第三幕" in reply
-    assert "达弗2 排行2" in reply
-    for banned in ["DARV", "F_A"]:
-        assert banned not in reply
+    assert "达弗 · 第三层 Ancient 遗物选择率排行" in reply
+    assert "2. 幻想遗物乙 —— 53%" in reply
 
 
-def test_bot_near_miss_act_phrasing_gets_hint(monkeypatch):
+def test_bot_single_act_npc_bare_name_returns_board(monkeypatch):
+    patch_loader(monkeypatch, _neow_snapshot())
+    reply = bot.route_group_command(101, "涅奥")
+    assert isinstance(reply, RenderedReply)
+    assert "涅奥 · 第一层 Ancient 遗物选择率排行" in reply
+    assert "1. 幻想遗物甲 —— 76%" in reply
+    assert "涅奥1" not in reply
+
+
+def test_bot_multiact_npc_bare_name_prompts_for_layer(monkeypatch):
+    patch_loader(monkeypatch, _darv_snapshot())
+    reply = bot.route_group_command(101, "达弗")
+    assert str(reply) == "达弗有多个可查询层：\n达弗2\n达弗3"
+
+
+def test_bot_paihang_suffix_is_compatible_with_main_entry(monkeypatch):
+    patch_loader(monkeypatch, _darv_snapshot())
+    main = str(bot.route_group_command(101, "达弗2"))
+    compat = str(bot.route_group_command(101, "达弗2 排行2"))
+    assert compat == main
+    assert str(bot.route_group_command(101, "达弗2排行")) == main
+
+
+def test_bot_npc_invalid_layer_gets_short_hint(monkeypatch):
+    patch_loader(monkeypatch, _darv_snapshot())
+    reply = bot.route_group_command(101, "达弗1")
+    assert str(reply) == "达弗有多个可查询层：\n达弗2\n达弗3"
+    patch_loader(monkeypatch, _neow_snapshot())
+    reply = bot.route_group_command(101, "涅奥2")
+    assert str(reply) == "涅奥目前只有第一层的数据。\n可发送：涅奥"
+
+
+@pytest.mark.parametrize(
+    "command",
+    ["达弗2最高", "达弗2 最高", "达弗2最低", "达弗2 最低", "达弗 第三幕 最低"],
+)
+def test_bot_top_and_bottom_no_longer_route_to_leaderboard(monkeypatch, command):
+    patch_loader(monkeypatch, _darv_snapshot())
+    reply = bot.route_group_command(101, command)
+    text = str(reply)
+    assert "选择排行" not in text
+    assert "最高 5" not in text and "最低 5" not in text
+    assert "当前没有进行中的游戏" in text
+
+
+def test_bot_act_word_after_keyword_is_not_a_board(monkeypatch):
     patch_loader(monkeypatch, _darv_snapshot())
     reply = bot.route_group_command(101, "达弗2 排行 第二幕")
-    assert isinstance(reply, RenderedReply)
-    assert "达弗2 排行2" in reply
+    assert "选择排行" not in str(reply)
+    assert "当前没有进行中的游戏" in str(reply)
 
 
 def test_unrelated_messages_are_not_swallowed_by_npc_commands(monkeypatch):
