@@ -225,7 +225,7 @@ def test_boss3_returns_safe_hint_without_fake_board(monkeypatch):
 def test_boss_board_is_complete_cohort_not_top_n(monkeypatch):
     snapshot, zh = full_boss_snapshot()
     patch_boss(monkeypatch, snapshot, zh)
-    reply = bot.route_group_command(101, "Boss 遗物 1")
+    reply = bot.route_group_command(101, "Boss1")
     text = str(reply)
     rows = [line for line in text.splitlines()[1:] if line.strip()]
     assert len(rows) == 6
@@ -331,12 +331,11 @@ def test_npc_invalid_layer_gets_valid_layer_hint(monkeypatch):
 
 # 12-14. Old Ancient syntax ----------------------------------------------------
 
-def test_darv2_paihang_old_syntax_stays_compatible(monkeypatch):
+def test_darv2_paihang_old_syntax_no_longer_routes(monkeypatch):
     patch_ancient(monkeypatch, darv_snapshot())
-    main = str(bot.route_group_command(101, "达弗2"))
-    compat = str(bot.route_group_command(101, "达弗2排行"))
-    assert compat == main
-    assert "达弗 · 第二层 Ancient 遗物选择率排行" in compat
+    reply = str(bot.route_group_command(101, "达弗2排行"))
+    assert reply == bot.UNKNOWN_COMMAND_REPLY
+    assert "Ancient 遗物选择率排行" not in reply
 
 
 @pytest.mark.parametrize("command", ["达弗2最高", "达弗2 最高", "达弗2最低", "达弗2 最低"])
@@ -346,7 +345,7 @@ def test_ancient_top_and_bottom_no_longer_enter_leaderboard(monkeypatch, command
     text = str(reply)
     assert "选择排行" not in text
     assert "最高 5" not in text and "最低 5" not in text
-    assert "当前没有进行中的游戏" in text
+    assert text == bot.UNKNOWN_COMMAND_REPLY
 
 
 # 15-16. STS2 Ancient single relic copy -----------------------------------------
@@ -397,11 +396,12 @@ def test_relic_query_reply_keeps_image_path(monkeypatch):
 def test_boss_spaced_spelling_equals_compact(monkeypatch):
     snapshot, zh = full_boss_snapshot()
     patch_boss(monkeypatch, snapshot, zh)
-    assert str(bot.route_group_command(101, "Boss 遗物 1")) == str(
-        bot.route_group_command(101, "Boss1")
-    )
     assert str(bot.route_group_command(101, "Boss1")) == str(
         bot.route_group_command(101, "BOSS 1")
+    )
+    assert (
+        str(bot.route_group_command(101, "Boss遗物1"))
+        == bot.UNKNOWN_COMMAND_REPLY
     )
 
 
@@ -410,8 +410,13 @@ def test_ancient_spaced_spelling_equals_compact(monkeypatch):
     assert str(bot.route_group_command(101, "达弗 2")) == str(
         bot.route_group_command(101, "达弗2")
     )
-    assert str(bot.route_group_command(101, "达弗2 排行")) == str(
-        bot.route_group_command(101, "达弗2排行")
+    assert (
+        str(bot.route_group_command(101, "达弗2 排行"))
+        == bot.UNKNOWN_COMMAND_REPLY
+    )
+    assert (
+        str(bot.route_group_command(101, "达弗2排行"))
+        == bot.UNKNOWN_COMMAND_REPLY
     )
 
 

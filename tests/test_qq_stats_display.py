@@ -179,7 +179,7 @@ def test_sts2_default_shows_compact_stat_block(monkeypatch):
 
     assert "卡牌奖励：第一/二/三层 86% / 60% / 55% 会选" in reply
     assert "商店：37% / 44% / 44% 会买" in reply
-    assert "铁匠铺：25% / 14% / 10% 会升级" in reply
+    assert "休息时：25% / 14% / 10% 会敲牌" in reply
     assert "胜率关联：+2 / +1 / -2 个百分点" in reply
     assert "样本：第一/二/三层 4k / 15k / 7.4k 次" in reply
     assert "数据来源：Untapped" not in reply
@@ -333,7 +333,7 @@ def test_sts2_single_card_query_includes_compact_stats(monkeypatch):
     assert "=== 二代统计 ===" not in reply
     assert "卡牌奖励：第一/二/三层 86% / 60% / 55% 会选" in reply
     assert "商店：37% / 44% / 44% 会买" in reply
-    assert "铁匠铺：25% / 14% / 10% 会升级" in reply
+    assert "休息时：25% / 14% / 10% 会敲牌" in reply
     assert "胜率关联：+2 / +1 / -2 个百分点" in reply
     assert "样本：第一/二/三层 4k / 15k / 7.4k 次" in reply
     assert "数据来源：Untapped" not in reply

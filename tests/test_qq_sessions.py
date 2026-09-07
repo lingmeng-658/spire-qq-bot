@@ -169,9 +169,11 @@ def test_route_help_returns_fixed_text_and_does_not_change_active_session(monkey
 
     reply1 = bot.route_group_command(123, "帮助")
     reply2 = bot.route_group_command(123, "help")
+    reply3 = bot.route_group_command(123, "功能")
 
     assert reply1 == bot.HELP_TEXT
     assert reply2 == bot.HELP_TEXT
+    assert reply3 == bot.HELP_TEXT
     assert sessions.get(123) is fake_game
 
 
@@ -180,102 +182,67 @@ def test_route_help_guess_subcommand(monkeypatch):
 
     reply = bot.route_group_command(123, "帮助 猜卡")
 
-    assert "开始 = 一二代混合" in reply
-    assert "开始1 = 只猜一代" in reply
-    assert "开始2 = 只猜二代" in reply
-    assert "指定题库" in reply
-    assert "开始 猎宝" in reply
+    assert "正式命令：" in reply
+    assert "开始 / 结束" in reply
     assert "开始2 骨妹" in reply
-    assert "猜测：直接发送卡名或描述片段" in reply
-    assert "结束：发送 结束" in reply
-    assert "提示：猜错累计后会自动揭示稀有度、描述、卡名等提示" in reply
+    assert "开始1 无色" in reply
     assert "猜卡进行中" in reply
     assert "普通输入只作为猜测" in reply
-    assert "完整卡名 + 1/2 可临时查卡" in reply
+    assert "想强制查询时用 卡名1 / 卡名2" in reply
+    for banned in ("猜词", "猜谜", "开局", "开始游戏", "end"):
+        assert banned not in reply
 
 
 def test_route_help_query_subcommand(monkeypatch):
     from card_guess.qq import bot
 
-    reply = bot.route_group_command(123, "帮助 查卡")
+    reply = bot.route_group_command(123, "帮助 查询")
 
-    assert "直接发送完整卡名即可查卡" in reply
-    assert "愤怒 → 提示选择一代/二代" in reply
-    assert "愤怒1 → 查一代" in reply
-    assert "愤怒2 → 查二代" in reply
-    assert "打击2 → 列出二代各角色版本" in reply
-    assert "打击2 铁甲战士 → 查对应角色版本" in reply
-    assert "猜卡进行中" in reply
-    assert "普通卡名仍作为猜测" in reply
-    assert "完整卡名 + 1/2（可加角色）才作为显式查卡" in reply
-    assert "胜率差样本过少时不展示。" in reply
+    assert "直接发卡名或遗物名即可查询" in reply
+    assert "只在某一代存在 → 直接查询" in reply
+    assert "两代同名 → 提示加 1 / 2" in reply
+    assert "空格可以忽略" in reply
+    assert "不讲拼音 / 模糊匹配" in reply
 
 
-def test_route_help_pools_subcommand(monkeypatch):
+def test_route_help_rank_subcommand(monkeypatch):
     from card_guess.qq import bot
 
-    reply = bot.route_group_command(123, "帮助 题库")
+    reply = bot.route_group_command(123, "帮助 排行")
 
-    assert "不写1/2 = 一二代混合" in reply
-    assert "写1/2 = 只使用对应代际" in reply
-    assert "STS1：" in reply
-    assert "铁甲战士（战士/战士哥）" in reply
-    assert "静默猎手（猎宝/猎豹）" in reply
-    assert "故障机器人（鸡煲/机宝）" in reply
-    assert "观者（紫皮）" in reply
-    assert "STS2：" in reply
-    assert "死灵契约师（亡灵契约师/骨妹）" in reply
-    assert "摄政王（储君）" in reply
-    assert "无色（无色牌） / 事件（事件牌）" in reply
-    assert "任务（任务牌） / 衍生（衍生牌）" in reply
-    assert "开始1猎宝 / 开始 1 猎宝 / 开始   2   无色" in reply
+    assert "观者1" in reply
+    assert "观者1普通" in reply
+    assert "Boss1" in reply
+    assert "Boss2" in reply
+    assert "先古遗民" in reply
+    assert "达弗2" in reply
+    assert "涅奥" in reply
+    assert "上面的数字均表示第几层。" in reply
+    for banned in ("抓取", "胜率", "榜单", "终局", "Top"):
+        assert banned not in reply
 
 
-def test_route_help_leaderboard_subcommand(monkeypatch):
+def test_route_old_help_subcommands_are_not_formal(monkeypatch):
     from card_guess.qq import bot
 
-    reply = bot.route_group_command(123, "帮助 榜单")
-
-    assert "=== 帮助 榜单 ===" in reply
-    assert "猎宝1 抓取" in reply
-    assert "猎宝1 抓取2" in reply
-    assert "战士1 胜率3" in reply
-    assert "骨妹2 抓取1" in reply
-    assert "STS1：" in reply
-    assert "抓取 / 胜率 = 全局（1-50 层全部奖励）" in reply
-    assert "抓取1/2/3、胜率1/2/3 = 各幕" in reply
-    assert "STS2：" in reply
-    assert "暂不支持可靠全局口径（无数字会提示）" in reply
-    assert "胜率差样本过少时不展示。" in reply
-    assert "旧命令（榜单1/2 …）仍兼容。" in reply
-    assert "终局" not in reply
-    assert "榜单2 骨妹 终局" not in reply
-
-
-def test_route_help_top_level_mentions_leaderboard(monkeypatch):
-    from card_guess.qq import bot
-
-    reply = bot.route_group_command(123, "帮助")
-
-    assert "榜单/数据排行：" in reply
-    assert "猎宝1 抓取" in reply
-    assert "战士1 胜率3" in reply
-    assert "骨妹2 抓取1" in reply
-    assert "STS1 无数字 = 全局；STS2 仅 1/2/3 幕" in reply
-    assert "帮助 榜单" in reply
-    assert "终局" not in reply
+    for command in ("帮助 查卡", "帮助 题库", "帮助 榜单"):
+        reply = bot.route_group_command(123, command)
+        assert "没有子帮助" in reply
+        assert "=== 帮助" not in reply
 
 
 def test_route_help_unknown_subcommand_lists_options(monkeypatch):
     from card_guess.qq import bot
 
-    reply = bot.route_group_command(123, "\u5e2e\u52a9 abc")
+    reply = bot.route_group_command(123, "帮助 abc")
 
     assert "abc" in reply
-    assert "\u731c\u5361" in reply
-    assert "\u67e5\u5361" in reply
-    assert "\u9898\u5e93" in reply
-    assert "\u699c\u5355" in reply
+    assert "猜卡" in reply
+    assert "查询" in reply
+    assert "排行" in reply
+    assert "查卡" not in reply
+    assert "题库" not in reply
+    assert "榜单" not in reply
 
 
 def test_route_replies_when_no_game_is_running(monkeypatch):
@@ -285,7 +252,7 @@ def test_route_replies_when_no_game_is_running(monkeypatch):
 
     reply = bot.route_group_command(123, "hello")
 
-    assert reply == "当前没有进行中的游戏"
+    assert reply == bot.UNKNOWN_COMMAND_REPLY
 
 
 def test_route_rejects_duplicate_start_commands(monkeypatch):
@@ -294,9 +261,9 @@ def test_route_rejects_duplicate_start_commands(monkeypatch):
 
     from card_guess.qq import bot
 
-    assert bot.route_group_command(123, "猜词") == "本群已有一局正在进行"
-    assert bot.route_group_command(123, "猜词1") == "本群已有一局正在进行"
-    assert bot.route_group_command(123, "猜词2") == "本群已有一局正在进行"
+    assert bot.route_group_command(123, "开始") == "当前会话已有一局"
+    assert bot.route_group_command(123, "开始1") == "当前会话已有一局"
+    assert bot.route_group_command(123, "开始2") == "当前会话已有一局"
 
 
 def test_route_delegates_guess_text_to_game_state(monkeypatch):
@@ -335,10 +302,10 @@ def test_route_starts_game_for_supported_modes(monkeypatch):
     monkeypatch.setattr(sessions, "start", fake_start)
     monkeypatch.setattr(sessions, "get", lambda group_id: None)
 
-    reply1 = bot.route_group_command(50, "猜词")
-    reply2 = bot.route_group_command(50, "猜词1")
-    reply3 = bot.route_group_command(50, "猜词2")
-    reply4 = bot.route_group_command(50, "猜词1 铁甲战士")
+    reply1 = bot.route_group_command(50, "开始")
+    reply2 = bot.route_group_command(50, "开始1")
+    reply3 = bot.route_group_command(50, "开始2")
+    reply4 = bot.route_group_command(50, "开始1 铁甲战士")
 
     assert "牌名：" in reply1
     assert "牌名：" in reply2
@@ -352,7 +319,7 @@ def test_route_reports_unknown_character_without_creating_session(monkeypatch):
 
     from card_guess.qq import bot
 
-    reply = bot.route_group_command(88, "猜词1 天外来客")
+    reply = bot.route_group_command(88, "开始1 天外来客")
 
     assert "角色" in reply and "天外来客" in reply
 
@@ -386,7 +353,7 @@ def test_route_start_shows_initial_puzzle_and_status(monkeypatch):
     monkeypatch.setattr(sessions, "get", lambda group_id: None)
     monkeypatch.setattr(sessions, "start", lambda group_id, mode, character=None: fake_game)
 
-    reply = bot.route_group_command(77, "猜词")
+    reply = bot.route_group_command(77, "开始")
 
     assert "牌名：□t□i□k□e" in reply
     assert "来源：铁甲战士" in reply
@@ -416,7 +383,7 @@ def test_route_start_keeps_wrong_and_total_guess_counts(monkeypatch):
     monkeypatch.setattr(sessions, "get", lambda group_id: None)
     monkeypatch.setattr(sessions, "start", lambda group_id, mode, character=None: fake_game)
 
-    reply = bot.route_group_command(88, "猜词1")
+    reply = bot.route_group_command(88, "开始1")
 
     assert "已猜错：oops" in reply
     assert "累计猜测：9 次" in reply

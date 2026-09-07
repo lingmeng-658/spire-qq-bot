@@ -2,8 +2,8 @@
 """QQ leaderboard & single-relic display tests for STS2 Ancient choice stats.
 
 The Ancient entry is now NPC + layer (达弗2 / 涅奥) with full-cohort boards;
-排行 stays as a compatibility suffix and 最高/最低 no longer route to a
-leaderboard.  All NPCs, relic ids, and Chinese names below are fictional
+排行/最高/最低 no longer route to a leaderboard.  All NPCs, relic ids, and
+Chinese names below are fictional
 fixtures so no network or real run data is touched.
 """
 
@@ -250,12 +250,16 @@ def test_bot_multiact_npc_bare_name_prompts_for_layer(monkeypatch):
     assert str(reply) == "达弗有多个可查询层：\n达弗2\n达弗3"
 
 
-def test_bot_paihang_suffix_is_compatible_with_main_entry(monkeypatch):
+def test_bot_paihang_suffix_no_longer_routes(monkeypatch):
     patch_loader(monkeypatch, _darv_snapshot())
-    main = str(bot.route_group_command(101, "达弗2"))
-    compat = str(bot.route_group_command(101, "达弗2 排行2"))
-    assert compat == main
-    assert str(bot.route_group_command(101, "达弗2排行")) == main
+    assert (
+        str(bot.route_group_command(101, "达弗2 排行2"))
+        == bot.UNKNOWN_COMMAND_REPLY
+    )
+    assert (
+        str(bot.route_group_command(101, "达弗2排行"))
+        == bot.UNKNOWN_COMMAND_REPLY
+    )
 
 
 def test_bot_npc_invalid_layer_gets_short_hint(monkeypatch):
@@ -277,14 +281,14 @@ def test_bot_top_and_bottom_no_longer_route_to_leaderboard(monkeypatch, command)
     text = str(reply)
     assert "选择排行" not in text
     assert "最高 5" not in text and "最低 5" not in text
-    assert "当前没有进行中的游戏" in text
+    assert text == bot.UNKNOWN_COMMAND_REPLY
 
 
 def test_bot_act_word_after_keyword_is_not_a_board(monkeypatch):
     patch_loader(monkeypatch, _darv_snapshot())
     reply = bot.route_group_command(101, "达弗2 排行 第二幕")
     assert "选择排行" not in str(reply)
-    assert "当前没有进行中的游戏" in str(reply)
+    assert str(reply) == bot.UNKNOWN_COMMAND_REPLY
 
 
 def test_unrelated_messages_are_not_swallowed_by_npc_commands(monkeypatch):

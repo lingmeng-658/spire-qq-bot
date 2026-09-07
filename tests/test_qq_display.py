@@ -339,7 +339,7 @@ def test_non_card_name_without_game_keeps_unknown_input_reply(monkeypatch):
 
     reply = bot.route_group_command(101, "这不是卡名")
 
-    assert reply == "当前没有进行中的游戏"
+    assert reply == bot.UNKNOWN_COMMAND_REPLY
 
 
 def test_duplicate_exact_card_name_without_suffix_requires_generation_hint(monkeypatch):
@@ -361,7 +361,8 @@ def test_duplicate_exact_card_name_without_suffix_requires_generation_hint(monke
     assert "白噪声" in reply
     assert "白噪声1" in reply
     assert "白噪声2" in reply
-    assert "请发送" in reply
+    assert "找到两代同名内容：" in reply
+    assert "请发送" not in reply
     assert reply.image_path is None
 
 

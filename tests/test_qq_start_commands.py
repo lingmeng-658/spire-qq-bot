@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
+"""QQ start-command routing after Command UX v1."""
+
 import pytest
 
 from card_guess.qq import bot, sessions
 
 
-BASE_WORDS = ["猜词", "猜谜", "开始", "开局", "开始游戏"]
+RETIRED_START_WORDS = ("猜词", "猜谜", "开局", "开始游戏")
 
 
 @pytest.fixture(autouse=True)
@@ -25,31 +28,37 @@ def patch_start(monkeypatch):
     return calls
 
 
-def test_all_base_words_start_mixed(monkeypatch):
+def test_start_is_the_only_mixed_mode_entry(monkeypatch):
     calls = patch_start(monkeypatch)
 
-    for word in BASE_WORDS:
+    bot.route_group_command(101, "开始")
+
+    assert calls == [(101, "mixed", None)]
+
+
+def test_retired_start_words_do_not_start(monkeypatch):
+    calls = patch_start(monkeypatch)
+
+    for word in RETIRED_START_WORDS:
         bot.route_group_command(101, word)
 
-    assert calls == [(101, "mixed", None)] * len(BASE_WORDS)
+    assert calls == []
 
 
-def test_all_base_words_with_suffix_1_start_sts1(monkeypatch):
+def test_start_with_suffix_1_uses_sts1(monkeypatch):
     calls = patch_start(monkeypatch)
 
-    for word in BASE_WORDS:
-        bot.route_group_command(101, word + "1")
+    bot.route_group_command(101, "开始1")
 
-    assert calls == [(101, "sts1", None)] * len(BASE_WORDS)
+    assert calls == [(101, "sts1", None)]
 
 
-def test_all_base_words_with_suffix_2_start_sts2(monkeypatch):
+def test_start_with_suffix_2_uses_sts2(monkeypatch):
     calls = patch_start(monkeypatch)
 
-    for word in BASE_WORDS:
-        bot.route_group_command(101, word + "2")
+    bot.route_group_command(101, "开始2")
 
-    assert calls == [(101, "sts2", None)] * len(BASE_WORDS)
+    assert calls == [(101, "sts2", None)]
 
 
 def test_start_with_character_uses_mixed_and_defect(monkeypatch):
@@ -68,18 +77,18 @@ def test_start1_with_character_uses_sts1_and_defect(monkeypatch):
     assert calls == [(101, "sts1", "defect")]
 
 
-def test_guess2_with_character_uses_sts2_and_necrobinder(monkeypatch):
+def test_start2_with_character_uses_sts2_and_necrobinder(monkeypatch):
     calls = patch_start(monkeypatch)
 
-    bot.route_group_command(101, "猜谜2 骨妹")
+    bot.route_group_command(101, "开始2 骨妹")
 
     assert calls == [(101, "sts2", "necrobinder")]
 
 
-def test_open2_with_character_uses_sts2_and_regent(monkeypatch):
+def test_start2_with_character_uses_sts2_and_regent(monkeypatch):
     calls = patch_start(monkeypatch)
 
-    bot.route_group_command(101, "开局2 储君")
+    bot.route_group_command(101, "开始2 储君")
 
     assert calls == [(101, "sts2", "regent")]
 
@@ -87,9 +96,9 @@ def test_open2_with_character_uses_sts2_and_regent(monkeypatch):
 def test_unknown_suffix_3_is_not_a_start_command(monkeypatch):
     calls = patch_start(monkeypatch)
 
-    reply = bot.route_group_command(101, "开始3")
+    reply = str(bot.route_group_command(101, "开始3"))
 
-    assert reply == "当前没有进行中的游戏"
+    assert reply == bot.UNKNOWN_COMMAND_REPLY
     assert calls == []
 
 
@@ -97,57 +106,12 @@ def test_non_start_card_names_with_generation_suffix_are_not_start_commands(monk
     calls = patch_start(monkeypatch)
 
     reply = bot.route_group_command(101, "愤怒1")
-    assert "愤怒" in str(reply)
-    assert "本轮题目" not in str(reply)
-    assert calls == []
-
-    reply = bot.route_group_command(101, "愤怒2")
-    assert "愤怒" in str(reply)
     assert "本轮题目" not in str(reply)
     assert calls == []
 
     reply = bot.route_group_command(101, "内心宁静")
-    assert "内心宁静" in str(reply)
     assert "当前没有进行中的游戏" not in str(reply)
     assert calls == []
-
-    reply = bot.route_group_command(101, "abc1")
-    assert reply == "当前没有进行中的游戏"
-
-    reply = bot.route_group_command(101, "测试2")
-    assert reply == "当前没有进行中的游戏"
-
-
-def test_unknown_suffix_letters_are_not_a_start_command(monkeypatch):
-    calls = patch_start(monkeypatch)
-
-    reply = bot.route_group_command(101, "猜词abc")
-
-    assert reply == "当前没有进行中的游戏"
-    assert calls == []
-
-
-def test_unknown_suffix_12_is_not_a_start_command(monkeypatch):
-    calls = patch_start(monkeypatch)
-
-    reply = bot.route_group_command(101, "开局12")
-
-    assert reply == "当前没有进行中的游戏"
-    assert calls == []
-
-
-def test_legacy_guess_words_keep_existing_modes(monkeypatch):
-    calls = patch_start(monkeypatch)
-
-    bot.route_group_command(101, "猜词")
-    bot.route_group_command(101, "猜词1")
-    bot.route_group_command(101, "猜词2")
-
-    assert calls == [
-        (101, "mixed", None),
-        (101, "sts1", None),
-        (101, "sts2", None),
-    ]
 
 
 def test_start1_colorless_uses_sts1_and_colorless(monkeypatch):
@@ -188,53 +152,6 @@ def test_start2_token_uses_sts2_and_token(monkeypatch):
     bot.route_group_command(101, "开始2 衍生")
 
     assert calls == [(101, "sts2", "token")]
-
-
-def test_start2_special_pool_aliases_with_card_suffix(monkeypatch):
-    calls = patch_start(monkeypatch)
-
-    for phrase in ["开始2 无色牌", "开始2 事件牌", "开始2 任务牌", "开始2 衍生牌"]:
-        bot.route_group_command(101, phrase)
-
-    assert calls == [
-        (101, "sts2", "colorless"),
-        (101, "sts2", "event"),
-        (101, "sts2", "quest"),
-        (101, "sts2", "token"),
-    ]
-
-
-@pytest.mark.parametrize(
-    "phrase",
-    ["开始1 任务", "开始1 衍生", "开始1 事件"],
-)
-def test_special_pool_without_cards_does_not_fallback(monkeypatch, phrase):
-    reply = bot.route_group_command(101, phrase)
-
-    assert reply == "当前版本没有可用的该类题库"
-    assert sessions.get(101) is None
-
-
-def test_start2_quest_picks_quest_pool_card(monkeypatch):
-    monkeypatch.setattr(sessions.random, "choice", lambda cards: cards[0])
-
-    reply = bot.route_group_command(101, "开始2 任务")
-
-    game = sessions.get(101)
-    assert game is not None
-    assert game.card["pool"] == "quest"
-    assert "任务" in str(reply)
-
-
-def test_start2_token_picks_token_pool_card(monkeypatch):
-    monkeypatch.setattr(sessions.random, "choice", lambda cards: cards[0])
-
-    reply = bot.route_group_command(101, "开始2 衍生")
-
-    game = sessions.get(101)
-    assert game is not None
-    assert game.card["pool"] == "token"
-    assert "衍生" in str(reply)
 
 
 def test_original_character_aliases_still_work(monkeypatch):
@@ -288,10 +205,8 @@ def test_start_space_before_generation_suffix_starts_sts1(monkeypatch):
     assert calls == [(101, "sts1", None)]
 
 
-def test_whitespace_normalization_applies_only_to_start_word(monkeypatch):
-    calls = patch_start(monkeypatch)
+def test_duplicate_start_returns_channel_neutral_copy(monkeypatch):
+    fake_game = object()
+    monkeypatch.setattr(sessions, "get", lambda group_id: fake_game)
 
-    reply = bot.route_group_command(101, "猜词1猎宝")
-
-    assert reply == "当前没有进行中的游戏"
-    assert calls == []
+    assert str(bot.route_group_command(101, "开始")) == "当前会话已有一局"

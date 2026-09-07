@@ -2,8 +2,8 @@
 
 Rules exercised through the real router:
 - 观者1普通 == 观 者 1 普 通 (new leaderboard family)
-- old short board 猎宝 1 抓取 == 猎宝1抓取
-- ancient board 达弗 2 排行 == 达弗2排行
+- retired 抓取/胜率 short boards no longer route in any spacing
+- ancient board 达弗 2 == 达弗2; 排行 compatibility no longer routes
 - relic/card generation queries keep working for 添水 2 / 黑星 2
 - whitespace that still cannot hit a legal command keeps the original
   behaviour (idle: the same unknown-message reply as before).
@@ -76,18 +76,18 @@ def test_new_leaderboard_spacing_is_equivalent(patch_new_board):
     assert "1. 虚甲 —— 90.0%" in texts[0]
 
 
-def test_old_short_leaderboard_spacing_is_equivalent(patch_old_board):
-    reply_a = str(bot.route_group_command(91002, "猎宝1抓取"))
-    reply_b = str(bot.route_group_command(91002, "猎宝1 抓取"))
-    reply_c = str(bot.route_group_command(91002, "猎宝 1抓取"))
-    reply_d = str(bot.route_group_command(91002, "猎 宝1 抓 取"))
-    assert reply_a == reply_b == reply_c == reply_d
-    assert "虚甲" in reply_a
+def test_old_short_leaderboard_spacing_does_not_route(patch_old_board, monkeypatch):
+    monkeypatch.setattr(bot, "_load_query_cards", lambda: [])
+    monkeypatch.setattr(bot, "_load_query_relics", lambda: [])
+    for command in ("猎宝1抓取", "猎宝1 抓取", "猎宝 1抓取", "猎 宝1 抓 取"):
+        assert str(bot.route_group_command(91002, command)) == bot.UNKNOWN_COMMAND_REPLY
 
 
 def test_ancient_board_spacing_is_equivalent(monkeypatch):
     from card_guess.qq import renderer as qq_renderer
 
+    monkeypatch.setattr(bot, "_load_query_cards", lambda: [])
+    monkeypatch.setattr(bot, "_load_query_relics", lambda: [])
     monkeypatch.setattr(
         qq_renderer,
         "load_sts2_ancient_choice_stats",
@@ -98,12 +98,12 @@ def test_ancient_board_spacing_is_equivalent(monkeypatch):
         "render_ancient_choice_leaderboard",
         lambda *args, **kwargs: "达弗排行内容",
     )
-    replies = [
-        str(bot.route_group_command(91003, command))
-        for command in ("达弗2 排行", "达弗 2 排行", "达弗2排行")
-    ]
-    assert replies[0] == replies[1] == replies[2]
-    assert "达弗排行内容" in replies[0]
+    assert str(bot.route_group_command(91003, "达弗2")) == "达弗排行内容"
+    assert str(bot.route_group_command(91003, "达弗 2")) == "达弗排行内容"
+    assert (
+        str(bot.route_group_command(91003, "达弗2 排行"))
+        == bot.UNKNOWN_COMMAND_REPLY
+    )
 
 
 def test_relic_generation_query_spacing_still_routes(monkeypatch):

@@ -335,7 +335,7 @@ def test_unknown_relic_name_keeps_unknown_input_reply(monkeypatch):
 
     reply = bot.route_group_command(101, "不存在的遗物")
 
-    assert reply == "当前没有进行中的游戏"
+    assert reply == bot.UNKNOWN_COMMAND_REPLY
 
 
 # Boss 信息只在 Boss 遗物上有值且存在 offer 时展示 ------------------------------

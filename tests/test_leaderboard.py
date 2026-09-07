@@ -1,8 +1,8 @@
 """Fictional tests for the STS1/STS2 Top-10 leaderboards (抓取/胜率).
 
 Ranking and copy logic are tested with fabricated cards + fabricated unified
-snapshots so results never depend on the real snapshot ranking.  Command
-parsing is exercised through the QQ router with the data loaders patched.
+snapshots so results never depend on the real snapshot ranking.  Retired QQ
+routing is covered by the Command UX test file instead.
 
 A-D scope:
 - STS1 bare 抓取/胜率 = global boards (whole-run pick_rate / win_delta)
@@ -13,8 +13,6 @@ A-D scope:
 import pytest
 
 from card_guess import leaderboard as lb
-from card_guess.qq import bot, sessions
-
 
 def _metric(value, unit="percent"):
     return {"value": value, "unit": unit, "sample_size": 100}
@@ -383,23 +381,6 @@ def test_final_board_removed_for_both_generations():
         reply = lb.build_leaderboard_reply(tag, "终局")
         assert "该榜单已取消" in reply
         assert "抓取/胜率" in reply
-
-
-def test_route_final_board_gives_natural_notice(monkeypatch):
-    for command in (
-        "榜单1 终局",
-        "榜单1 战士 终局",
-        "榜单2 终局",
-        "榜单2 骨妹 终局",
-        "榜单2 储君 终局",
-    ):
-        reply = str(bot.route_group_command(77, command))
-        assert "该榜单已取消" in reply
-        assert "抓取/胜率" in reply
-        assert "角色池" not in reply
-        assert "无法识别角色" not in reply
-
-
 def test_final_keyword_rejected_by_rankings():
     with pytest.raises(ValueError):
         lb.build_rankings("sts1", "终局")
@@ -438,106 +419,6 @@ def test_tie_break_is_deterministic_by_card_id():
     second = lb.build_rankings("sts1", "抓取", cards=cards, unified=unified)
     assert [row.card_id for row in first] == ["TIE_AA", "TIE_AB"]
     assert [row.card_id for row in second] == ["TIE_AA", "TIE_AB"]
-
-
-# ------------------------------------------------------------ short commands
-
-def test_short_command_sts1_global_and_acts():
-    text = str(bot.route_group_command(77, "猎宝1 抓取"))
-    assert "=== STS1 · 静默猎手 · 全局抓取率 Top 10 ===" in text
-    assert "1. 毒雾  92.0%" in text
-
-    act2 = str(bot.route_group_command(77, "猎宝1 抓取2"))
-    assert "=== STS1 · 静默猎手 · 第二幕抓取率 Top 10 ===" in act2
-
-
-def test_short_command_win_and_sts2_role():
-    text = str(bot.route_group_command(77, "战士1 胜率3"))
-    assert "=== STS1 · 铁甲战士 · 第三幕胜率差 Top 10 ===" in text
-
-    sts2 = str(bot.route_group_command(77, "骨妹2 抓取1"))
-    assert "=== STS2 · 死灵契约师 · 第一幕抓取率 Top 10 ===" in sts2
-    assert "1. 骨甲  86.0%" in sts2
-
-
-def test_short_command_sts2_bare_rejected():
-    for command in ("猎宝2 抓取", "骨妹2 胜率", "储君2 胜率"):
-        reply = str(bot.route_group_command(77, command))
-        assert lb.STS2_GLOBAL_NOTICE in reply
-        assert "角色" not in reply
-
-
-def test_short_command_in_active_game_does_not_consume_guess(monkeypatch):
-    class FakeGame:
-        card = {"name": "打击", "game": "sts1"}
-        wrong_count = 3
-        total_guess_count = 7
-
-        def handle_input(self, text):  # pragma: no cover - must not be called
-            raise AssertionError("short leaderboard command reached the game")
-
-    game = FakeGame()
-    monkeypatch.setattr(sessions, "get", lambda group_id: game)
-    reply = str(bot.route_group_command(77, "猎宝1 抓取2"))
-
-    assert "第二幕抓取率 Top 10" in reply
-    assert game.wrong_count == 3
-    assert game.total_guess_count == 7
-
-
-def test_short_command_old_style_compat():
-    text = str(bot.route_group_command(77, "榜单2 猎宝 胜率2"))
-    assert "=== STS2 · 静默猎手 · 第二幕胜率差 Top 10 ===" in text
-
-    global_board = str(bot.route_group_command(77, "榜单1 战士 抓取"))
-    assert "全局抓取率 Top 10" in global_board
-
-
-# ------------------------------------------------------------ error copy
-
-def test_route_act_word_hint_for_short_command():
-    reply = str(bot.route_group_command(77, "猎宝2 胜率 第二幕"))
-    assert "幕数请直接写在指标后：" in reply
-    assert "猎宝2 胜率2" in reply
-    assert "无法识别" not in reply
-
-
-def test_route_act_word_hint_for_old_style():
-    reply = str(bot.route_group_command(77, "榜单2 猎宝 胜率 第二幕"))
-    assert "幕数请直接写在指标后：" in reply
-    assert "榜单2 猎宝 胜率2" in reply
-
-
-def test_route_out_of_range_act_suffix_hints():
-    reply = str(bot.route_group_command(77, "猎宝2 抓取4"))
-    assert "1/2/3" in reply
-    assert "猎宝2 抓取2" in reply
-
-    reply = str(bot.route_group_command(77, "榜单1 猎宝 胜率4"))
-    assert "胜率1 / 胜率2 / 胜率3" in reply
-
-
-def test_route_unknown_metric_gives_short_example():
-    reply = str(bot.route_group_command(77, "榜单1 传说"))
-    assert "无法识别的榜单关键词" not in reply
-    assert "抓取 / 胜率" in reply
-
-
-def test_leaderboard_errors_never_say_unrecognised_keyword():
-    samples = ("榜单1 传说", "猎宝2 胜率 第二幕", "榜单1 抓取4", "榜单2 骨妹 终局")
-    for command in samples:
-        reply = str(bot.route_group_command(77, command))
-        assert "无法识别的榜单关键词" not in reply
-
-
-def test_route_leaderboard_invalid_forms_give_clear_hints():
-    assert "榜单语法" in str(bot.route_group_command(77, "榜单 抓取"))
-    assert "榜单语法" in str(bot.route_group_command(77, "榜单3 抓取"))
-    assert "缺少榜单指标" in str(bot.route_group_command(77, "榜单1"))
-    unknown_role = bot.route_group_command(77, "榜单1 幽灵 抓取")
-    assert "无法识别角色“幽灵”" in str(unknown_role)
-
-
 def test_build_rankings_rejects_unknown_game_or_keyword():
     with pytest.raises(ValueError):
         lb.build_rankings("sts3", "抓取")
@@ -545,25 +426,6 @@ def test_build_rankings_rejects_unknown_game_or_keyword():
         lb.build_rankings("sts1", "传说")
     with pytest.raises(ValueError):
         lb.build_rankings("sts2", "抓取")  # STS2 has no global scope
-
-
-def test_help_subcommand_promotes_short_commands_and_removes_final():
-    reply = str(bot.route_group_command(123, "帮助 榜单"))
-    assert "=== 帮助 榜单 ===" in reply
-    assert "猎宝1 抓取" in reply
-    assert "猎宝1 抓取2" in reply
-    assert "战士1 胜率3" in reply
-    assert "骨妹2 抓取1" in reply
-    assert "STS1：" in reply
-    assert "全局" in reply
-    assert "STS2：" in reply
-    assert "暂不支持可靠全局口径" in reply
-    assert "胜率差样本过少时不展示。" in reply
-    assert "终局" not in reply
-    assert "榜单2 骨妹 终局" not in reply
-
-
-
 HEART_CARDS = [
     {"id": "HEART_SILENT", "pool": "silent", "name": "毒雾"},
     {"id": "HEART_SILENT2", "pool": "silent", "name": "影袭"},
@@ -608,141 +470,6 @@ def test_heart_board_skips_missing_and_ranks_descending():
         lb.build_rankings("sts1", "心脏", cards=HEART_CARDS, unified=_heart_unified(), act=1)
     with pytest.raises(ValueError):
         lb.build_rankings("sts2", "心脏", cards=HEART_CARDS, unified=_heart_unified())
-
-
-def test_heart_board_command_and_sts2_rejection(monkeypatch):
-    monkeypatch.setattr(
-        lb,
-        "_load_unified_snapshot",
-        lambda game: _heart_unified() if game == "sts1" else STS2_UNIFIED,
-    )
-    monkeypatch.setattr(
-        lb,
-        "load_cards",
-        lambda game: HEART_CARDS if game == "sts1" else STS2_CARDS,
-    )
-
-    reply = str(bot.route_group_command(77, "猎宝1 心脏"))
-    assert "=== STS1 · 静默猎手 · 心脏胜利卡组 Top 10 ===" in reply
-    assert "1. 影袭  85.50%" in reply
-
-    for command in ("猎宝2 心脏", "骨妹2 心脏", "储君2 心脏", "榜单2 骨妹 心脏"):
-        text = str(bot.route_group_command(77, command))
-        assert "STS2 暂无心脏统计。" in text
-        assert "角色池" not in text
-        assert "无法识别角色" not in text
-
-
-def test_legacy_heart_command_and_sts1_role_pool_error(monkeypatch):
-    monkeypatch.setattr(
-        lb,
-        "_load_unified_snapshot",
-        lambda game: _heart_unified() if game == "sts1" else STS2_UNIFIED,
-    )
-    monkeypatch.setattr(
-        lb,
-        "load_cards",
-        lambda game: HEART_CARDS if game == "sts1" else STS2_CARDS,
-    )
-
-    reply = str(bot.route_group_command(77, "榜单1 猎宝 心脏"))
-    assert "=== STS1 · 静默猎手 · 心脏胜利卡组 Top 10 ===" in reply
-
-    text = str(bot.route_group_command(77, "榜单1 骨妹 心脏"))
-    assert "暂不支持角色池" in text
-
-
-def test_heart_short_command_in_active_game_does_not_consume_guess(monkeypatch):
-    class FakeGame:
-        card = {"name": "打击", "game": "sts1"}
-        wrong_count = 3
-        total_guess_count = 7
-
-        def handle_input(self, text):  # pragma: no cover - must not be called
-            raise AssertionError("short heart command reached the game")
-
-    game = FakeGame()
-    monkeypatch.setattr(sessions, "get", lambda group_id: game)
-    reply = str(bot.route_group_command(77, "猎宝1 心脏"))
-
-    assert "心脏胜利卡组 Top 10" in reply
-    assert game.wrong_count == 3
-    assert game.total_guess_count == 7
-
-
-def test_help_mentions_heart_only_for_sts1():
-    reply = str(bot.route_group_command(123, "帮助 榜单"))
-    assert "心脏" in reply
-    assert "仅 STS1" in reply
-    assert "终局" not in reply
-    assert "榜单2 骨妹 终局" not in reply
-
-    top = str(bot.route_group_command(123, "帮助"))
-    assert "心脏" in top
-    assert "支持：抓取 / 胜率 / 终局" not in top
-    assert "终局" not in top
-
-
-
-# ------------------------------------------------- single-generation role shorthand
-
-def test_single_generation_role_omits_generation_for_sts2_roles():
-    necro = str(bot.route_group_command(77, "骨妹 抓取1"))
-    assert "=== STS2 · 死灵契约师 · 第一幕抓取率 Top 10 ===" in necro
-    assert "1. 骨甲  86.0%" in necro
-
-    regent = str(bot.route_group_command(77, "储君 胜率2"))
-    assert "=== STS2 · 储君 · 第二幕胜率差 Top 10 ===" in regent
-    assert "STS1" not in regent
-
-
-def test_watcher_single_generation_omits_generation_for_sts1():
-    heart = str(bot.route_group_command(77, "观者 心脏"))
-    assert "=== STS1 · 观者 · 心脏胜利卡组 Top 10 ===" in heart
-    assert "STS2" not in heart
-
-    pick2 = str(bot.route_group_command(77, "观者 抓取2"))
-    assert "=== STS1 · 观者 · 第二幕抓取率 Top 10 ===" in pick2
-
-
-def test_loose_spacing_single_generation_shorthand():
-    reply = str(bot.route_group_command(77, "骨妹  抓取1"))
-    assert "=== STS2 · 死灵契约师 · 第一幕抓取率 Top 10 ===" in reply
-
-    no_space = str(bot.route_group_command(77, "骨妹抓取1"))
-    assert "=== STS2 · 死灵契约师 · 第一幕抓取率 Top 10 ===" in no_space
-
-
-def test_two_generation_role_without_generation_asks_for_1_or_2():
-    samples = (
-        ("战士 抓取1", "战士"),
-        ("猎宝 胜率2", "猎宝"),
-        ("鸡煲 抓取3", "鸡煲"),
-    )
-    for command, role in samples:
-        reply = str(bot.route_group_command(77, command))
-        assert f"这个角色两代都有，请写 {role}1 或 {role}2。" in reply
-        assert "Top 10" not in reply
-
-
-def test_single_generation_shorthand_does_not_consume_active_game_guess(monkeypatch):
-    class FakeGame:
-        card = {"name": "打击", "game": "sts1"}
-        wrong_count = 3
-        total_guess_count = 7
-
-        def handle_input(self, text):  # pragma: no cover - must not be called
-            raise AssertionError("single-generation shorthand reached the game")
-
-    game = FakeGame()
-    monkeypatch.setattr(sessions, "get", lambda group_id: game)
-    for command in ("骨妹 抓取1", "储君 胜率2", "观者 心脏"):
-        reply = str(bot.route_group_command(77, command))
-        assert "Top 10" in reply
-    assert game.wrong_count == 3
-    assert game.total_guess_count == 7
-
-
 # ------------------------------------------------- heart board starter filtering
 
 def _starter_board_cards_and_unified():

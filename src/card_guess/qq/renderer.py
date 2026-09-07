@@ -325,7 +325,7 @@ def render_sts2_stats(card, snapshot):
 
     upgrade_row = _format_metric_row(smith, "upgrade_rate", lambda v: f"{v:.0f}%")
     if upgrade_row is not None:
-        rows.append(f"铁匠铺：{upgrade_row} 会升级")
+        rows.append(f"休息时：{upgrade_row} 会敲牌")
 
     impact_row = _sts2_win_impact_row(reward)
     if impact_row is not None:
