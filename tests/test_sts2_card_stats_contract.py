@@ -127,3 +127,19 @@ def test_source_scope_metadata_is_complete(snapshot):
         "versions",
         "total_runs",
     }
+
+
+def test_no_partial_finegrained_overlay_in_formal_snapshot(snapshot):
+    for card_id, card in snapshot["cards"].items():
+        untapped = card.get("untapped")
+        if not isinstance(untapped, dict):
+            continue
+        for section_key, section in untapped.items():
+            if not isinstance(section, dict):
+                continue
+            for act_key, act_data in section.items():
+                assert "finegrained" not in act_data, (
+                    card_id,
+                    section_key,
+                    act_key,
+                )
