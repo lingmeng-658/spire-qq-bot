@@ -34,6 +34,7 @@ STS2_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts2_card_stats.json"
 STS1_RELIC_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts1_relic_stats.json"
 STS2_RELIC_STATS_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts2_relic_stats.json"
 STS2_ANCIENT_CHOICE_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts2_ancient_choice.json"
+STS2_RELIC_SHOP_SNAPSHOT = REPO_ROOT / "data" / "stats" / "sts2_relic_shop_stats.json"
 GAME_NAMES = {
     "sts1": "杀戮尖塔 1",
     "sts2": "杀戮尖塔 2",
@@ -48,6 +49,7 @@ _sts2_card_stats_cache = None
 _sts1_relic_stats_cache = None
 _sts2_relic_stats_cache = None
 _sts2_ancient_choice_cache = None
+_sts2_relic_shop_cache = None
 
 STS1_ASC7PLUS_SOURCE_ID = f"{STS1_SOURCE_ID}_{COHORT_ASC7PLUS.key}"
 
@@ -206,6 +208,17 @@ def load_sts2_ancient_choice_stats():
         except (OSError, json.JSONDecodeError):
             _sts2_ancient_choice_cache = {}
     return _sts2_ancient_choice_cache
+
+
+def load_sts2_relic_shop_stats():
+    global _sts2_relic_shop_cache
+    if _sts2_relic_shop_cache is None:
+        try:
+            with open(STS2_RELIC_SHOP_SNAPSHOT, encoding="utf-8") as f:
+                _sts2_relic_shop_cache = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            _sts2_relic_shop_cache = {}
+    return _sts2_relic_shop_cache
 
 
 _ACTS = ("act_1", "act_2", "act_3")
@@ -865,6 +878,84 @@ def _render_relic_description(relic):
     return text.strip()
 
 
+
+def _sts2_shop_metric_value(row, key):
+    metric = row.get(key) if isinstance(row, dict) else None
+    if not isinstance(metric, dict):
+        return None
+    value = metric.get("value")
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return None
+    return value
+
+
+def _sts2_shop_percent_cell(value):
+    return f"{round(value)}%" if value is not None else "-"
+
+
+def _sts2_shop_impact_cell(value):
+    if value is None:
+        return "-"
+    rounded = round(value)
+    if rounded == 0:
+        return "0"
+    return f"+{rounded}" if rounded > 0 else f"{rounded}"
+
+
+def _sts2_shop_sample_cell(row):
+    if not isinstance(row, dict):
+        return "-"
+    offered = row.get("offered")
+    if isinstance(offered, bool) or not isinstance(offered, (int, float)):
+        return "-"
+    formatted = _format_compact_sample_count(offered)
+    return formatted if formatted is not None else "-"
+
+
+def render_sts2_relic_shop_stats(relic, snapshot):
+    """Render one compact Shop Stats block for a non-Ancient STS2 relic.
+
+    Decision data (bought rate per act) comes first, then run-level
+    win-rate impact and the offered sample.  Acts without data render "-",
+    and the whole group is hidden when no act has a purchase decision.
+    """
+    if not isinstance(relic, dict) or not isinstance(snapshot, dict):
+        return ""
+    if str(relic.get("tier") or "").strip().lower() == "ancient":
+        return ""
+    relic_id = str(relic.get("id") or "").strip()
+    if not relic_id:
+        return ""
+    entry = (snapshot.get("relics") or {}).get(relic_id)
+    if not isinstance(entry, dict):
+        return ""
+    shop = entry.get("shop")
+    if not isinstance(shop, dict):
+        return ""
+    purchase_cells = []
+    impact_cells = []
+    sample_cells = []
+    for act_key in _ACTS:
+        row = shop.get(act_key)
+        purchase_cells.append(
+            _sts2_shop_percent_cell(_sts2_shop_metric_value(row, "purchase_rate"))
+        )
+        impact_cells.append(
+            _sts2_shop_impact_cell(_sts2_shop_metric_value(row, "run_win_rate_impact"))
+        )
+        sample_cells.append(_sts2_shop_sample_cell(row))
+    if all(cell == "-" for cell in purchase_cells):
+        return ""
+    lines = []
+    if any(cell != "-" for cell in purchase_cells):
+        lines.append(f"\u5546\u5e97\uff1a\u7b2c\u4e00/\u4e8c/\u4e09\u5c42 {' / '.join(purchase_cells)} \u4f1a\u4e70")
+    if any(cell != "-" for cell in impact_cells):
+        lines.append(f"\u80dc\u7387\u5173\u8054\uff1a{' / '.join(impact_cells)} \u4e2a\u767e\u5206\u70b9")
+    if any(cell != "-" for cell in sample_cells):
+        lines.append(f"\u6837\u672c\uff1a\u7b2c\u4e00/\u4e8c/\u4e09\u5c42 {' / '.join(sample_cells)} \u6b21")
+    return "\n".join(lines)
+
+
 def render_relic_query_reply(relics):
     if len(relics) == 1:
         relic = relics[0]
@@ -888,6 +979,12 @@ def render_relic_query_reply(relics):
             )
             if stats_body:
                 parts.append(stats_body)
+            if str(relic.get("tier") or "").strip().lower() != "ancient":
+                shop_body = render_sts2_relic_shop_stats(
+                    relic, load_sts2_relic_shop_stats()
+                )
+                if shop_body:
+                    parts.append(shop_body)
         text = "\n\n".join(parts)
         return RenderedReply(text, image_path=resolve_local_relic_image(relic))
 
