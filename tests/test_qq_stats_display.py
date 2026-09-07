@@ -26,8 +26,16 @@ def make_card(name="磨蚀", card_id="ABRASIVE", game="sts2", pool="silent"):
     }
 
 
-def metric(value, unit="percent"):
-    return {"value": value, "unit": unit, "sample_size": 100}
+def metric(value, unit="percent", sample_size=100):
+    payload = {"value": value, "unit": unit}
+    if sample_size is not None:
+        payload["sample_size"] = sample_size
+    return payload
+
+
+def metric_without_sample(value, unit="percent"):
+    """A metric-like dict without a sample_size field (unreliable sample)."""
+    return {"value": value, "unit": unit}
 
 
 def win_metric(value, denominator, comparison_denominator):
@@ -50,15 +58,15 @@ def make_full_snapshot(card_id="ABRASIVE"):
                 "untapped": {
                     "card_reward": {
                         "act_1": {
-                            "pick_rate": metric(52.0),
+                            "pick_rate": metric(86.0, sample_size=4000),
                             "run_win_rate_impact": metric(2.0, "percentage_points"),
                         },
                         "act_2": {
-                            "pick_rate": metric(60.0),
+                            "pick_rate": metric(60.0, sample_size=15000),
                             "run_win_rate_impact": metric(1.0, "percentage_points"),
                         },
                         "act_3": {
-                            "pick_rate": metric(55.0),
+                            "pick_rate": metric(55.0, sample_size=7400),
                             "run_win_rate_impact": metric(-2.0, "percentage_points"),
                         },
                     },
@@ -119,7 +127,7 @@ def _render_sts1_default(monkeypatch, source):
     return str(render_card_query_reply([card]))
 
 
-def test_sts1_default_hides_presence_quintet(monkeypatch):
+def test_sts1_default_shows_first_pick_and_repick_but_hides_terminal_fields(monkeypatch):
     source = dict(
         make_sts1_snapshot("CARNAGE")["cards"]["CARNAGE"]["metrics"][
             STS1_ASC7PLUS_SOURCE_ID
@@ -129,11 +137,12 @@ def test_sts1_default_hides_presence_quintet(monkeypatch):
 
     reply = _render_sts1_default(monkeypatch, source)
 
-    assert "再次选择率" not in reply
     assert "对局结束时持有率" not in reply
     assert "结束时平均持有" not in reply
     assert "结束时升级比例" not in reply
     assert "心脏胜利卡组出现率" not in reply
+    assert "第一次选择：平均第9层左右" in reply
+    assert "再遇到：约19%会再拿一张" in reply
 
 
 def test_sts1_default_keeps_act_pick_rate_and_win_delta(monkeypatch):
@@ -143,12 +152,12 @@ def test_sts1_default_keeps_act_pick_rate_and_win_delta(monkeypatch):
 
     reply = _render_sts1_default(monkeypatch, source)
 
-    assert "卡牌奖励出现时：\n第一/二/三幕：52.1% / 60.0% / 55.0% 会选" in reply
-    assert "胜率关联：\n第一/二/三幕：+2.5 / +1.0 / -2.0 个百分点" in reply
-    assert "胜率差仅代表统计关联。" in reply
-    assert "第一次拿到" not in reply
-
-
+    assert "卡牌奖励：第一/二/三层 52.1% / 60.0% / 55.0% 会选" in reply
+    assert "胜率关联：+2.5 / +1.0 / -2.0 个百分点" in reply
+    assert "第一次选择：平均第9层左右" in reply
+    assert "再遇到：约19%会再拿一张" in reply
+    assert "幕" not in reply
+    assert "胜率差仅代表统计关联。" not in reply
 
 
 def test_sts2_default_hides_ending_presence(monkeypatch):
@@ -161,21 +170,25 @@ def test_sts2_default_hides_ending_presence(monkeypatch):
     assert "对局结束时持有率" not in reply
 
 
-def test_sts2_default_shows_only_card_reward_choice(monkeypatch):
+def test_sts2_default_shows_compact_stat_block(monkeypatch):
     monkeypatch.setattr("card_guess.qq.renderer.load_sts2_card_stats", lambda: make_full_snapshot())
     monkeypatch.setattr("card_guess.qq.renderer.resolve_local_card_image", lambda c: None)
     monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", lambda c: None)
 
     reply = str(render_card_query_reply([make_card()]))
 
-    assert "卡牌奖励出现时：\n第一/二/三幕：52% / 60% / 55% 会选" in reply
-    assert "数据来源：Untapped" in reply
+    assert "卡牌奖励：第一/二/三层 86% / 60% / 55% 会选" in reply
+    assert "商店：37% / 44% / 44% 会买" in reply
+    assert "铁匠铺：25% / 14% / 10% 会升级" in reply
+    assert "胜率关联：+2 / +1 / -2 个百分点" in reply
+    assert "样本：第一/二/三层 4k / 15k / 7.4k 次" in reply
+    assert "数据来源：Untapped" not in reply
+    assert "幕" not in reply
+    assert "Act" not in reply and "Run" not in reply
     assert "商店购买率" not in reply
     assert "升级率" not in reply
     assert "胜率差" not in reply
     assert "对局结束时持有率" not in reply
-
-
 
 
 def test_sts1_single_card_query_includes_identity_and_stats(monkeypatch):
@@ -197,11 +210,11 @@ def test_sts1_single_card_query_includes_identity_and_stats(monkeypatch):
 
     assert "=== 残杀 · STS1 · 铁甲战士 ===" in reply
     assert "=== 一代统计 ===" not in reply
-    assert "卡牌奖励出现时：\n第一/二/三幕：52.1% / 60.0% / 55.0% 会选" in reply
-    assert "胜率关联：\n第一/二/三幕：+2.5 / +1.0 / -2.0 个百分点" in reply
-    assert "胜率差仅代表统计关联。" in reply
-    assert "第一次拿到" not in reply
-    assert "再次选择率" not in reply
+    assert "卡牌奖励：第一/二/三层 52.1% / 60.0% / 55.0% 会选" in reply
+    assert "胜率关联：+2.5 / +1.0 / -2.0 个百分点" in reply
+    assert "第一次选择：平均第9层左右" in reply
+    assert "再遇到：约19%会再拿一张" in reply
+    assert "幕" not in reply
     assert "对局结束时持有率" not in reply
     assert "结束时平均持有" not in reply
     assert "结束时升级比例" not in reply
@@ -235,15 +248,16 @@ def test_sts1_missing_act_and_metric_show_dash_never_zero(monkeypatch):
         [make_card(name="残杀", card_id="CARNAGE", game="sts1", pool="ironclad")]
     )
 
-    assert "卡牌奖励出现时：\n第一/二/三幕：52.1% / - / 55.0% 会选" in reply
-    assert "胜率关联：\n第一/二/三幕：+2.5 / - / - 个百分点" in reply
-    assert "第一次拿到" not in reply
-    assert "再次选择率" not in reply
+    assert "卡牌奖励：第一/二/三层 52.1% / - / 55.0% 会选" in reply
+    assert "胜率关联：+2.5 / - / - 个百分点" in reply
+    assert "第一次选择" not in reply
+    assert "再遇到" not in reply
     assert "对局结束时持有率" not in reply
     assert "结束时平均持有" not in reply
     assert "结束时升级比例" not in reply
     assert "0% / 0% / 0%" not in reply
     assert "0.0 / 0.0 / 0.0" not in reply
+    assert "幕" not in reply
 
 
 def test_sts1_win_delta_guard_hides_small_cohort_acts(monkeypatch):
@@ -263,7 +277,7 @@ def test_sts1_win_delta_guard_hides_small_cohort_acts(monkeypatch):
         [make_card(name="残杀", card_id="CARNAGE", game="sts1", pool="ironclad")]
     )
 
-    assert "胜率关联：\n第一/二/三幕：- / +4.9 / - 个百分点" in reply
+    assert "胜率关联：- / +4.9 / - 个百分点" in reply
     assert "35.1" not in reply
     assert "1.2" not in reply
 
@@ -317,11 +331,13 @@ def test_sts2_single_card_query_includes_compact_stats(monkeypatch):
     assert isinstance(reply, RenderedReply)
     assert "=== 磨蚀 · STS2 · 静默猎手 ===" in reply
     assert "=== 二代统计 ===" not in reply
-    assert "卡牌奖励出现时：\n第一/二/三幕：52% / 60% / 55% 会选" in reply
-    assert "数据来源：Untapped" in reply
-    assert "商店购买率" not in reply
-    assert "升级率" not in reply
-    assert "胜率差" not in reply
+    assert "卡牌奖励：第一/二/三层 86% / 60% / 55% 会选" in reply
+    assert "商店：37% / 44% / 44% 会买" in reply
+    assert "铁匠铺：25% / 14% / 10% 会升级" in reply
+    assert "胜率关联：+2 / +1 / -2 个百分点" in reply
+    assert "样本：第一/二/三层 4k / 15k / 7.4k 次" in reply
+    assert "数据来源：Untapped" not in reply
+    assert "幕" not in reply
     assert "对局结束时持有率" not in reply
     assert "描述：" not in reply
     assert "费用：" not in reply
@@ -343,10 +359,10 @@ def test_sts2_stats_missing_acts_show_dash_never_zero(monkeypatch):
                 "untapped": {
                     "card_reward": {
                         "act_1": {
-                            "pick_rate": metric(52.0),
+                            "pick_rate": metric(86.0, sample_size=4000),
                             "run_win_rate_impact": metric(2.0, "percentage_points"),
                         },
-                        "act_3": {"pick_rate": metric(55.0)},
+                        "act_3": {"pick_rate": metric(55.0, sample_size=7400)},
                     },
                     "shop": {
                         "act_1": {"purchase_rate": metric(37.0)},
@@ -364,13 +380,14 @@ def test_sts2_stats_missing_acts_show_dash_never_zero(monkeypatch):
     reply = render_card_query_reply([make_card()])
 
     assert "=== 磨蚀 · STS2 · 静默猎手 ===" in reply
-    assert "卡牌奖励出现时：\n第一/二/三幕：52% / - / 55% 会选" in reply
-    assert "数据来源：Untapped" in reply
-    assert "商店购买率" not in reply
-    assert "升级率" not in reply
-    assert "胜率差" not in reply
+    assert "卡牌奖励：第一/二/三层 86% / - / 55% 会选" in reply
+    assert "商店：37% / 44% / - 会买" in reply
+    assert "铁匠铺" not in reply
+    assert "胜率关联：+2 / - / - 个百分点" in reply
+    assert "样本：第一/二/三层 4k / - / 7.4k 次" in reply
     assert "对局结束时持有率" not in reply
     assert "0% / 0% / 0%" not in reply
+    assert "幕" not in reply
 
 
 def test_sts2_query_without_any_stats_still_renders_card(monkeypatch):
@@ -597,7 +614,6 @@ def test_route_group_command_sts2_suffix_query_hides_ending_presence(monkeypatch
     )
 
 
-
 def _render_sts1_query(monkeypatch, card_id, snapshot):
     card = make_card(name="残杀", card_id=card_id, game="sts1", pool="ironclad")
     monkeypatch.setattr("card_guess.qq.renderer.load_sts1_card_stats", lambda: snapshot)
@@ -628,10 +644,12 @@ def test_sts1_default_hides_heart_presence_line(monkeypatch):
     snapshot = {"cards": {"CARNAGE": {"metrics": {STS1_ASC7PLUS_SOURCE_ID: source}}}}
     reply = _render_sts1_query(monkeypatch, "CARNAGE", snapshot)
 
-    assert "卡牌奖励出现时：\n第一/二/三幕：52.1% / 60.0% / 55.0% 会选" in reply
-    assert "胜率关联：\n第一/二/三幕：+2.5 / +1.0 / -2.0 个百分点" in reply
+    assert "卡牌奖励：第一/二/三层 52.1% / 60.0% / 55.0% 会选" in reply
+    assert "胜率关联：+2.5 / +1.0 / -2.0 个百分点" in reply
     assert "心脏胜利卡组出现率" not in reply
     assert "对局结束时持有率" not in reply
+    assert "第一次选择：平均第9层左右" in reply
+    assert "再遇到：约19%会再拿一张" in reply
 
 
 def test_sts1_heart_missing_stays_hidden(monkeypatch):
@@ -654,7 +672,6 @@ def test_sts2_reply_never_includes_heart_line(monkeypatch):
     assert "心脏" not in reply
 
 
-
 def test_sts1_starter_card_heart_metric_stays_hidden(monkeypatch):
     card = make_card(name="打击", card_id="STRIKE_R", game="sts1", pool="ironclad")
     card["rarity"] = "Basic"
@@ -669,3 +686,73 @@ def test_sts1_starter_card_heart_metric_stays_hidden(monkeypatch):
     reply = str(render_card_query_reply([card]))
     assert "心脏胜利卡组出现率" not in reply
     assert "对局结束时持有率" not in reply
+
+
+
+def test_sts1_repick_rate_hidden_below_sample_guard(monkeypatch):
+    source = {
+        "act_pick_rate": {
+            act: metric(50.0)
+            for act in ("act_1", "act_2", "act_3")
+        },
+        "repick_rate": metric(67.0, sample_size=50),
+    }
+    snapshot = {"cards": {"CARNAGE": {"metrics": {STS1_ASC7PLUS_SOURCE_ID: source}}}}
+    reply = _render_sts1_query(monkeypatch, "CARNAGE", snapshot)
+    assert "再遇到" not in reply
+    assert "约67%" not in reply
+
+    source["repick_rate"] = metric(67.0, sample_size=146)
+    reply = _render_sts1_query(monkeypatch, "CARNAGE", snapshot)
+    assert "再遇到：约67%会再拿一张" in reply
+
+
+def test_sts2_sample_row_uses_compact_k(monkeypatch):
+    snapshot = {
+        "cards": {
+            "ABRASIVE": {
+                "id": "ABRASIVE",
+                "untapped": {
+                    "card_reward": {
+                        "act_1": {"pick_rate": metric(86.0, sample_size=12500)},
+                        "act_2": {"pick_rate": metric(60.0, sample_size=860)},
+                        "act_3": {"pick_rate": metric(55.0, sample_size=999)},
+                    }
+                },
+                "spire_codex": {},
+            }
+        }
+    }
+    monkeypatch.setattr("card_guess.qq.renderer.load_sts2_card_stats", lambda: snapshot)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_card_image", lambda c: None)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", lambda c: None)
+
+    reply = str(render_card_query_reply([make_card()]))
+
+    assert "样本：第一/二/三层 12.5k / 860 / 999 次" in reply
+    assert "12500" not in reply
+
+
+def test_sts2_sample_row_hidden_without_sample_sizes(monkeypatch):
+    snapshot = {
+        "cards": {
+            "ABRASIVE": {
+                "id": "ABRASIVE",
+                "untapped": {
+                    "card_reward": {
+                        act: {"pick_rate": metric_without_sample(86.0)}
+                        for act in ("act_1", "act_2", "act_3")
+                    }
+                },
+                "spire_codex": {},
+            }
+        }
+    }
+    monkeypatch.setattr("card_guess.qq.renderer.load_sts2_card_stats", lambda: snapshot)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_card_image", lambda c: None)
+    monkeypatch.setattr("card_guess.qq.renderer.resolve_local_upgraded_card_image", lambda c: None)
+
+    reply = str(render_card_query_reply([make_card()]))
+
+    assert "卡牌奖励：第一/二/三层 86% / 86% / 86% 会选" in reply
+    assert "样本" not in reply

@@ -168,7 +168,7 @@ def acquisition(
 
 def test_common_relic_query_renders_condensed_stats(monkeypatch, tmp_path):
     relic = make_relic()
-    snapshot = make_snapshot("AKABEKO")
+    snapshot = make_snapshot("AKABEKO", first_acquisition=acquisition())
     patch_query_env(monkeypatch, relic=relic, snapshot=snapshot)
     # 图片根目录指向空临时目录，保证“无本地图”断言与真实 assets 无关
     monkeypatch.setattr(renderer, "REPO_ROOT", tmp_path / "empty-repo")
@@ -177,10 +177,16 @@ def test_common_relic_query_renders_condensed_stats(monkeypatch, tmp_path):
     assert "=== 赤牛 · STS1 ===" in reply
     assert "效果：\n每场战斗的第一回合，额外造成 8 点伤害。" in reply
     assert "\n\n普通遗物" in reply
+    assert "首次获得：通常第13层左右，约一半在第9～27层" in reply
+    assert "最终携带：铁甲3.2% · 静默2.9% · 机器人3.4% · 观者5.7%" in reply
     for hidden in [
         "约3.6%的对局最后带着它。",
         "各职业使用比例接近。",
         "击败心脏的对局中约15.3%带着它。",
+        "铁甲：",
+        "角色分布",
+        "获取时间比较分散",
+        "超过一半来自",
     ]:
         assert hidden not in reply
     # R5D：删掉的冗余口径与旧格式都不应出现
@@ -195,21 +201,17 @@ def test_common_relic_query_renders_condensed_stats(monkeypatch, tmp_path):
         "终局",
         "终局记录",
         "终局持有率",
-        "角色分布",
         "心脏胜局出现率",
         "心脏局携带",
         "携带比例接近",
-        "铁甲：",
         "静默：",
         "机器人：",
         "观者：",
         "选择率",
+        "样本",
     ]:
         assert banned not in reply
     assert reply.image_path is None
-
-
-# R5D: Boss 遗物压缩文案（选择率优先，不显示获取层段落） -----------------------
 
 def test_boss_relic_query_condensed(monkeypatch):
     relic = make_relic(
@@ -376,6 +378,8 @@ def test_starter_relic_shows_persistent_note_without_made_up_stats(monkeypatch):
     assert "铁甲的初始遗物。\n部分路线会将它替换。" in reply
     assert "带着它。" not in reply
     assert "击败心脏" not in reply
+    assert "首次获得" not in reply
+    assert "最终携带" not in reply
     assert "%" not in reply
     for banned in [
         "13.81%",
@@ -391,10 +395,7 @@ def test_starter_relic_shows_persistent_note_without_made_up_stats(monkeypatch):
     ]:
         assert banned not in reply
 
-
-# 职业差异明显时：只说最突出的职业 ---------------------------------------------
-
-def test_skewed_role_spread_hidden_from_default_common_display(monkeypatch):
+def test_common_relic_presence_row_shows_skewed_values_without_spread_talk(monkeypatch):
     relic = make_relic()
     snapshot = make_snapshot(
         "AKABEKO",
@@ -408,15 +409,13 @@ def test_skewed_role_spread_hidden_from_default_common_display(monkeypatch):
     )
     reply = render_one(monkeypatch, relic, snapshot)
 
+    assert "最终携带：铁甲12.0% · 静默2.0% · 机器人2.2% · 观者2.5%" in reply
     assert "职业差异比较明显" not in reply
     assert "铁甲使用比例最高" not in reply
-    assert "12.0%" not in reply
+    assert "各职业使用比例接近。" not in reply
     assert "\n\n普通遗物" in reply
     for banned in ["静默：", "机器人：", "观者：", "角色分布"]:
         assert banned not in reply
-
-
-# 心脏持有：压缩为一行 ---------------------------------------------------------
 
 def test_heart_hold_hidden_from_default_common_display(monkeypatch):
     relic = make_relic()
@@ -430,11 +429,9 @@ def test_heart_hold_hidden_from_default_common_display(monkeypatch):
     assert "在本次统计中，共有2416场对局成功击败心脏。" not in reply
     assert "其中229场结束时携带它（9.50%）。" not in reply
     assert "\n\n普通遗物" in reply
-    for banned in ["终局记录", "心脏胜局出现率", "心脏局携带"]:
+    assert "最终携带：铁甲3.2% · 静默2.9% · 机器人3.4% · 观者5.7%" in reply
+    for banned in ["终局记录", "心脏胜局出现率", "心脏局携带", "击败心脏"]:
         assert banned not in reply
-
-
-# 描述中的 [E] 继续使用能量文本转换 ---------------------------------------------
 
 def test_relic_description_energy_token_renders_as_energy_text(monkeypatch):
     relic = make_relic(
@@ -467,58 +464,65 @@ def test_relic_description_multiple_energy_tokens_render_counted_text(monkeypatc
     assert "[E]" not in reply
 
 
-# R5B/R5D：获取层时机（仅 Common/Uncommon/Rare） --------------------------------
+# R5B/R5D：获取时机（仅 Common/Uncommon/Rare，coverage 达到门槛才展示）
 
-def test_relic_query_hides_acquisition_timing_when_data_present(monkeypatch):
+def test_relic_query_shows_acquisition_timing_when_data_present(monkeypatch):
     relic = make_relic()
     snapshot = make_snapshot("AKABEKO", first_acquisition=acquisition())
     reply = render_one(monkeypatch, relic, snapshot)
 
-    assert "通常在第" not in reply
-    assert "约一半集中在第9～27层，超过一半来自第一幕。" not in reply
+    assert "首次获得：通常第13层左右，约一半在第9～27层" in reply
     assert "\n\n普通遗物" in reply
+    assert "最终携带：铁甲3.2% · 静默2.9% · 机器人3.4% · 观者5.7%" in reply
     for banned in [
         "在有获取记录的对局中",
+        "约一半集中在第9～27层，超过一半来自第一幕。",
         "约一半的记录落在",
         "超过一半的获取记录发生在",
+        "超过一半来自",
+        "获取时间比较分散",
         "sample_size",
         "coverage",
         "获取率",
         "掉落率",
         "终局",
+        "第一幕",
+        "第二幕",
+        "第三幕",
     ]:
         assert banned not in reply
 
-
-def test_relic_query_fractional_percentiles_do_not_show_acquisition(monkeypatch):
+def test_relic_query_rounds_fractional_percentiles_when_showing(monkeypatch):
     relic = make_relic()
     fa = acquisition(median=12.5, p25=9.0, p75=27.5)
     snapshot = make_snapshot("AKABEKO", first_acquisition=fa)
     reply = render_one(monkeypatch, relic, snapshot)
 
-    assert "通常在第" not in reply
-    assert "约一半集中在第9～28层，超过一半来自第一幕。" not in reply
+    assert "首次获得：通常第13层左右，约一半在第9～28层" in reply
+    assert "12.5" not in reply
+    assert "27.5" not in reply
 
-
-def test_relic_query_act_spread_hidden_when_no_dominant_act(monkeypatch):
+def test_relic_query_timing_ignores_act_spread_commentary(monkeypatch):
     relic = make_relic()
     fa = acquisition(act1=40.0, act2=30.0, act3=30.0)
     snapshot = make_snapshot("AKABEKO", first_acquisition=fa)
     reply = render_one(monkeypatch, relic, snapshot)
 
-    assert "获取时间比较分散，三幕都有不少记录。" not in reply
+    assert "首次获得：通常第13层左右，约一半在第9～27层" in reply
+    assert "获取时间比较分散" not in reply
     assert "超过一半来自" not in reply
-
+    assert "三幕都有不少记录" not in reply
 
 def test_relic_query_hides_acquisition_when_no_data(monkeypatch):
     relic = make_relic()
     snapshot = make_snapshot("AKABEKO")
     reply = render_one(monkeypatch, relic, snapshot)
 
-    assert "通常在第" not in reply
+    assert "首次获得" not in reply
+    assert "通常第" not in reply
+    assert "最终携带：铁甲3.2% · 静默2.9% · 机器人3.4% · 观者5.7%" in reply
     assert "=== 赤牛 · STS1 ===" in reply
     assert "效果：" in reply
-
 
 def test_relic_query_hides_acquisition_below_coverage_threshold(monkeypatch):
     relic = make_relic()
@@ -526,24 +530,57 @@ def test_relic_query_hides_acquisition_below_coverage_threshold(monkeypatch):
     snapshot = make_snapshot("AKABEKO", first_acquisition=fa)
     reply = render_one(monkeypatch, relic, snapshot)
 
-    assert "通常在第" not in reply
+    assert "首次获得" not in reply
+    assert "通常第" not in reply
     assert "\n\n普通遗物" in reply
+    assert "最终携带：铁甲3.2% · 静默2.9% · 机器人3.4% · 观者5.7%" in reply
 
-
-def test_relic_query_hides_acquisition_at_high_coverage(monkeypatch):
+def test_relic_query_shows_acquisition_at_sufficient_coverage(monkeypatch):
     relic = make_relic()
     fa = acquisition(coverage=90.0)
     snapshot = make_snapshot("AKABEKO", first_acquisition=fa)
     reply = render_one(monkeypatch, relic, snapshot)
 
-    assert "通常在第" not in reply
+    assert "首次获得：通常第13层左右，约一半在第9～27层" in reply
     assert "\n\n普通遗物" in reply
-
+    assert "最终携带：铁甲3.2% · 静默2.9% · 机器人3.4% · 观者5.7%" in reply
 
 def test_relic_query_never_shows_acquisition_for_non_eligible_tier(monkeypatch):
     relic = make_relic(tier="Starter", relic_id="BURNING_BLOOD", name="燃烧之血")
     fa = acquisition()
-    snapshot = make_snapshot("BURNING_BLOOD", first_acquisition=fa)
+    snapshot = make_snapshot(
+        "BURNING_BLOOD",
+        first_acquisition=fa,
+        roles={"IRONCLAD": 86.19},
+    )
     reply = render_one(monkeypatch, relic, snapshot)
 
-    assert "通常在第" not in reply
+    assert "首次获得" not in reply
+    assert "最终携带" not in reply
+    assert "通常第" not in reply
+    assert "%" not in reply
+    assert "铁甲的初始遗物。\n部分路线会将它替换。" in reply
+def test_common_relic_presence_row_lists_only_supported_roles(monkeypatch):
+    relic = make_relic()
+    snapshot = make_snapshot(
+        "AKABEKO",
+        roles={
+            "IRONCLAD": 6.0,
+            "THE_SILENT": 4.0,
+        },
+    )
+    reply = render_one(monkeypatch, relic, snapshot)
+
+    assert "最终携带：铁甲6.0% · 静默4.0%" in reply
+    after = reply.split("最终携带", 1)[1]
+    assert "机器人" not in after
+    assert "观者" not in after
+
+
+def test_common_relic_presence_row_hidden_when_no_role_metrics(monkeypatch):
+    relic = make_relic()
+    snapshot = make_snapshot("AKABEKO", roles={})
+    reply = render_one(monkeypatch, relic, snapshot)
+
+    assert "最终携带" not in reply
+    assert "\n\n普通遗物" in reply

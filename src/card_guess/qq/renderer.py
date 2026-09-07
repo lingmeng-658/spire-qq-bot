@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 from pathlib import Path
 
@@ -231,7 +232,59 @@ def _format_metric_row(acts, key, formatter):
     return " / ".join(formatter(value) if value is not None else "-" for value in values)
 
 
+def _format_compact_sample_count(value):
+    """Compact sample-size text (4000 -> 4k, 7400 -> 7.4k, 860 -> 860)."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    count = int(value)
+    if count < 1000:
+        return str(count)
+    if count % 1000 == 0:
+        return f"{count // 1000}k"
+    return f"{count / 1000:.1f}k"
+
+
+def _sts2_win_impact_row(reward):
+    """Run-level win-rate impact per act; only card-reward data is used."""
+    if not isinstance(reward, dict):
+        return None
+    cells = []
+    for act in _ACTS:
+        value = _metric_value(reward.get(act), "run_win_rate_impact")
+        if value is None:
+            cells.append("-")
+        elif value > 0:
+            cells.append(f"+{value:.0f}")
+        elif value < 0:
+            cells.append(f"{value:.0f}")
+        else:
+            cells.append("0")
+    if all(cell == "-" for cell in cells):
+        return None
+    return f"胜率关联：{' / '.join(cells)} 个百分点"
+
+
+def _sts2_sample_row(reward):
+    """Sample-size row from card-reward pick data; hides when all acts miss."""
+    if not isinstance(reward, dict):
+        return None
+    cells = []
+    for act in _ACTS:
+        act_data = reward.get(act)
+        sample = None
+        if isinstance(act_data, dict):
+            pick = act_data.get("pick_rate")
+            if isinstance(pick, dict):
+                sample = _format_compact_sample_count(pick.get("sample_size"))
+        cells.append(sample)
+    if not any(cell is not None for cell in cells):
+        return None
+    parts = " / ".join(cell if cell is not None else "-" for cell in cells)
+    return f"样本：第一/二/三层 {parts} 次"
+
+
 def render_sts2_stats(card, snapshot):
+    """STS2 default stat rows: reward / shop / smith / run impact / sample."""
     if not isinstance(snapshot, dict):
         return ""
     card_stats = snapshot.get("cards")
@@ -242,17 +295,34 @@ def render_sts2_stats(card, snapshot):
         return ""
 
     untapped = entry.get("untapped")
-    reward = untapped.get("card_reward") if isinstance(untapped, dict) else None
-
-    pick_row = _format_metric_row(reward, "pick_rate", lambda v: f"{v:.0f}%")
-    if pick_row is None:
+    if not isinstance(untapped, dict):
         return ""
-    return (
-        "卡牌奖励出现时：\n"
-        f"第一/二/三幕：{pick_row} 会选\n\n"
-        "数据来源：Untapped"
-    )
+    reward = untapped.get("card_reward")
+    shop = untapped.get("shop")
+    smith = untapped.get("smith")
 
+    rows = []
+    pick_row = _format_metric_row(reward, "pick_rate", lambda v: f"{v:.0f}%")
+    if pick_row is not None:
+        rows.append(f"卡牌奖励：第一/二/三层 {pick_row} 会选")
+
+    purchase_row = _format_metric_row(shop, "purchase_rate", lambda v: f"{v:.0f}%")
+    if purchase_row is not None:
+        rows.append(f"商店：{purchase_row} 会买")
+
+    upgrade_row = _format_metric_row(smith, "upgrade_rate", lambda v: f"{v:.0f}%")
+    if upgrade_row is not None:
+        rows.append(f"铁匠铺：{upgrade_row} 会升级")
+
+    impact_row = _sts2_win_impact_row(reward)
+    if impact_row is not None:
+        rows.append(impact_row)
+
+    sample_row = _sts2_sample_row(reward)
+    if sample_row is not None:
+        rows.append(sample_row)
+
+    return "\n".join(rows)
 
 def _act_row_value(source, name, formatter):
     acts = source.get(name)
@@ -314,8 +384,47 @@ def _sts1_same_rarity_rank_row(snapshot, card):
     return " · ".join(cells)
 
 
+_REPICK_MIN_SAMPLE_SIZE = 100
+
+
+def _scalar_metric_value(source, key):
+    """Numeric value from a scalar metric dict, or None."""
+    if not isinstance(source, dict):
+        return None
+    metric = source.get(key)
+    if not isinstance(metric, dict):
+        return None
+    value = metric.get("value")
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return value
+
+
+def _repick_row(source):
+    """Second-encounter re-pick sentence, hidden below the sample guard."""
+    if not isinstance(source, dict):
+        return None
+    metric = source.get("repick_rate")
+    if not isinstance(metric, dict):
+        return None
+    value = metric.get("value")
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    sample = metric.get("sample_size")
+    if isinstance(sample, bool) or not isinstance(sample, (int, float)):
+        return None
+    if int(sample) < _REPICK_MIN_SAMPLE_SIZE:
+        return None
+    return f"再遇到：约{value:.0f}%会再拿一张"
+
+
 def render_sts1_stats(card, snapshot):
-    """STS1 stats for the default asc7plus cohort; missing values render '-'."""
+    """STS1 default stat rows for the asc7plus cohort.
+
+    Rows answer decision and descriptive questions players actually ask:
+    reward pick rate, same-cohort rank, act win delta, first-choice floor and
+    second-encounter re-pick rate.  Terminal / Heart presence stays hidden.
+    """
     if not isinstance(snapshot, dict):
         return ""
     card_stats = snapshot.get("cards")
@@ -328,28 +437,29 @@ def render_sts1_stats(card, snapshot):
     if not isinstance(source, dict):
         return ""
 
+    rows = []
     pick_row = _act_row_value(source, "act_pick_rate", lambda v: f"{v:.1f}%")
+    if pick_row is not None:
+        rows.append(f"卡牌奖励：第一/二/三层 {pick_row} 会选")
+
+    rank_row = _sts1_same_rarity_rank_row(snapshot, card)
+    if rank_row is not None:
+        rows.append(f"同类排名：{rank_row}")
+
     delta_row = _sts1_win_delta_row(source)
     if delta_row is not None:
-        delta_row = f"{delta_row} 个百分点"
+        rows.append(f"胜率关联：{delta_row} 个百分点")
 
-    pick_line = (
-        f"第一/二/三幕：{pick_row} 会选" if pick_row is not None else "第一/二/三幕：-"
-    )
-    delta_line = (
-        f"第一/二/三幕：{delta_row}" if delta_row is not None else "第一/二/三幕：-"
-    )
-    rank_row = _sts1_same_rarity_rank_row(snapshot, card)
-    blocks = [f"卡牌奖励出现时：\n{pick_line}"]
-    if rank_row is not None:
-        blocks.append(f"同稀有度选择率排名：\n第一/二/三幕：{rank_row}")
-    blocks.extend(
-        [
-            f"胜率关联：\n{delta_line}",
-            "胜率差仅代表统计关联。",
-        ]
-    )
-    return "\n\n".join(blocks)
+    first_floor = _scalar_metric_value(source, "first_pick_floor_mean")
+    if first_floor is not None:
+        floor = int(math.floor(float(first_floor) + 0.5))
+        rows.append(f"第一次选择：平均第{floor}层左右")
+
+    repick_row = _repick_row(source)
+    if repick_row is not None:
+        rows.append(repick_row)
+
+    return "\n".join(rows)
 
 
 STS1_RELIC_ROLE_LABELS = {
@@ -469,14 +579,80 @@ def _boss_act_choice_paragraph(context, act_label):
     )
 
 
+RELIC_DESCRIPTIVE_TIERS = ("common", "uncommon", "rare")
+RELIC_ACQUISITION_MIN_COVERAGE_PERCENT = 60.0
+
+
+def _relic_metric_value(metric):
+    """Return a numeric rate value from a snapshot metric dict, or None."""
+    if not isinstance(metric, dict):
+        return None
+    value = metric.get("value")
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return value
+
+
+def _format_relic_percent(value):
+    return f"{value:.1f}%"
+
+
+def _display_floor(value):
+    """Round a recorded floor to the nearest integer, half-up (locked by tests)."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return int(math.floor(float(value) + 0.5))
+
+
+def _final_presence_row(entry):
+    """Per-character final-presence sentence in the project role order."""
+    supported = entry.get("supported_roles")
+    if not isinstance(supported, list):
+        return None
+    per_character = entry.get("per_character")
+    if not isinstance(per_character, dict):
+        return None
+    cells = []
+    for role, label in STS1_RELIC_ROLE_LABELS.items():
+        if role not in supported:
+            continue
+        value = _relic_metric_value(per_character.get(role))
+        if value is None:
+            continue
+        cells.append(f"{label}{_format_relic_percent(value)}")
+    if not cells:
+        return None
+    return "最终携带：" + " · ".join(cells)
+
+
+def _first_acquisition_row(relic, entry):
+    """First-acquisition timing row; requires reliable recorded coverage."""
+    tier = str(relic.get("tier") or "").strip().lower()
+    if tier not in RELIC_DESCRIPTIVE_TIERS:
+        return None
+    fa = entry.get("first_acquisition")
+    if not isinstance(fa, dict):
+        return None
+    coverage = _relic_metric_value(fa.get("coverage_rate"))
+    if coverage is None or coverage < RELIC_ACQUISITION_MIN_COVERAGE_PERCENT:
+        return None
+    median = _display_floor(fa.get("median_floor"))
+    p25 = _display_floor(fa.get("p25_floor"))
+    p75 = _display_floor(fa.get("p75_floor"))
+    if median is None or p25 is None or p75 is None:
+        return None
+    return f"首次获得：通常第{median}层左右，约一半在第{p25}～{p75}层"
+
+
 def render_relic_stats(relic, snapshot):
     """Render audited STS1 relic stats as natural-language sentences.
 
-    Default QQ output keeps only decision value: Boss relics show each act's
-    choice rate together with its same-act rank, and single-role relics keep a
-    plain role-restriction identity note.  Overall presence, Heart presence,
-    role spread and acquisition-timing copy stay hidden by default; the
-    statistics remain available in the snapshot.
+    Default QQ output keeps only decision or descriptive value:
+    - Boss relics show each act's choice rate together with its same-act rank;
+    - Common/Uncommon/Rare relics add first-acquisition timing (when recorded
+      coverage is reliable) and per-character final presence;
+    - single-role relics keep a plain role-restriction identity note;
+    - overall / Heart presence and act-distribution noise stay hidden.
     """
     if not isinstance(snapshot, dict):
         return ""
@@ -516,6 +692,17 @@ def render_relic_stats(relic, snapshot):
                 continue
             paragraphs.append(_boss_act_choice_paragraph(context, act_label))
 
+    if tier in RELIC_DESCRIPTIVE_TIERS:
+        rows = []
+        acquisition_row = _first_acquisition_row(relic, entry)
+        if acquisition_row is not None:
+            rows.append(acquisition_row)
+        presence_row = _final_presence_row(entry)
+        if presence_row is not None:
+            rows.append(presence_row)
+        if rows:
+            paragraphs.append("\n".join(rows))
+
     return "\n\n".join(paragraphs)
 
 
@@ -526,6 +713,7 @@ def render_relic_stats(relic, snapshot):
 # Untapped "Ancient Choice" relic pages.  Ranks only ever compare one
 # (NPC x act) cohort; end-of-run relic presence is deliberately not shown
 # as a default statistic.
+
 
 
 def _ancient_choice_block(snapshot):

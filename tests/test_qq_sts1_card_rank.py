@@ -102,14 +102,12 @@ def _cohort_snapshot():
 def test_sts1_default_adds_same_rarity_rank_row_under_pick_line(monkeypatch):
     reply = _render(monkeypatch, make_card(), _cohort_snapshot())
 
-    assert (
-        "卡牌奖励出现时：\n第一/二/三幕：60.0% / 25.0% / - 会选\n\n"
-        "同稀有度选择率排名：\n第一/二/三幕：2/2 · 1/1 · -" in reply
-    )
+    assert "卡牌奖励：第一/二/三层 60.0% / 25.0% / - 会选" in reply
+    assert "同类排名：2/2 · 1/1 · -" in reply
     # The rank row sits below the pick line and above the win-delta note.
-    assert reply.index("同稀有度选择率排名") > reply.index("卡牌奖励出现时")
-    assert reply.index("胜率关联") > reply.index("同稀有度选择率排名")
-
+    assert reply.index("同类排名") > reply.index("卡牌奖励")
+    assert reply.index("胜率关联") > reply.index("同类排名")
+    assert "幕" not in reply
 
 def test_sts1_rank_row_hides_entirely_without_any_rankable_act(monkeypatch):
     snapshot = {
@@ -126,9 +124,8 @@ def test_sts1_rank_row_hides_entirely_without_any_rankable_act(monkeypatch):
         }
     }
     reply = _render(monkeypatch, make_card(), snapshot)
-    assert "卡牌奖励出现时" in reply
-    assert "同稀有度选择率排名" not in reply
-
+    assert "卡牌奖励：第一/二/三层 60.0% / - / - 会选" in reply
+    assert "同类排名" not in reply
 
 def test_sts1_colorless_and_basic_cards_never_render_rank_row(monkeypatch):
     colorless_card = make_card(name="发现", card_id="DISCOVERY", pool="colorless", rarity="Uncommon")
@@ -149,7 +146,7 @@ def test_sts1_colorless_and_basic_cards_never_render_rank_row(monkeypatch):
         }
     }
     reply = _render(monkeypatch, colorless_card, colorless_snapshot)
-    assert "同稀有度选择率排名" not in reply
+    assert "同类排名" not in reply
 
     starter_card = make_card(name="打击", card_id="STRIKE_R", rarity="Basic")
     starter_snapshot = {
@@ -162,5 +159,5 @@ def test_sts1_colorless_and_basic_cards_never_render_rank_row(monkeypatch):
         }
     }
     reply = _render(monkeypatch, starter_card, starter_snapshot)
-    assert "同稀有度选择率排名" not in reply
-    assert "卡牌奖励出现时" in reply
+    assert "同类排名" not in reply
+    assert "卡牌奖励：第一/二/三层 50.0% / - / - 会选" in reply
