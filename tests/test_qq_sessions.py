@@ -198,7 +198,7 @@ def test_route_help_query_subcommand(monkeypatch):
 
     reply = bot.route_group_command(123, "帮助 查询")
 
-    assert "直接发卡名或遗物名即可查询" in reply
+    assert "直接发卡名、遗物名或事件名即可查询" in reply
     assert "只在某一代存在 → 直接查询" in reply
     assert "两代同名 → 提示加 1 / 2" in reply
     assert "空格可以忽略" in reply
