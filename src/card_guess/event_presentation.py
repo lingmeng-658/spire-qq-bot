@@ -17,6 +17,7 @@ from card_guess.sts1_event_stats_coverage import (
     event_level_stats_only,
     mapped_keys,
 )
+from card_guess.sts2_event_stats import load_sts2_event_stats_snapshot
 
 
 DEFAULT_DESCRIPTION_LIMIT = 140
@@ -195,11 +196,13 @@ def _visible_choices(event: EventRecord) -> list[tuple[EventChoice, str | None]]
     ]
 
 
-# STS1 Event Stats are a QQ enhancement over the plain catalog first screen.
-# The artifact is generated data with frozen aggregation semantics; this layer
-# only loads it and attaches compact per-choice lines before a player decides.
+# Event Stats are a QQ enhancement over the plain catalog first screen.  The
+# artifacts are generated data with frozen aggregation semantics; this layer
+# only loads them and attaches compact per-choice lines before a player decides.
 _EVENT_STATS_LOADER = load_sts1_event_stats_snapshot
 _EVENT_STATS_SNAPSHOT: dict | None = None
+_STS2_EVENT_STATS_LOADER = load_sts2_event_stats_snapshot
+_STS2_EVENT_STATS_SNAPSHOT: dict | None = None
 
 
 def _event_stats_snapshot() -> dict:
@@ -211,10 +214,24 @@ def _event_stats_snapshot() -> dict:
     return _EVENT_STATS_SNAPSHOT
 
 
+def _sts2_event_stats_snapshot() -> dict:
+    """Load the validated STS2 Event Stats snapshot once (empty on failure)."""
+
+    global _STS2_EVENT_STATS_SNAPSHOT
+    if _STS2_EVENT_STATS_SNAPSHOT is None:
+        _STS2_EVENT_STATS_SNAPSHOT = _STS2_EVENT_STATS_LOADER()
+    return _STS2_EVENT_STATS_SNAPSHOT
+
+
 _SHARE_LABEL = "选项占比"
-_WIN_RATE_LABEL = "关联胜率"
+_WIN_RATE_LABEL = "历史通关率"
 _SAMPLE_FOOTER = "样本：{:,} 次遭遇"
-_STATS_DISCLAIMER = "※ 选项占比不是“可选时选择率”；关联胜率仅表示历史关联，不代表因果。"
+_STATS_DISCLAIMER = "※ 选项占比不是“可选时选择率”；历史通关率仅表示历史关联，不代表因果。"
+_STS2_SHARE_LABEL = "选项出现占比"
+_STS2_DISCLAIMER = (
+    "※ 选项出现占比以事件遭遇次数为分母，重复选择时可能超过100%；"
+    "历史通关率仅表示历史关联，不代表因果。"
+)
 
 _STATS_ACT_KEYS = ("act_1", "act_2", "act_3")
 
@@ -230,6 +247,8 @@ def _event_stats_view(
       percentages are recomputed from summed underlying counts.
     """
 
+    if event.game == "sts2":
+        return _sts2_event_stats_view(snapshot, event)
     if event.game != "sts1" or not isinstance(snapshot, dict):
         return None, False
     events = snapshot.get("events")
@@ -252,6 +271,31 @@ def _event_stats_view(
     if len(present) == 1:
         return (acts[present[0]] if isinstance(acts[present[0]], dict) else None), False
     return build_cross_act_view(row), True
+
+
+def _sts2_event_stats_view(
+    snapshot: dict, event: EventRecord
+) -> tuple[dict | None, bool]:
+    """Resolve the flat STS2 event row; there is no act split in v1."""
+
+    if not isinstance(snapshot, dict):
+        return None, False
+    events = snapshot.get("events")
+    if not isinstance(events, dict):
+        return None, False
+    row = events.get(event.id)
+    if not isinstance(row, dict):
+        return None, False
+    encounters = row.get("encounter_count")
+    if (
+        not isinstance(encounters, int)
+        or isinstance(encounters, bool)
+        or encounters <= 0
+    ):
+        return None, False
+    if not isinstance(row.get("choices"), dict):
+        return None, False
+    return row, False
 
 
 def _number(value) -> bool:
@@ -324,6 +368,53 @@ def _event_stats_choice_line(
     return _option_line_merged(view, matches)
 
 
+def _sts2_initial_key(event: EventRecord, choice_id: str) -> str | None:
+    """The first-screen localization key when the visible choice is real."""
+
+    pages = event.raw.get("pages")
+    if not isinstance(pages, list):
+        return None
+    for page in pages:
+        if not isinstance(page, dict) or page.get("id") != "INITIAL":
+            continue
+        options = page.get("options")
+        if not isinstance(options, list):
+            continue
+        if not any(
+            isinstance(option, dict) and option.get("id") == choice_id
+            for option in options
+        ):
+            continue
+        return f"{event.id}.pages.INITIAL.options.{choice_id}.title"
+    return None
+
+
+def _sts2_choice_stats_line(
+    event: EventRecord, choice: EventChoice, view: dict
+) -> str | None:
+    """Compact STS2 line; QQ v1 defaults to the run-weighted win rate."""
+
+    if not choice.id or choice.id.endswith("_LOCKED"):
+        return None
+    key = _sts2_initial_key(event, choice.id)
+    if key is None:
+        return None
+    choices = view.get("choices")
+    if not isinstance(choices, dict):
+        return None
+    row = choices.get(key)
+    if not isinstance(row, dict):
+        return None
+    share = row.get("occurrence_share")
+    if not isinstance(share, dict) or not _number(share.get("value")):
+        return None
+    text = f"{_STS2_SHARE_LABEL} {share['value']:.1f}%"
+    run_rate = row.get("associated_run_win_rate")
+    if isinstance(run_rate, dict) and _number(run_rate.get("value")):
+        text += f" · {_WIN_RATE_LABEL} {run_rate['value']:.1f}%"
+    return text
+
+
 def _event_stats_footer(
     view: dict, *, cross_act: bool = False, event_level: bool = False
 ) -> str | None:
@@ -345,6 +436,17 @@ def _event_stats_footer(
     if markers:
         sample += "（" + " · ".join(markers) + "）"
     return f"{sample}\n{_STATS_DISCLAIMER}"
+
+
+def _sts2_event_stats_footer(view: dict) -> str | None:
+    encounters = view.get("encounter_count")
+    if (
+        not isinstance(encounters, int)
+        or isinstance(encounters, bool)
+        or encounters <= 0
+    ):
+        return None
+    return f"{_SAMPLE_FOOTER.format(encounters)}\n{_STS2_DISCLAIMER}"
 
 
 @dataclass(frozen=True)
@@ -372,11 +474,12 @@ def build_event_display(
 ) -> EventDisplay:
     """Enrich normalized choices once for both presentation modes."""
 
-    snapshot = (
-        stats_snapshot
-        if stats_snapshot is not None
-        else _event_stats_snapshot()
-    )
+    if stats_snapshot is not None:
+        snapshot = stats_snapshot
+    elif event.game == "sts2":
+        snapshot = _sts2_event_stats_snapshot()
+    else:
+        snapshot = _event_stats_snapshot()
     view, cross_act = _event_stats_view(snapshot, event)
     slot_index_by_choice = {
         id(choice): index
@@ -407,15 +510,20 @@ def build_event_display(
             )
         slot_index = slot_index_by_choice.get(id(choice))
         stats_text = None
-        if view is not None and slot_index is not None:
-            stats_text = _event_stats_choice_line(event, slot_index, view)
+        if view is not None:
+            if event.game == "sts2":
+                stats_text = _sts2_choice_stats_line(event, choice, view)
+            elif slot_index is not None:
+                stats_text = _event_stats_choice_line(event, slot_index, view)
         if stats_text:
             stats_shown = True
         choices.append(EventChoiceDisplay(text, description, stats_text))
 
     footer = None
     if view is not None:
-        if stats_shown:
+        if event.game == "sts2" and stats_shown:
+            footer = _sts2_event_stats_footer(view)
+        elif stats_shown:
             footer = _event_stats_footer(
                 view, cross_act=cross_act, event_level=False
             )

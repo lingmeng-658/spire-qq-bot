@@ -184,11 +184,11 @@ def test_big_fish_three_options_show_their_own_share():
     )
 
     banana = _segment(reply, "1. 香蕉", "2. 甜甜圈")
-    assert "选项占比 15.0% · 关联胜率 11.6%" in banana
+    assert "选项占比 15.0% · 历史通关率 11.6%" in banana
     donut = _segment(reply, "2. 甜甜圈", "3. 盒子")
-    assert "选项占比 51.1% · 关联胜率 11.1%" in donut
+    assert "选项占比 51.1% · 历史通关率 11.1%" in donut
     box = _segment(reply, "3. 盒子", "4. 离开")
-    assert "选项占比 33.8% · 关联胜率 6.6%" in box
+    assert "选项占比 33.8% · 历史通关率 6.6%" in box
 
 
 def test_big_fish_stats_appear_before_user_chooses():
@@ -226,11 +226,11 @@ def test_the_cleric_options_map_to_audited_dump_keys():
     )
 
     heal = _segment(reply, "1. 治疗", "2. 净化")
-    assert "选项占比 23.8% · 关联胜率 7.9%" in heal  # Healed, not Card Removal
+    assert "选项占比 23.8% · 历史通关率 7.9%" in heal  # Healed, not Card Removal
     purify = _segment(reply, "2. 净化", "3. 离开")
-    assert "选项占比 60.9% · 关联胜率 10.7%" in purify  # Card Removal
+    assert "选项占比 60.9% · 历史通关率 10.7%" in purify  # Card Removal
     leave = _option_line(reply, "3. 离开")
-    assert "选项占比 15.3% · 关联胜率 5.8%" in leave
+    assert "选项占比 15.3% · 历史通关率 5.8%" in leave
 
 
 def test_drug_dealer_options_map_to_audited_dump_keys():
@@ -239,11 +239,11 @@ def test_drug_dealer_options_map_to_audited_dump_keys():
     )
 
     jax = _segment(reply, "1. 试一下J.A.X.", "2. 当一下实验对象")
-    assert "选项占比 9.2% · 关联胜率 17.8%" in jax  # Obtain J.A.X.
+    assert "选项占比 9.2% · 历史通关率 17.8%" in jax  # Obtain J.A.X.
     subject = _segment(reply, "2. 当一下实验对象", "3. 喝一下突变剂")
-    assert "选项占比 47.4% · 关联胜率 24.5%" in subject  # Became Test Subject
+    assert "选项占比 47.4% · 历史通关率 24.5%" in subject  # Became Test Subject
     mutagens = _segment(reply, "3. 喝一下突变剂", "4. 离开")
-    assert "选项占比 43.4% · 关联胜率 20.2%" in mutagens  # Inject Mutagens
+    assert "选项占比 43.4% · 历史通关率 20.2%" in mutagens  # Inject Mutagens
 
 
 def test_low_sample_null_win_rate_shows_only_share_without_na():
@@ -253,7 +253,7 @@ def test_low_sample_null_win_rate_shows_only_share_without_na():
 
     leave = _option_line(reply, "4. 离开")
     assert "选项占比 0.0%" in leave
-    assert "关联胜率" not in leave
+    assert "历史通关率" not in leave
     assert "N/A" not in reply
 
 
@@ -329,7 +329,7 @@ def test_direct_event_query_shows_stats_before_choice(monkeypatch):
 
     assert reply is not None
     text = str(reply)
-    assert "选项占比 51.1% · 关联胜率 11.1%" in text
+    assert "选项占比 51.1% · 历史通关率 11.1%" in text
     assert "样本：6,702 次遭遇" in text
     assert event_sessions.get(101) is None
 
@@ -342,7 +342,7 @@ def test_random_interaction_first_screen_shows_stats(monkeypatch):
 
     assert reply is not None
     text = str(reply)
-    assert "选项占比 51.1% · 关联胜率 11.1%" in text
+    assert "选项占比 51.1% · 历史通关率 11.1%" in text
     assert "样本：6,702 次遭遇" in text
     assert event_sessions.get(101) is not None
 

@@ -71,7 +71,7 @@ def test_drug_dealer_direct_query_keeps_fixed_relic_effects_and_stats(monkeypatc
     assert "可能的选择：" in reply
     assert "遗物「突变之力」" in reply
     assert "效果：" in reply
-    assert "选项占比 43.4% · 关联胜率 20.2%" in reply
+    assert "选项占比 43.4% · 历史通关率 20.2%" in reply
     assert "样本：2,445 次遭遇" in reply
     assert event_sessions.get(101) is None
 
