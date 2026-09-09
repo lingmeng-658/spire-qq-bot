@@ -197,7 +197,7 @@ def test_big_fish_stats_appear_before_user_chooses():
     )
 
     assert reply.index("选项占比") < reply.index("样本：6,702 次遭遇")
-    assert reply.index("样本：6,702 次遭遇") < reply.index("※ 选项占比不是")
+    assert reply.index("样本：6,702 次遭遇") < reply.index("※ 历史统计")
 
 
 def test_big_fish_sample_size_and_single_disclaimer():
@@ -206,7 +206,8 @@ def test_big_fish_sample_size_and_single_disclaimer():
     )
 
     assert "样本：6,702 次遭遇" in reply
-    assert reply.count("※ 选项占比不是“可选时选择率”") == 1
+    assert reply.count("※ 历史统计，仅代表关联，不代表因果。") == 1
+    assert "可选时选择率" not in reply
 
 
 def test_big_fish_unmapped_leave_row_keeps_plain_catalog_text():
@@ -267,7 +268,7 @@ def test_event_without_stats_falls_back_to_plain_catalog_render():
     assert "1. 选项 —— 效果。" in plain
     assert "选项占比" not in plain
     assert "样本：" not in plain
-    assert "※ 选项占比不是" not in plain
+    assert "※ 历史统计" not in plain
 
 
 def test_missing_snapshot_is_safe_fallback_for_real_event():

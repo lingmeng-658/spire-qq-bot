@@ -11,6 +11,9 @@ from card_guess.cards import (
     render_description,
     render_sts1_energy,
 )
+from card_guess.event_entity_links import EventEntityLink, links_for_entity
+from card_guess.event_presentation import strip_event_bbcode
+from card_guess.events import EventCatalogError, EventRecord, get_event
 from card_guess.leaderboard import is_win_delta_eligible
 from card_guess.puzzle import format_pool, format_rarity, format_type
 from card_guess.relics import load_relics
@@ -956,6 +959,66 @@ def render_sts2_relic_shop_stats(relic, snapshot):
     return "\n".join(lines)
 
 
+def _linked_event_choice(event: EventRecord, link: EventEntityLink):
+    if event.game == "sts1":
+        index = link.condition.choice_index
+        if index is None or index >= len(event.choices):
+            return None
+        return event.choices[index]
+    return next(
+        (
+            choice
+            for choice in event.choices
+            if choice.id == link.condition.choice_id
+        ),
+        None,
+    )
+
+
+def _event_association_summary(
+    event: EventRecord, link: EventEntityLink, entity_name: str
+) -> str:
+    if link.relation == "FALLBACK_REWARD":
+        return f"{link.condition.fallback_text}改为获得"
+    if link.relation == "REMOVE":
+        return f"可献上「{entity_name}」"
+    if link.relation == "REWARD" and link.entity_type == "card" and link.entity_id == "BITE":
+        return "移除所有打击后获得 5 张"
+    choice = _linked_event_choice(event, link)
+    choice_text = strip_event_bbcode(
+        getattr(choice, "text_zh", None)
+    ).strip().rstrip("：:")
+    if link.relation == "REWARD":
+        return f"选择「{choice_text}」可获得" if choice_text else "可获得"
+    return "有关联"
+
+
+def render_event_associations(entity, entity_type: str) -> str:
+    """Render a compact reverse Event-link section for one concrete entity."""
+
+    if not isinstance(entity, dict):
+        return ""
+    game = str(entity.get("game") or "").strip()
+    entity_id = str(entity.get("id") or "").strip()
+    entity_name = str(entity.get("name") or "").strip()
+    if not game or not entity_id or entity_type not in {"card", "relic"}:
+        return ""
+    lines = []
+    for link in links_for_entity(game, entity_type, entity_id):
+        try:
+            event = get_event(game, link.event_id)
+        except EventCatalogError:
+            continue
+        summary = _event_association_summary(event, link, entity_name)
+        lines.append(f"- {event.name_zh}：{summary}")
+    if not lines:
+        return ""
+    visible = lines[:3]
+    if len(lines) > 3:
+        visible.append(f"- 另有 {len(lines) - 3} 个事件关联")
+    return "\n".join(["事件关联：", *visible])
+
+
 def render_relic_query_reply(relics):
     if len(relics) == 1:
         relic = relics[0]
@@ -969,6 +1032,9 @@ def render_relic_query_reply(relics):
         tier_text = _relic_tier_display(relic)
         if tier_text:
             parts.append(tier_text)
+        association_body = render_event_associations(relic, "relic")
+        if association_body:
+            parts.append(association_body)
         if game == "sts1":
             stats_body = render_relic_stats(relic, load_sts1_relic_stats())
             if stats_body:
@@ -1041,17 +1107,21 @@ def render_card_candidates(name, cards):
 def render_card_query_reply(cards):
     if len(cards) == 1:
         card = cards[0]
-        text = _query_identity_header(card)
+        parts = [_query_identity_header(card)]
+        association_body = render_event_associations(card, "card")
+        if association_body:
+            parts.append(association_body)
         image_path = resolve_local_card_image(card)
         image_paths = None
         if card.get("game") == "sts1":
             stats_text = render_sts1_stats(card, load_sts1_card_stats())
             if stats_text:
-                text = f"{text}\n\n{stats_text}"
+                parts.append(stats_text)
         elif card.get("game") == "sts2":
             stats_text = render_sts2_stats(card, load_sts2_card_stats())
             if stats_text:
-                text = f"{text}\n\n{stats_text}"
+                parts.append(stats_text)
+        text = "\n\n".join(parts)
         upgraded_path = resolve_local_upgraded_card_image(card)
         if upgraded_path is not None:
             image_paths = tuple(p for p in (image_path, upgraded_path) if p is not None)

@@ -201,8 +201,9 @@ def test_wellspring_renders_sts2_occurrence_share_and_history_win_rate():
     bathe = _segment(reply, "2. 沐浴", "样本：120 次遭遇")
     assert "选项出现占比 83.3% · 历史通关率 40.0%" in bathe
     assert "样本：120 次遭遇" in reply
-    assert "※ 选项出现占比以事件遭遇次数为分母，重复选择时可能超过100%；" in reply
-    assert "历史通关率仅表示历史关联，不代表因果。" in reply
+    assert "※ 历史统计，仅代表关联，不代表因果。" in reply
+    assert "※ 该选项可重复选择，因此占比可能超过100%。" not in reply
+    assert "以事件遭遇次数为分母" not in reply
 
 
 def test_slippery_bridge_repeated_choice_snapshot_renders_without_misleading_rate():
@@ -216,6 +217,8 @@ def test_slippery_bridge_repeated_choice_snapshot_renders_without_misleading_rat
     assert "节点选择率" not in reply
     assert "选择率" not in reply
     assert "Pick Rate" not in reply
+    assert "※ 历史统计，仅代表关联，不代表因果。" in reply
+    assert "※ 该选项可重复选择，因此占比可能超过100%。" in reply
 
 
 def test_abyssal_baths_linger_can_display_share_above_one_hundred_percent():
@@ -238,6 +241,8 @@ def test_abyssal_baths_linger_can_display_share_above_one_hundred_percent():
 
     assert "选项出现占比 160.0%" in reply
     assert "样本：50 次遭遇" in reply
+    assert "※ 历史统计，仅代表关联，不代表因果。" in reply
+    assert "※ 该选项可重复选择，因此占比可能超过100%。" in reply
 
 
 def test_stats_missing_falls_back_to_plain_event_catalog():

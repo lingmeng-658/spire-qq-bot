@@ -1,0 +1,165 @@
+{
+  "schema_version": "1.0",
+  "links": [
+    {
+      "game": "sts1",
+      "event_id": "ACCURSED_BLACKSMITH",
+      "entity_type": "relic",
+      "entity_id": "WARPEDTONGS",
+      "relation": "REWARD",
+      "condition": {"choice_id": null, "choice_index": 1, "fallback_text": null},
+      "source": "data/raw/sts1_events.json",
+      "evidence": "[Rummage] Obtain a special Relic. Become Cursed - Pain."
+    },
+    {
+      "game": "sts1",
+      "event_id": "DRUG_DEALER",
+      "entity_type": "relic",
+      "entity_id": "MUTAGENICSTRENGTH",
+      "relation": "REWARD",
+      "condition": {"choice_id": null, "choice_index": 2, "fallback_text": null},
+      "source": "data/raw/sts1_events.json",
+      "evidence": "[Ingest Mutagens] Obtain a special relic."
+    },
+    {
+      "game": "sts1",
+      "event_id": "DRUG_DEALER",
+      "entity_type": "relic",
+      "entity_id": "CIRCLET",
+      "relation": "FALLBACK_REWARD",
+      "condition": {"choice_id": null, "choice_index": 2, "fallback_text": "已拥有「突变之力」时"},
+      "source": "frozen-event-audit-v1",
+      "evidence": "Mutagenic Strength duplicate fallback is Circlet."
+    },
+    {
+      "game": "sts1",
+      "event_id": "N_LOTH",
+      "entity_type": "relic",
+      "entity_id": "NLOTH_S_GIFT",
+      "relation": "REWARD",
+      "condition": {"choice_id": null, "choice_index": 0, "fallback_text": null},
+      "source": "data/raw/sts1_events.json",
+      "evidence": "Exchange a Relic for a special reward."
+    },
+    {
+      "game": "sts1",
+      "event_id": "N_LOTH",
+      "entity_type": "relic",
+      "entity_id": "CIRCLET",
+      "relation": "FALLBACK_REWARD",
+      "condition": {"choice_id": null, "choice_index": 0, "fallback_text": "已拥有「恩洛斯的礼物」时"},
+      "source": "frozen-event-audit-v1",
+      "evidence": "N'loth's Gift duplicate fallback is Circlet."
+    },
+    {
+      "game": "sts1",
+      "event_id": "TOMB_OF_LORD_RED_MASK",
+      "entity_type": "relic",
+      "entity_id": "RED_MASK",
+      "relation": "REWARD",
+      "condition": {"choice_id": null, "choice_index": 1, "fallback_text": null},
+      "source": "data/raw/sts1_events.json",
+      "evidence": "[Offer: Gold] Lose all Gold. Obtain a Relic."
+    },
+    {
+      "game": "sts1",
+      "event_id": "FORGOTTEN_ALTAR",
+      "entity_type": "relic",
+      "entity_id": "DARKSTONE_PERIAPT",
+      "relation": "REWARD",
+      "condition": {"choice_id": null, "choice_index": 0, "fallback_text": null},
+      "source": "data/raw/sts1_events.json",
+      "evidence": "[Offer] Gain Darkstone Periapt (Relic)."
+    },
+    {
+      "game": "sts1",
+      "event_id": "GOLDEN_IDOL",
+      "entity_type": "relic",
+      "entity_id": "GOLDEN_IDOL",
+      "relation": "REWARD",
+      "condition": {"choice_id": null, "choice_index": 0, "fallback_text": null},
+      "source": "data/raw/sts1_events.json",
+      "evidence": "[Take] Gain the Golden Idol (Relic)."
+    },
+    {
+      "game": "sts1",
+      "event_id": "THE_MOAI_HEAD",
+      "entity_type": "relic",
+      "entity_id": "GOLDEN_IDOL",
+      "relation": "REMOVE",
+      "condition": {"choice_id": null, "choice_index": 1, "fallback_text": null},
+      "source": "data/raw/sts1_events.json",
+      "evidence": "[Offer: Golden Idol] Gain 333 Gold. Lose Golden Idol."
+    },
+    {
+      "game": "sts1",
+      "event_id": "DRUG_DEALER",
+      "entity_type": "card",
+      "entity_id": "J_A_X",
+      "relation": "REWARD",
+      "condition": {"choice_id": null, "choice_index": 0, "fallback_text": null},
+      "source": "data/raw/sts1_events.json",
+      "evidence": "[Test J.A.X.] Get JAXXED."
+    },
+    {
+      "game": "sts1",
+      "event_id": "VAMPIRES",
+      "entity_type": "card",
+      "entity_id": "BITE",
+      "relation": "REWARD",
+      "condition": {"choice_id": null, "choice_index": 0, "fallback_text": null},
+      "source": "data/raw/sts1_events.json",
+      "evidence": "[Accept] Remove all Strikes. Receive 5 Bites. Lose 30% Max HP."
+    },
+    {
+      "game": "sts2",
+      "event_id": "DROWNING_BEACON",
+      "entity_type": "relic",
+      "entity_id": "FRESNEL_LENS",
+      "relation": "REWARD",
+      "condition": {"choice_id": "CLIMB", "choice_index": null, "fallback_text": null},
+      "source": "data/raw/sts2_events.json",
+      "evidence": "攀爬：获得菲涅耳透镜。"
+    },
+    {
+      "game": "sts2",
+      "event_id": "GRAVE_OF_THE_FORGOTTEN",
+      "entity_type": "relic",
+      "entity_id": "FORGOTTEN_SOUL",
+      "relation": "REWARD",
+      "condition": {"choice_id": "ACCEPT", "choice_index": null, "fallback_text": null},
+      "source": "data/raw/sts2_events.json",
+      "evidence": "接受这颗遗忘之魂：获得遗忘之魂。"
+    },
+    {
+      "game": "sts2",
+      "event_id": "ROOM_FULL_OF_CHEESE",
+      "entity_type": "relic",
+      "entity_id": "CHOSEN_CHEESE",
+      "relation": "REWARD",
+      "condition": {"choice_id": "SEARCH", "choice_index": null, "fallback_text": null},
+      "source": "data/raw/sts2_events.json",
+      "evidence": "仔细翻找：失去14点生命，获得天选芝士。"
+    },
+    {
+      "game": "sts2",
+      "event_id": "SUNKEN_STATUE",
+      "entity_type": "relic",
+      "entity_id": "SWORD_OF_STONE",
+      "relation": "REWARD",
+      "condition": {"choice_id": "GRAB_SWORD", "choice_index": null, "fallback_text": null},
+      "source": "data/raw/sts2_events.json",
+      "evidence": "拿起石剑：获得石之剑。"
+    },
+    {
+      "game": "sts2",
+      "event_id": "WAR_HISTORIAN_REPY",
+      "entity_type": "relic",
+      "entity_id": "HISTORY_COURSE",
+      "relation": "REWARD",
+      "condition": {"choice_id": "UNLOCK_CAGE", "choice_index": null, "fallback_text": null},
+      "source": "data/raw/sts2_events.json",
+      "evidence": "打开笼子：失去灯火钥匙。获得历史课。"
+    }
+  ]
+}

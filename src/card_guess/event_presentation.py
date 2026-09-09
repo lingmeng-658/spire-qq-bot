@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 import re
 
+from card_guess.cards import load_cards
+from card_guess.event_entity_links import EventEntityLink, links_for_event
 from card_guess.events import EventChoice, EventRecord
 from card_guess.relics import load_relics
 from card_guess.qq.relic_short_summary import short_relic_effect
@@ -35,79 +37,81 @@ _POOL_LABELS = {
     "ancient": "先古遗民",
 }
 
-# Only rewards whose concrete STS1 entity is audited in the recovery layer.
-# The catalog remains the source of names and effect text.
-_FIXED_STS1_EVENT_REWARDS = {
-    "ACCURSED_BLACKSMITH": ("WARPEDTONGS",),
-    "DRUG_DEALER": ("MUTAGENICSTRENGTH", "CIRCLET"),
-    "N_LOTH": ("NLOTH_S_GIFT", "CIRCLET"),
-    "TOMB_OF_LORD_RED_MASK": ("RED_MASK",),
-}
-_STS1_RELICS_BY_ID: dict[str, dict] | None = None
-
-# STS2 audited fixed-relic rewards inside the playable random pool.  Each row
-# maps a frozen event + visible choice to the catalog relic it grants, so the
-# QQ first screen can show name + short effect before the player decides.
-# Runtime/random rewards and unknown fixed entities stay categorical.
-_FIXED_STS2_EVENT_REWARDS = {
-    "DROWNING_BEACON": {"CLIMB": "FRESNEL_LENS"},
-    "GRAVE_OF_THE_FORGOTTEN": {"ACCEPT": "FORGOTTEN_SOUL"},
-    "ROOM_FULL_OF_CHEESE": {"SEARCH": "CHOSEN_CHEESE"},
-    "SUNKEN_STATUE": {"GRAB_SWORD": "SWORD_OF_STONE"},
-    "WAR_HISTORIAN_REPY": {"UNLOCK_CAGE": "HISTORY_COURSE"},
-}
-_STS2_RELICS_BY_ID: dict[str, dict] | None = None
+_RELICS_BY_GAME: dict[str, dict[str, dict]] = {}
+_CARDS_BY_GAME: dict[str, dict[str, dict]] = {}
+_EVENT_LINK_RELATION_ORDER = {"REWARD": 0, "FALLBACK_REWARD": 1}
 
 
-def _fixed_sts2_reward_effects(
-    event: EventRecord, choice: EventChoice
-) -> str:
-    """Return the audited fixed STS2 relic effect line for one choice row."""
-    if event.game != "sts2":
-        return ""
-    relic_id = (_FIXED_STS2_EVENT_REWARDS.get(event.id) or {}).get(choice.id or "")
-    if not relic_id:
-        return ""
-    global _STS2_RELICS_BY_ID
-    if _STS2_RELICS_BY_ID is None:
-        _STS2_RELICS_BY_ID = {r["id"]: r for r in load_relics("sts2")}
-    relic = _STS2_RELICS_BY_ID.get(relic_id)
+def _link_matches_choice(
+    link: EventEntityLink, choice: EventChoice, choice_index: int
+) -> bool:
+    if link.game == "sts1":
+        return link.condition.choice_index == choice_index
+    return link.condition.choice_id == choice.id
+
+
+def _relic_link_text(link: EventEntityLink) -> str:
+    relics = _RELICS_BY_GAME.get(link.game)
+    if relics is None:
+        relics = {item["id"]: item for item in load_relics(link.game)}
+        _RELICS_BY_GAME[link.game] = relics
+    relic = relics.get(link.entity_id)
     if not relic:
         return ""
     name = str(relic.get("name") or "").strip()
     effect = short_relic_effect(
-        relic.get("description"), relic_id=relic_id, game="sts2"
+        relic.get("description"), relic_id=link.entity_id, game=link.game
     )
-    if name and effect:
-        return f"遗物「{name}」\n效果：{effect}"
-    return ""
+    if not name:
+        return ""
+    if link.relation == "FALLBACK_REWARD":
+        prefix = f"若{link.condition.fallback_text}：获得遗物"
+    elif link.relation == "REMOVE":
+        prefix = "献上遗物"
+    else:
+        prefix = "获得遗物"
+    text = f"{prefix}「{name}」"
+    if effect:
+        text += f"\n效果：{effect}"
+    return text
 
 
-def _fixed_reward_effects(event: EventRecord, choice: EventChoice) -> str:
-    """Return catalog-backed effects for an audited fixed STS1 reward."""
-    if event.game != "sts1" or event.id not in _FIXED_STS1_EVENT_REWARDS:
-        return ""
-    # Match the audited option by its stable raw English token, not display text.
-    option = str((choice.raw or {}).get("option") or "")
-    option_folded = option.casefold()
-    if not option or not any(token in option_folded for token in (
-        "obtain a special relic", "special reward", "obtain a relic."
-    )):
-        return ""
-    global _STS1_RELICS_BY_ID
-    if _STS1_RELICS_BY_ID is None:
-        _STS1_RELICS_BY_ID = {r["id"]: r for r in load_relics("sts1")}
+def _card_link_text(link: EventEntityLink) -> str:
+    cards = _CARDS_BY_GAME.get(link.game)
+    if cards is None:
+        cards = {item["id"]: item for item in load_cards(link.game)}
+        _CARDS_BY_GAME[link.game] = cards
+    card = cards.get(link.entity_id)
+    name = str((card or {}).get("name") or "").strip()
+    return f"获得卡牌「{name}」" if name else ""
+
+
+def _fixed_entity_effects(
+    event: EventRecord, choice: EventChoice, choice_index: int
+) -> str:
+    """Render audited concrete entities attached to this exact choice."""
+
+    links = sorted(
+        (
+            link
+            for link in links_for_event(event.game, event.id)
+            if _link_matches_choice(link, choice, choice_index)
+        ),
+        key=lambda link: (
+            _EVENT_LINK_RELATION_ORDER.get(link.relation, 9),
+            link.entity_type,
+            link.entity_id,
+        ),
+    )
     lines = []
-    for relic_id in _FIXED_STS1_EVENT_REWARDS[event.id]:
-        relic = _STS1_RELICS_BY_ID.get(relic_id)
-        if not relic:
-            continue
-        name = str(relic.get("name") or "").strip()
-        effect = short_relic_effect(
-            relic.get("description"), relic_id=relic_id, game="sts1"
+    for link in links:
+        text = (
+            _relic_link_text(link)
+            if link.entity_type == "relic"
+            else _card_link_text(link)
         )
-        if name and effect:
-            lines.append(f"遗物「{name}」\n效果：{effect}")
+        if text:
+            lines.append(text)
     return "\n".join(lines)
 
 
@@ -226,12 +230,10 @@ def _sts2_event_stats_snapshot() -> dict:
 _SHARE_LABEL = "选项占比"
 _WIN_RATE_LABEL = "历史通关率"
 _SAMPLE_FOOTER = "样本：{:,} 次遭遇"
-_STATS_DISCLAIMER = "※ 选项占比不是“可选时选择率”；历史通关率仅表示历史关联，不代表因果。"
+_STATS_DISCLAIMER = "※ 历史统计，仅代表关联，不代表因果。"
 _STS2_SHARE_LABEL = "选项出现占比"
-_STS2_DISCLAIMER = (
-    "※ 选项出现占比以事件遭遇次数为分母，重复选择时可能超过100%；"
-    "历史通关率仅表示历史关联，不代表因果。"
-)
+_STS2_REPEAT_DISCLAIMER = "※ 该选项可重复选择，因此占比可能超过100%。"
+_STS2_REPEATED_CHOICE_EVENTS = frozenset({"ABYSSAL_BATHS", "SLIPPERY_BRIDGE"})
 
 _STATS_ACT_KEYS = ("act_1", "act_2", "act_3")
 
@@ -438,7 +440,23 @@ def _event_stats_footer(
     return f"{sample}\n{_STATS_DISCLAIMER}"
 
 
-def _sts2_event_stats_footer(view: dict) -> str | None:
+def _sts2_repeat_disclaimer_needed(view: dict, event_id: str) -> bool:
+    if event_id in _STS2_REPEATED_CHOICE_EVENTS:
+        return True
+    choices = view.get("choices")
+    if not isinstance(choices, dict):
+        return False
+    for row in choices.values():
+        if not isinstance(row, dict):
+            continue
+        share = row.get("occurrence_share")
+        if isinstance(share, dict) and _number(share.get("value")):
+            if share["value"] > 100:
+                return True
+    return False
+
+
+def _sts2_event_stats_footer(view: dict, event_id: str) -> str | None:
     encounters = view.get("encounter_count")
     if (
         not isinstance(encounters, int)
@@ -446,7 +464,10 @@ def _sts2_event_stats_footer(view: dict) -> str | None:
         or encounters <= 0
     ):
         return None
-    return f"{_SAMPLE_FOOTER.format(encounters)}\n{_STS2_DISCLAIMER}"
+    lines = [_SAMPLE_FOOTER.format(encounters), _STATS_DISCLAIMER]
+    if _sts2_repeat_disclaimer_needed(view, event_id):
+        lines.append(_STS2_REPEAT_DISCLAIMER)
+    return "\n".join(lines)
 
 
 @dataclass(frozen=True)
@@ -485,6 +506,9 @@ def build_event_display(
         id(choice): index
         for index, choice in enumerate(display_slots(event))
     }
+    choice_index_by_choice = {
+        id(choice): index for index, choice in enumerate(event.choices)
+    }
     choices: list[EventChoiceDisplay] = []
     stats_shown = False
     for choice, locked_text in _visible_choices(event):
@@ -492,15 +516,12 @@ def build_event_display(
         if not text:
             continue
         description = _plain_choice_description(choice)
-        reward_effects = _fixed_reward_effects(event, choice)
-        if reward_effects:
+        entity_effects = _fixed_entity_effects(
+            event, choice, choice_index_by_choice[id(choice)]
+        )
+        if entity_effects:
             description = (
-                f"{description}\n{reward_effects}" if description else reward_effects
-            )
-        sts2_effects = _fixed_sts2_reward_effects(event, choice)
-        if sts2_effects:
-            description = (
-                f"{description}\n{sts2_effects}" if description else sts2_effects
+                f"{description}\n{entity_effects}" if description else entity_effects
             )
         if locked_text:
             description = (
@@ -522,7 +543,7 @@ def build_event_display(
     footer = None
     if view is not None:
         if event.game == "sts2" and stats_shown:
-            footer = _sts2_event_stats_footer(view)
+            footer = _sts2_event_stats_footer(view, event.id)
         elif stats_shown:
             footer = _event_stats_footer(
                 view, cross_act=cross_act, event_level=False
