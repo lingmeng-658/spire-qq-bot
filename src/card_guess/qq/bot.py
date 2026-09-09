@@ -5,8 +5,24 @@ import random
 import re
 
 from card_guess.cards import load_cards
-from card_guess.event_presentation import render_event, render_event_choice_outcome
-from card_guess.events import default_random_pool, find_events_by_name
+from card_guess.event_presentation import (
+    render_event,
+    render_event_unsupported,
+    render_event_choice_outcome,
+    render_event_level2_outcome,
+)
+from card_guess.event_query import plan_event_query, render_event_query
+from card_guess.event_interaction import (
+    EventInteractionKind,
+    interaction_plan,
+    supported_interaction_events,
+)
+from card_guess.events import (
+    EventCatalogError,
+    default_random_pool,
+    find_events_by_name,
+    get_event,
+)
 from card_guess.relics import find_relics_by_name, load_relics
 from card_guess import leaderboard as lb
 from card_guess.puzzle import POOL_NAMES, format_rarity
@@ -510,7 +526,33 @@ def _render_event_matches(name, matches):
         return None
     if {"sts1", "sts2"}.issubset(_games_for_events(matches)):
         return RenderedReply(_cross_generation_hint(name))
-    return RenderedReply(render_event(matches[0]))
+    return RenderedReply(render_event_query(plan_event_query(matches[0])))
+
+
+def _render_direct_event_query(command):
+    """Resolve an exact Event query before interactive-session input."""
+
+    name, generation, role = _parse_generation_selector(command)
+    if name is None or role is not None:
+        return None
+    event_matches = _find_events_by_name(name, generation)
+    if not event_matches:
+        return None
+
+    matches = {
+        "card": _find_cards_by_name(name, generation),
+        "relic": (
+            _find_relics_by_name(name)
+            if generation is None
+            else _find_generation_relics_by_name(name, generation)
+        ),
+        "event": event_matches,
+    }
+    display_name = f"{name}{generation}" if generation is not None else name
+    ambiguity = _entity_disambiguation(display_name, matches)
+    if ambiguity is not None:
+        return ambiguity
+    return _render_event_matches(name, event_matches)
 
 
 def _render_typed_query(command):
@@ -557,8 +599,21 @@ def _actor_label(actor):
     return label or "群友"
 
 
+def _resolve_event_for_session(session):
+    """Load the EventRecord for a session (None when catalog is unavailable)."""
+    try:
+        return get_event(session.game, session.event_id)
+    except EventCatalogError:
+        return None
+
+
 def _active_event_session_reply(group_id, command, actor=None):
-    """Route a message while an interactive event round is pending."""
+    """Route a message while an interactive event round is pending.
+
+    Level 2 (whitelisted multi-stage events) stays alive after each choice
+    until the player reaches a terminal page.
+    Level 1 (everything else) is choice -> result -> end.
+    """
 
     session = event_sessions.get(group_id)
     if session is None:
@@ -571,8 +626,29 @@ def _active_event_session_reply(group_id, command, actor=None):
     choice = event_sessions.resolve_choice(session, command)
     if choice is None:
         return RenderedReply(EVENT_SESSION_INVALID_REPLY)
-    event_sessions.end(group_id)
-    return RenderedReply(render_event_choice_outcome(choice, _actor_label(actor)))
+
+    if not session.is_level2:
+        event_sessions.end(group_id)
+        return RenderedReply(render_event_choice_outcome(choice, _actor_label(actor)))
+
+    # Level 2 resolution
+    event = _resolve_event_for_session(session)
+    if event is None:
+        event_sessions.end(group_id)
+        return RenderedReply(render_event_choice_outcome(choice, _actor_label(actor)))
+
+    resolved = event_sessions.advance(group_id, event, choice)
+    next_session = event_sessions.get(group_id)
+    next_choices = next_session.visible_choices if next_session is not None else ()
+    return RenderedReply(
+        render_event_level2_outcome(
+            choice,
+            _actor_label(actor),
+            resolved.result_text,
+            next_choices,
+            terminal=resolved.terminal,
+        )
+    )
 
 
 def _render_random_event_reply(command, group_id=None):
@@ -580,9 +656,21 @@ def _render_random_event_reply(command, group_id=None):
         return None
     generation = RANDOM_EVENT_COMMANDS[command]
     game = f"sts{generation}" if generation is not None else random.choice(("sts1", "sts2"))
-    event = random.choice(default_random_pool(game))
-    reply = RenderedReply(render_event(event))
-    if group_id is not None and game == "sts2":
+    event = random.choice(supported_interaction_events(default_random_pool(game)))
+    plan = interaction_plan(event)
+    if plan.kind is EventInteractionKind.UNSUPPORTED:
+        rendered = render_event(event)
+        # Keep simple renderer substitutions backward-compatible while the
+        # production renderer gets the explicit non-interactive notice.
+        if rendered == event.id:
+            reply = RenderedReply(rendered)
+        else:
+            reply = RenderedReply(
+                render_event_unsupported(event, plan.unsupported_reason or "暂不支持完整互动。")
+            )
+    else:
+        reply = RenderedReply(render_event(event))
+    if group_id is not None and plan.kind is not EventInteractionKind.UNSUPPORTED:
         event_sessions.open_if_idle(group_id, event)
     return reply
 
@@ -712,13 +800,18 @@ def route_group_command(group_id, text, actor=None):
     if command and command.split(None, 1)[0].lower() in HELP_COMMANDS:
         return render_help(command)
 
-    active_event_reply = _active_event_session_reply(group_id, command, actor)
-    if active_event_reply is not None:
-        return active_event_reply
-
     typed_query = _render_typed_query(command)
     if typed_query is not None:
         return typed_query
+
+    if event_sessions.get(group_id) is not None:
+        event_query = _render_direct_event_query(command)
+        if event_query is not None:
+            return event_query
+
+    active_event_reply = _active_event_session_reply(group_id, command, actor)
+    if active_event_reply is not None:
+        return active_event_reply
 
     random_event = _render_random_event_reply(command, group_id)
     if random_event is not None:

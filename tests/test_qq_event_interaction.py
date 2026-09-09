@@ -1,6 +1,8 @@
 """STS2 Interactive Event Level 1 tests.
 
-Choice -> official result_zh -> end, first-valid-answerer semantics.  All
+Choice -> official result_zh -> end, first-valid-answerer semantics.  Only
+catalog events whose interaction plan is playable may open a random session;
+unsupported events stay direct-query only.  All
 session state lives in ``card_guess.qq.event_sessions`` so the guess-card
 session system stays untouched.  Real frozen catalog records are used only
 for the audited smoke examples; every behavioural test uses fictional
@@ -11,6 +13,7 @@ from __future__ import annotations
 
 import pytest
 
+from card_guess.event_interaction import EventInteractionKind, interaction_plan
 from card_guess.event_presentation import list_visible_choices, strip_event_bbcode
 from card_guess.events import EventChoice, EventRecord, get_event
 from card_guess.qq import bot, event_sessions, sessions
@@ -37,7 +40,7 @@ def make_choice(
 def make_event(
     *,
     game="sts2",
-    event_id="STS2_INTERACTIVE_FIXTURE",
+    event_id="WELLSPRING",
     name="互动事件",
     act=1,
     pool="act_specific",
@@ -95,6 +98,18 @@ def patch_query_sources(monkeypatch, *, cards=(), relics=(), events=()):
     monkeypatch.setattr(
         bot,
         "render_event",
+        lambda event: f"event:{event.game}:{event.name_zh}",
+        raising=False,
+    )
+    monkeypatch.setattr(
+        bot,
+        "plan_event_query",
+        lambda event: event,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        bot,
+        "render_event_query",
         lambda event: f"event:{event.game}:{event.name_zh}",
         raising=False,
     )
@@ -156,7 +171,7 @@ def test_mixed_random_event_creating_session_when_sts2_wins(monkeypatch):
             return "sts2"
         return items[0]
 
-    event = make_event(event_id="STS2_WON")
+    event = make_event(event_id="WELLSPRING")
     patch_pool(monkeypatch, event)
     monkeypatch.setattr(
         bot,
@@ -168,16 +183,16 @@ def test_mixed_random_event_creating_session_when_sts2_wins(monkeypatch):
     reply = bot.route_group_command(101, "事件")
 
     assert reply is not None
-    assert event_sessions.get(101).event_id == "STS2_WON"
+    assert event_sessions.get(101).event_id == "WELLSPRING"
 
 
-def test_mixed_random_event_does_not_create_session_when_sts1_wins(monkeypatch):
+def test_mixed_random_event_creates_session_for_playable_sts1(monkeypatch):
     def choose(items):
         if items == ("sts1", "sts2"):
             return "sts1"
         return items[0]
 
-    event = make_event(game="sts1", event_id="STS1_STATIC")
+    event = make_event(game="sts1", event_id="BIG_FISH")
     patch_pool(monkeypatch, event)
     monkeypatch.setattr(
         bot,
@@ -189,8 +204,63 @@ def test_mixed_random_event_does_not_create_session_when_sts1_wins(monkeypatch):
     reply = bot.route_group_command(101, "事件")
 
     assert reply is not None
+    assert event_sessions.get(101).event_id == "BIG_FISH"
+
+
+def test_sts1_playable_event_creates_session_and_resolves_by_ordinal(monkeypatch):
+    event = make_event(
+        game="sts1",
+        event_id="BIG_FISH",
+        choices=(
+            make_choice("", "香蕉", description="回复最大生命值的 1/3。", result=None),
+            make_choice("", "甜甜圈", description="最大生命值 +5。", result=None),
+        ),
+    )
+    patch_pool(monkeypatch, event)
+
+    first = bot.route_group_command(101, "事件1")
+    assert event_sessions.get(101) is not None
+
+    reply = str(bot.route_group_command(101, "2", actor="小明"))
+    assert "小明选择了" in reply
+    assert "最大生命值 +5" in reply
+    assert "事件结束" in reply
     assert event_sessions.get(101) is None
-    assert 101 not in event_sessions.SESSIONS
+
+
+def test_event1_filters_unsupported_events_before_random_choice(monkeypatch):
+    unsupported = make_event(game="sts1", event_id="MATCH_AND_KEEP", name="对对碰！")
+    playable = make_event(game="sts1", event_id="BIG_FISH", name="大鱼")
+    chosen_from = []
+
+    monkeypatch.setattr(bot, "default_random_pool", lambda game: (unsupported, playable))
+
+    def choose(items):
+        chosen_from.append(tuple(event.id for event in items))
+        return items[0]
+
+    monkeypatch.setattr(
+        bot,
+        "random",
+        type("FixtureRandom", (), {"choice": staticmethod(choose)}),
+        raising=False,
+    )
+
+    reply = bot.route_group_command(101, "事件1")
+
+    assert reply is not None
+    assert chosen_from == [("BIG_FISH",)]
+    assert event_sessions.get(101).event_id == "BIG_FISH"
+
+
+def test_sts1_unsupported_event_direct_query_still_returns_catalog_data(monkeypatch):
+    event = make_event(game="sts1", event_id="MATCH_AND_KEEP", name="对对碰！")
+    patch_query_sources(monkeypatch, events=(event,))
+
+    reply = str(bot.route_group_command(101, "对对碰！"))
+
+    assert reply == "event:sts1:对对碰！"
+    assert event_sessions.get(101) is None
 
 
 # 4: direct name query stays a pure lookup ------------------------------------
@@ -408,7 +478,7 @@ def test_session_is_cleaned_immediately_after_choice(monkeypatch):
 
 def test_new_random_event_does_not_overwrite_active_interaction(monkeypatch):
     first = make_event(
-        event_id="FIRST_EVENT",
+        event_id="WELLSPRING",
         choices=(make_choice("A", "选项一", result="结果一。"),),
     )
     patch_pool(monkeypatch, first)
@@ -416,14 +486,14 @@ def test_new_random_event_does_not_overwrite_active_interaction(monkeypatch):
     before = event_sessions.get(101)
 
     second = make_event(
-        event_id="SECOND_EVENT",
+        event_id="AMALGAMATOR",
         choices=(make_choice("B", "选项二", result="结果二。"),),
     )
     patch_pool(monkeypatch, second)
     reply = str(bot.route_group_command(101, "事件2"))
 
     assert event_sessions.get(101) is before
-    assert before.event_id == "FIRST_EVENT"
+    assert before.event_id == "WELLSPRING"
     assert "互动事件进行中" in reply
 
 
@@ -517,56 +587,62 @@ def test_smoke_waterlogged_scriptorium_any_legal_option(monkeypatch):
     assert event_sessions.get(101) is None
 
 
-def test_smoke_colossal_flower_deeper_choice_ends_without_next_page(monkeypatch):
+def test_smoke_unsupported_multistage_event_is_query_only(monkeypatch):
     event = get_event("sts2", "COLOSSAL_FLOWER")
-    session = smoke_open(monkeypatch, event)
-    choice = session.visible_choices[1]
-    assert choice.id == "REACH_DEEPER_1"
-    page_texts = [
-        page.get("description", "")
-        for page in event.raw.get("pages", [])
-        if isinstance(page, dict) and page.get("description")
-    ]
+    patch_query_sources(monkeypatch, events=(event,))
 
-    reply = str(bot.route_group_command(101, "2", actor="群友甲"))
+    reply = str(bot.route_group_command(101, event.name_zh))
 
-    assert f"群友甲选择了「{choice.text_zh}」" in reply
-    assert strip_event_bbcode(choice.result_zh) in reply
-    assert "事件结束。" in reply
+    assert reply == "event:sts2:巨大花卉"
     assert event_sessions.get(101) is None
-    for page_text in page_texts:
-        assert page_text not in reply
-    assert "LINGER" not in reply
+    assert interaction_plan(event).kind is EventInteractionKind.UNSUPPORTED
 
 
-def test_smoke_abyssal_baths_immerse_ends_without_linger(monkeypatch):
+def test_smoke_abyssal_baths_immerse_enters_linger(monkeypatch):
     event = get_event("sts2", "ABYSSAL_BATHS")
     session = smoke_open(monkeypatch, event)
     choice = session.visible_choices[0]
     assert choice.id == "IMMERSE"
-    sequences = event.raw.get("flavor_sequences", {})
-
     reply = str(bot.route_group_command(101, "1", actor="群友甲"))
 
     assert f"群友甲选择了「{choice.text_zh}」" in reply
     assert strip_event_bbcode(choice.result_zh) in reply
-    assert "事件结束。" in reply
-    assert event_sessions.get(101) is None
-    for texts in sequences.values():
-        if isinstance(texts, list):
-            for text in texts:
-                assert text not in reply
+    assert "事件结束。" not in reply
+    assert event_sessions.get(101) is not None
+    assert "沉溺" in reply
 
 
-def test_smoke_no_result_real_event_ends_safely(monkeypatch):
+def test_smoke_unsupported_relic_trader_is_query_only(monkeypatch):
     event = get_event("sts2", "RELIC_TRADER")
-    session = smoke_open(monkeypatch, event)
-    assert session is not None
-    choice = session.visible_choices[0]
-    assert not (choice.result_zh or "").strip()
+    patch_query_sources(monkeypatch, events=(event,))
 
-    reply = str(bot.route_group_command(101, "1", actor="群友甲"))
+    reply = str(bot.route_group_command(101, event.name_zh))
 
-    assert f"群友甲选择了「{choice.text_zh}」" in reply
-    assert "事件结束。" in reply
+    assert reply == "event:sts2:遗物交换商"
     assert event_sessions.get(101) is None
+    assert interaction_plan(event).kind is EventInteractionKind.UNSUPPORTED
+
+
+def test_event2_filters_unsupported_events_before_random_choice(monkeypatch):
+    unsupported = get_event("sts2", "COLOSSAL_FLOWER")
+    playable = get_event("sts2", "WELLSPRING")
+    chosen_from = []
+
+    monkeypatch.setattr(bot, "default_random_pool", lambda game: (unsupported, playable))
+
+    def choose(items):
+        chosen_from.append(tuple(event.id for event in items))
+        return items[0]
+
+    monkeypatch.setattr(
+        bot,
+        "random",
+        type("FixtureRandom", (), {"choice": staticmethod(choose)}),
+        raising=False,
+    )
+
+    reply = bot.route_group_command(101, "事件2")
+
+    assert reply is not None
+    assert chosen_from == [("WELLSPRING",)]
+    assert event_sessions.get(101).event_id == "WELLSPRING"

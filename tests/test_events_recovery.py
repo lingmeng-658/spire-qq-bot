@@ -24,6 +24,27 @@ def _recover(zh, raw_option):
 
 # Recovered rows: (description_zh, raw en option, expected description_zh)
 RECOVERED_CASES = [
+    # Fixed/small fixed reward entities verified against desktop-1.0.jar.
+    (
+        "获得一件特别遗物。 被诅咒——疼痛。",
+        "[Rummage] Obtain a special Relic. Become Cursed - Pain.",
+        "获得遗物「弯曲铁钳」。被诅咒——疼痛。",
+    ),
+    (
+        "获得一件特殊遗物。",
+        "[Ingest Mutagens] Obtain a special relic.",
+        "获得遗物「突变之力」（已持有时获得「头环」）。",
+    ),
+    (
+        "失去这件遗物。 获得一件特别的遗物。",
+        "Exchange a Relic for a special reward.",
+        "失去这件遗物。获得遗物「恩洛斯的礼物」（已持有时获得「头环」）。",
+    ),
+    (
+        "失去所有金币。 获得遗物。",
+        "[Offer: Gold] Lose all Gold. Obtain a Relic.",
+        "失去所有金币。获得遗物「红面具」。",
+    ),
     # BIG_FISH 香蕉 / 甜甜圈
     ("回复 生命。", "[Banana] Heal ⅓ Max HP.", "回复最大生命值的 1/3。"),
     ("最大生命值 + 。", "[Donut] Max HP +5.", "最大生命值 +5。"),
@@ -74,13 +95,10 @@ UNRESOLVED_CASES = [
     ("赌 金币 —— 30%: 赢得 金币。", "[Bet on Murderer] 50 Gold: Win 250 Gold (risky)."),
     # official zh only exposes dynamic price/amount fragments
     ("金币 。", "[Buy 3 Potions] Lose 40 Gold. Obtain 3 Potions."),
-    ("回复 点生命。", "[Sleep] Heal ⅓ Max HP."),
     # dynamic / runtime-interpolated values must not be frozen
     ("移除所有 打击 牌。 获得5张 噬咬 牌。 失去 最大生命。", "[Accept] Remove all Strikes. Receive 5 Bites. Lose 30% Max HP."),
     ("从你的牌组中移除一张牌。 失去 生命。", "[Pray] Remove a card from your deck. Lose 25% HP."),
     ("随机升级 2 张牌。 失去 生命。", "[Enter] Upgrade 2 random cards. Take 20% Max HP damage."),
-    ("获得一件遗物。 %: 被诅咒——苦恼。", "[Open Coffin] Obtain a Relic. 50%: Become Cursed - Writhe."),
-    ("失去 生命。 %: 找到一件遗物。", "[Reach Inside] Take damage. Chance to find a Relic."),
     ("在你的牌组中加入 2 张无色牌。 失去 点生命。", "[Recall (2)] Add 2 Colorless cards to your deck. Lose HP."),
     ("获得书。 失去 生命。", "[Take] Obtain the Book. Lose HP."),
     ("获得 ～ 金币。", "[Destroy] Gain 50-80 Gold."),
@@ -130,7 +148,25 @@ def test_full_catalog_scan_is_idempotent():
             recovered = recover_choice_description_zh(choice.get("description_zh"), raw_option)
             if recovered is not None and recovered != choice.get("description_zh"):
                 touched.append((event["id"], index))
-    assert touched == []
+    assert set(touched) == {
+        ("ACCURSED_BLACKSMITH", 1),
+        ("DRUG_DEALER", 2),
+        ("FACETRADER", 0),
+        ("FACETRADER", 3),
+        ("MUSHROOMS", 1),
+        ("N_LOTH", 0),
+        ("FALLING", 0),
+        ("FALLING", 1),
+        ("FALLING", 2),
+        ("THE_LIBRARY", 1),
+        ("THE_MAUSOLEUM", 0),
+        ("TOMB_OF_LORD_RED_MASK", 1),
+        ("WEMEETAGAIN", 0),
+        ("WEMEETAGAIN", 1),
+        ("WEMEETAGAIN", 2),
+        ("WORLD_OF_GOOP", 1),
+        ("SCRAP_OOZE", 0),
+    }
 
 
 # Catalog reload must surface the final complete zh text to EventRecord.
@@ -147,3 +183,102 @@ def test_catalog_reload_has_final_complete_text():
     assert goop.choices[0].description_zh == "获得 75 金币。 失去 11 生命。"
 
     assert len(load_events("sts1").events) == 52
+
+
+def test_player_facing_recovery_fixes_face_trader_and_mushrooms():
+    face = get_event("sts1", "FACETRADER")
+    rendered = " ".join(choice.description_zh or "" for choice in face.choices)
+    assert "失去 金币" not in rendered
+    assert "生命， 获得" not in rendered
+    assert "最大生命值的10%" in rendered
+    assert "50或75金币" in rendered
+    assert "进入后续选择" in rendered
+
+    mushrooms = get_event("sts1", "MUSHROOMS")
+    eat = mushrooms.choices[1].description_zh
+    assert "回复 点生命" not in eat
+    assert "回复最大生命值的25%" in eat
+
+
+def test_falling_runtime_card_names_degrade_to_card_types():
+    falling = get_event("sts1", "FALLING")
+    descriptions = [choice.description_zh for choice in falling.choices]
+    assert descriptions == [
+        "失去一张技能牌。",
+        "失去一张能力牌。",
+        "失去一张攻击牌。",
+    ]
+
+
+def test_recovery_preserves_original_raw_option():
+    falling = get_event("sts1", "FALLING")
+    assert falling.choices[0].raw["option"] == "[Land] Lose a Skill card."
+    face = get_event("sts1", "FACETRADER")
+    assert face.choices[0].raw["option"] == "[Touch] Lose Gold."
+
+
+def test_remaining_sts1_fragments_are_safe_and_natural():
+    assert get_event("sts1", "THE_LIBRARY").choices[1].description_zh == "回复最大生命值的 1/3。"
+    assert get_event("sts1", "THE_MAUSOLEUM").choices[0].description_zh == "获得一件遗物。有50%几率被诅咒——苦恼。"
+    assert get_event("sts1", "WEMEETAGAIN").choices[0].description_zh == "失去一瓶药水。获得一件遗物。"
+    assert get_event("sts1", "WEMEETAGAIN").choices[1].description_zh == "失去金币。获得一件遗物。"
+    assert get_event("sts1", "WEMEETAGAIN").choices[2].description_zh == "失去一张牌。获得一件遗物。"
+    assert get_event("sts1", "WORLD_OF_GOOP").choices[1].description_zh == "失去部分金币。"
+    assert get_event("sts1", "SCRAP_OOZE").choices[0].description_zh == "失去生命值，有机会找到一件遗物。"
+
+
+def test_fixed_reward_entities_are_specific_in_player_facing_text():
+    assert get_event("sts1", "ACCURSED_BLACKSMITH").choices[1].description_zh == (
+        "获得遗物「弯曲铁钳」。被诅咒——疼痛。"
+    )
+    assert get_event("sts1", "DRUG_DEALER").choices[2].description_zh == (
+        "获得遗物「突变之力」（已持有时获得「头环」）。"
+    )
+    assert get_event("sts1", "N_LOTH").choices[0].description_zh == (
+        "失去这件遗物。获得遗物「恩洛斯的礼物」（已持有时获得「头环」）。"
+    )
+    assert get_event("sts1", "TOMB_OF_LORD_RED_MASK").choices[1].description_zh == (
+        "失去所有金币。获得遗物「红面具」。"
+    )
+
+
+def test_random_and_runtime_reward_categories_remain_unexpanded():
+    expected = {
+        ("ADDICT", 0): "85 金币： 获得一件遗物。",
+        ("ADDICT", 1): "获得一件遗物。 被诅咒——羞耻。",
+        ("BIG_FISH", 2): "获得一件遗物。 被诅咒——悔恨。",
+        ("BONFIRE_ELEMENTALS", 2): "根据献上的贡品获得相应的奖励。 选择一张牌献上。",
+        ("LAB", 0): "找到一些药水！",
+        ("NOTEFORYOURSELF", 1): "获得 然后存放一张牌。",
+        ("THE_MAUSOLEUM", 0): "获得一件遗物。有50%几率被诅咒——苦恼。",
+    }
+
+    for (event_id, index), description in expected.items():
+        assert get_event("sts1", event_id).choices[index].description_zh == description
+
+
+def test_fixed_reward_recovery_preserves_raw_source_text():
+    expected = {
+        ("ACCURSED_BLACKSMITH", 1): (
+            "[Rummage] Obtain a special Relic. Become Cursed - Pain."
+        ),
+        ("DRUG_DEALER", 2): "[Ingest Mutagens] Obtain a special relic.",
+        ("N_LOTH", 0): "Exchange a Relic for a special reward.",
+        ("TOMB_OF_LORD_RED_MASK", 1): (
+            "[Offer: Gold] Lose all Gold. Obtain a Relic."
+        ),
+    }
+
+    for (event_id, index), raw_option in expected.items():
+        assert get_event("sts1", event_id).choices[index].raw["option"] == raw_option
+
+
+def test_sts2_choice_descriptions_bypass_sts1_recovery():
+    payload = json.loads(Path("data/raw/sts2_events.json").read_text(encoding="utf-8"))
+    raw_by_id = {event["id"]: event for event in payload["events"]}
+
+    for event in load_events("sts2").events:
+        raw_event = raw_by_id[event.id]
+        assert [choice.description_zh for choice in event.choices] == [
+            choice["description_zh"] for choice in raw_event["choices"]
+        ]

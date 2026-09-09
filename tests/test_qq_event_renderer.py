@@ -186,3 +186,39 @@ def test_sts2_result_and_pages_are_not_rendered():
     assert event.choices[1].result_zh not in reply
     assert event.raw["pages"][0]["description"] not in reply
 
+
+def test_fixed_sts1_event_rewards_show_catalog_effects_on_first_screen():
+    from card_guess.event_presentation import render_event
+    from card_guess.relics import load_relics
+    from card_guess.qq.relic_short_summary import short_relic_effect
+
+    relics = {item["id"]: item for item in load_relics("sts1")}
+    cases = {
+        "DRUG_DEALER": ("MUTAGENICSTRENGTH", "CIRCLET"),
+        "N_LOTH": ("NLOTH_S_GIFT", "CIRCLET"),
+        "ACCURSED_BLACKSMITH": ("WARPEDTONGS",),
+        "TOMB_OF_LORD_RED_MASK": ("RED_MASK",),
+    }
+    for event_id, reward_ids in cases.items():
+        reply = render_event(get_event("sts1", event_id))
+        for relic_id in reward_ids:
+            relic = relics[relic_id]
+            assert relic["name"] in reply
+            assert short_relic_effect(
+                relic["description"], relic_id=relic_id, game="sts1"
+            ) in reply
+
+
+def test_random_relic_rewards_are_not_expanded_and_other_games_unchanged():
+    from card_guess.event_presentation import render_event
+
+    random_reply = render_event(get_event("sts1", "THE_MAUSOLEUM"))
+    assert "获得一件遗物" in random_reply
+    assert "红面具" not in random_reply
+    assert "突变之力" not in random_reply
+
+    ordinary = make_event(game="sts1", event_id="ORDINARY")
+    assert "效果：" not in render_event(ordinary)
+
+    sts2_reply = render_event(get_event("sts2", "COLOSSAL_FLOWER"))
+    assert "突变之力" not in sts2_reply

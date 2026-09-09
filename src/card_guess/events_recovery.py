@@ -131,6 +131,42 @@ def recover_choice_description_zh(description_zh: str | None, raw_option: str) -
         return None
 
     changed = None
+    if raw_option.startswith("[Touch] Lose Gold"):
+        return "失去50或75金币，进入后续选择。"
+    if raw_option.startswith("[Continue] HP, gain"):
+        return "失去最大生命值的10%，获得50或75金币。"
+    if raw_option.startswith("[Eat] Heal HP"):
+        return "回复最大生命值的25%。被诅咒——寄生。"
+    runtime_card = {
+        "[Land] Lose a Skill card.": "失去一张技能牌。",
+        "[Channel] Lose a Power card.": "失去一张能力牌。",
+        "[Strike] Lose an Attack card.": "失去一张攻击牌。",
+    }
+    if raw_option in runtime_card:
+        return runtime_card[raw_option]
+    safe_fragments = {
+        "[Rummage] Obtain a special Relic. Become Cursed - Pain.": (
+            "获得遗物「弯曲铁钳」。被诅咒——疼痛。"
+        ),
+        "[Ingest Mutagens] Obtain a special relic.": (
+            "获得遗物「突变之力」（已持有时获得「头环」）。"
+        ),
+        "Exchange a Relic for a special reward.": (
+            "失去这件遗物。获得遗物「恩洛斯的礼物」（已持有时获得「头环」）。"
+        ),
+        "[Offer: Gold] Lose all Gold. Obtain a Relic.": (
+            "失去所有金币。获得遗物「红面具」。"
+        ),
+        "[Sleep] Heal ⅓ Max HP.": "回复最大生命值的 1/3。",
+        "[Open Coffin] Obtain a Relic. 50%: Become Cursed - Writhe.": "获得一件遗物。有50%几率被诅咒——苦恼。",
+        "[Give Potion] Lose a Potion. Obtain a Relic.": "失去一瓶药水。获得一件遗物。",
+        "[Give Gold] Lose Gold. Obtain a Relic.": "失去金币。获得一件遗物。",
+        "[Give Card] Lose a Card. Obtain a Relic.": "失去一张牌。获得一件遗物。",
+        "[Leave It] Lose some Gold.": "失去部分金币。",
+        "[Reach Inside] Take damage. Chance to find a Relic.": "失去生命值，有机会找到一件遗物。",
+    }
+    if raw_option in safe_fragments:
+        return safe_fragments[raw_option]
     for filler in (
         _fill_heal_fraction,
         _fill_max_hp_bonus,

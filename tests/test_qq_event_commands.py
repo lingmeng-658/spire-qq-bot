@@ -86,7 +86,13 @@ def patch_query_sources(monkeypatch, *, cards=(), relics=(), events=()):
     )
     monkeypatch.setattr(
         bot,
-        "render_event",
+        "plan_event_query",
+        lambda event: event,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        bot,
+        "render_event_query",
         lambda event: f"event:{event.game}:{event.name_zh}",
         raising=False,
     )
@@ -99,8 +105,12 @@ def patch_query_sources(monkeypatch, *, cards=(), relics=(), events=()):
 def test_generation_random_event_uses_only_that_default_pool(
     monkeypatch, command, game
 ):
-    chosen = make_event(game=game, event_id=f"{game}_CHOSEN")
-    pools = {"sts1": (make_event("sts1"),), "sts2": (make_event("sts2"),)}
+    chosen_id = "BIG_FISH" if game == "sts1" else "WELLSPRING"
+    chosen = make_event(game=game, event_id=chosen_id)
+    pools = {
+        "sts1": (make_event("sts1", "BIG_FISH"),),
+        "sts2": (make_event("sts2"),),
+    }
     pools[game] = (chosen,)
     seen = []
 
@@ -120,8 +130,8 @@ def test_generation_random_event_uses_only_that_default_pool(
 
 
 def test_mixed_random_event_selects_game_before_selecting_from_its_pool(monkeypatch):
-    sts1 = (make_event("sts1", "STS1_ONLY"),)
-    sts2 = (make_event("sts2", "STS2_ONLY"),)
+    sts1 = (make_event("sts1", "BIG_FISH"),)
+    sts2 = (make_event("sts2", "WELLSPRING"),)
     calls = []
 
     def choose(items):
@@ -141,7 +151,7 @@ def test_mixed_random_event_selects_game_before_selecting_from_its_pool(monkeypa
     )
     monkeypatch.setattr(bot, "render_event", lambda event: event.id, raising=False)
 
-    assert str(bot.route_group_command(101, "事件")) == "STS2_ONLY"
+    assert str(bot.route_group_command(101, "事件")) == "WELLSPRING"
     assert calls == [("sts1", "sts2"), sts2]
 
 
@@ -216,7 +226,9 @@ def test_typed_name_form_resolves_cross_entity_collision(monkeypatch, command, e
     monkeypatch.setattr(
         bot, "render_relic_query_reply", lambda matches: RenderedReply("relic-only")
     )
-    monkeypatch.setattr(bot, "render_event", lambda record: "event-only", raising=False)
+    monkeypatch.setattr(
+        bot, "render_event_query", lambda plan: "event-only", raising=False
+    )
 
     assert str(bot.route_group_command(101, command)) == expected
 
@@ -293,4 +305,3 @@ def test_help_adds_event_entry_without_advertising_typed_disambiguators():
     assert "事件名" in bot.HELP_SUBCOMMANDS["查询"]
     assert "卡牌 名字" not in bot.HELP_TEXT
     assert "事件 名字" not in bot.HELP_TEXT
-

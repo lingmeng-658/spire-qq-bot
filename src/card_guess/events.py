@@ -20,6 +20,8 @@ import json
 from pathlib import Path
 from typing import Any, Mapping
 
+from card_guess.events_recovery import recover_choice_description_zh
+
 
 CATALOG_FILES = {
     "sts1": "sts1_events.json",
@@ -176,7 +178,13 @@ def _event_record(event: Mapping[str, Any]) -> EventRecord:
         EventChoice(
             id=choice["id"],
             text_zh=choice["text_zh"],
-            description_zh=choice["description_zh"],
+            description_zh=(
+                recover_choice_description_zh(
+                    choice["description_zh"],
+                    (choice.get("raw") or {}).get("option", ""),
+                )
+                or choice["description_zh"]
+            ) if event["game"] == "sts1" else choice["description_zh"],
             result_zh=choice["result_zh"],
             locked_zh=choice["locked_zh"],
             raw=choice["raw"],
