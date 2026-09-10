@@ -1,0 +1,676 @@
+"""Pure QQ-friendly presentation helpers for Event catalog records."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+import re
+
+from card_guess.cards import load_cards
+from card_guess.event_entity_links import EventEntityLink, links_for_event
+from card_guess.events import EventChoice, EventRecord
+from card_guess.relics import load_relics
+from card_guess.qq.relic_short_summary import short_relic_effect
+from card_guess.sts1_event_stats import (
+    build_cross_act_view,
+    load_sts1_event_stats_snapshot,
+)
+from card_guess.sts1_event_stats_coverage import (
+    display_slots,
+    event_level_stats_only,
+    mapped_keys,
+)
+from card_guess.sts2_event_stats import load_sts2_event_stats_snapshot
+
+
+DEFAULT_DESCRIPTION_LIMIT = 140
+DESCRIPTION_BOUNDARY_START = 120
+
+_BBCODE_RE = re.compile(
+    r"\[/?(?:red|green|blue|gold|purple|aqua|sine|jitter|orange|b)\]",
+    re.IGNORECASE,
+)
+_SENTENCE_BOUNDARIES = "。！？!?\n"
+_ACT_LABELS = {1: "第一层", 2: "第二层", 3: "第三层"}
+_POOL_LABELS = {
+    "shrine": "神龛",
+    "shared": "共享事件",
+    "ancient": "先古遗民",
+}
+
+_RELICS_BY_GAME: dict[str, dict[str, dict]] = {}
+_CARDS_BY_GAME: dict[str, dict[str, dict]] = {}
+_EVENT_LINK_RELATION_ORDER = {"REWARD": 0, "FALLBACK_REWARD": 1}
+
+
+def _link_matches_choice(
+    link: EventEntityLink, choice: EventChoice, choice_index: int
+) -> bool:
+    if link.game == "sts1":
+        return link.condition.choice_index == choice_index
+    return link.condition.choice_id == choice.id
+
+
+def _relic_link_text(link: EventEntityLink) -> str:
+    relics = _RELICS_BY_GAME.get(link.game)
+    if relics is None:
+        relics = {item["id"]: item for item in load_relics(link.game)}
+        _RELICS_BY_GAME[link.game] = relics
+    relic = relics.get(link.entity_id)
+    if not relic:
+        return ""
+    name = str(relic.get("name") or "").strip()
+    effect = short_relic_effect(
+        relic.get("description"), relic_id=link.entity_id, game=link.game
+    )
+    if not name:
+        return ""
+    if link.relation == "FALLBACK_REWARD":
+        prefix = f"若{link.condition.fallback_text}：获得遗物"
+    elif link.relation == "REMOVE":
+        prefix = "献上遗物"
+    else:
+        prefix = "获得遗物"
+    text = f"{prefix}「{name}」"
+    if effect:
+        text += f"\n效果：{effect}"
+    return text
+
+
+def _card_link_text(link: EventEntityLink) -> str:
+    cards = _CARDS_BY_GAME.get(link.game)
+    if cards is None:
+        cards = {item["id"]: item for item in load_cards(link.game)}
+        _CARDS_BY_GAME[link.game] = cards
+    card = cards.get(link.entity_id)
+    name = str((card or {}).get("name") or "").strip()
+    return f"获得卡牌「{name}」" if name else ""
+
+
+def _fixed_entity_effects(
+    event: EventRecord, choice: EventChoice, choice_index: int
+) -> str:
+    """Render audited concrete entities attached to this exact choice."""
+
+    links = sorted(
+        (
+            link
+            for link in links_for_event(event.game, event.id)
+            if _link_matches_choice(link, choice, choice_index)
+        ),
+        key=lambda link: (
+            _EVENT_LINK_RELATION_ORDER.get(link.relation, 9),
+            link.entity_type,
+            link.entity_id,
+        ),
+    )
+    lines = []
+    for link in links:
+        text = (
+            _relic_link_text(link)
+            if link.entity_type == "relic"
+            else _card_link_text(link)
+        )
+        if text:
+            lines.append(text)
+    return "\n".join(lines)
+
+
+def strip_event_bbcode(text: str | None) -> str:
+    """Remove supported presentation tags while preserving their contents."""
+
+    if not text:
+        return ""
+    return _BBCODE_RE.sub("", text)
+
+
+def truncate_event_description(
+    text: str | None,
+    limit: int = DEFAULT_DESCRIPTION_LIMIT,
+) -> str:
+    """Strip Event BBCode and safely shorten long official zh descriptions."""
+
+    cleaned = strip_event_bbcode(text).strip()
+    if len(cleaned) <= limit:
+        return cleaned
+
+    visible = cleaned[:limit]
+    boundary = max(visible.rfind(mark) for mark in _SENTENCE_BOUNDARIES)
+    if boundary + 1 >= min(DESCRIPTION_BOUNDARY_START, limit):
+        visible = visible[: boundary + 1]
+    return visible.rstrip() + "……"
+
+
+def _title_context(event: EventRecord) -> str | None:
+    if event.act in _ACT_LABELS:
+        return _ACT_LABELS[event.act]
+    return _POOL_LABELS.get(event.pool)
+
+
+def _plain_choice_text(choice: EventChoice) -> str:
+    return strip_event_bbcode(choice.text_zh).strip()
+
+
+def _plain_choice_description(choice: EventChoice) -> str:
+    return strip_event_bbcode(choice.description_zh).strip()
+
+
+def _plain_locked_text(choice: EventChoice) -> str:
+    return strip_event_bbcode(choice.locked_zh).strip().rstrip("。！？!?；;，, ")
+
+
+def list_visible_choices(event: EventRecord) -> tuple[EventChoice, ...]:
+    """Choices that occupy a numbered slot in player-facing event output.
+
+    ``_LOCKED`` rows are merged into their base row at render time and never
+    take their own number, so they are excluded here too.  This is the single
+    source of truth for both the first-screen numbering and interactive choice
+    sessions.
+    """
+
+    return tuple(
+        choice
+        for choice in event.choices
+        if not (choice.id or "").endswith("_LOCKED")
+    )
+
+
+def _visible_choices(event: EventRecord) -> list[tuple[EventChoice, str | None]]:
+    """Pair locked rows to their unique base ID and omit orphan locked rows."""
+
+    base_by_id: dict[str, list[EventChoice]] = {}
+    for choice in event.choices:
+        if not choice.id or choice.id.endswith("_LOCKED"):
+            continue
+        base_by_id.setdefault(choice.id, []).append(choice)
+
+    locked_by_base: dict[str, str] = {}
+    for choice in event.choices:
+        if not choice.id or not choice.id.endswith("_LOCKED"):
+            continue
+        base_id = choice.id[: -len("_LOCKED")]
+        if len(base_by_id.get(base_id, ())) != 1:
+            continue
+        locked_text = _plain_locked_text(choice)
+        if locked_text:
+            locked_by_base[base_id] = locked_text
+
+    return [
+        (choice, locked_by_base.get(choice.id or ""))
+        for choice in list_visible_choices(event)
+    ]
+
+
+# Event Stats are a QQ enhancement over the plain catalog first screen.  The
+# artifacts are generated data with frozen aggregation semantics; this layer
+# only loads them and attaches compact per-choice lines before a player decides.
+_EVENT_STATS_LOADER = load_sts1_event_stats_snapshot
+_EVENT_STATS_SNAPSHOT: dict | None = None
+_STS2_EVENT_STATS_LOADER = load_sts2_event_stats_snapshot
+_STS2_EVENT_STATS_SNAPSHOT: dict | None = None
+
+
+def _event_stats_snapshot() -> dict:
+    """Load the validated STS1 Event Stats snapshot once (empty on failure)."""
+
+    global _EVENT_STATS_SNAPSHOT
+    if _EVENT_STATS_SNAPSHOT is None:
+        _EVENT_STATS_SNAPSHOT = _EVENT_STATS_LOADER()
+    return _EVENT_STATS_SNAPSHOT
+
+
+def _sts2_event_stats_snapshot() -> dict:
+    """Load the validated STS2 Event Stats snapshot once (empty on failure)."""
+
+    global _STS2_EVENT_STATS_SNAPSHOT
+    if _STS2_EVENT_STATS_SNAPSHOT is None:
+        _STS2_EVENT_STATS_SNAPSHOT = _STS2_EVENT_STATS_LOADER()
+    return _STS2_EVENT_STATS_SNAPSHOT
+
+
+_SHARE_LABEL = "选项占比"
+_WIN_RATE_LABEL = "历史通关率"
+_SAMPLE_FOOTER = "样本：{:,} 次遭遇"
+_STATS_DISCLAIMER = "※ 历史统计，仅代表关联，不代表因果。"
+_STS2_SHARE_LABEL = "选项出现占比"
+_STS2_REPEAT_DISCLAIMER = "※ 该选项可重复选择，因此占比可能超过100%。"
+_STS2_REPEATED_CHOICE_EVENTS = frozenset({"ABYSSAL_BATHS", "SLIPPERY_BRIDGE"})
+
+_STATS_ACT_KEYS = ("act_1", "act_2", "act_3")
+
+def _event_stats_view(
+    snapshot: dict, event: EventRecord
+) -> tuple[dict | None, bool]:
+    """Resolve the QQ stats view for one event.
+
+    Returns ``(view, cross_act)``:
+    - events with a concrete catalog act use that act bucket only;
+    - act-less events with a single observed act keep that single bucket;
+    - act-less events with several observed acts get a cross-act view whose
+      percentages are recomputed from summed underlying counts.
+    """
+
+    if event.game == "sts2":
+        return _sts2_event_stats_view(snapshot, event)
+    if event.game != "sts1" or not isinstance(snapshot, dict):
+        return None, False
+    events = snapshot.get("events")
+    if not isinstance(events, list):
+        return None, False
+    row = None
+    for item in events:
+        if isinstance(item, dict) and item.get("id") == event.id:
+            row = item
+            break
+    if row is None:
+        return None, False
+    acts = row.get("acts")
+    if not isinstance(acts, dict) or not acts:
+        return None, False
+    if event.act in (1, 2, 3):
+        act_map = acts.get(f"act_{event.act}")
+        return (act_map if isinstance(act_map, dict) else None), False
+    present = [key for key in _STATS_ACT_KEYS if isinstance(acts.get(key), dict)]
+    if len(present) == 1:
+        return (acts[present[0]] if isinstance(acts[present[0]], dict) else None), False
+    return build_cross_act_view(row), True
+
+
+def _sts2_event_stats_view(
+    snapshot: dict, event: EventRecord
+) -> tuple[dict | None, bool]:
+    """Resolve the flat STS2 event row; there is no act split in v1."""
+
+    if not isinstance(snapshot, dict):
+        return None, False
+    events = snapshot.get("events")
+    if not isinstance(events, dict):
+        return None, False
+    row = events.get(event.id)
+    if not isinstance(row, dict):
+        return None, False
+    encounters = row.get("encounter_count")
+    if (
+        not isinstance(encounters, int)
+        or isinstance(encounters, bool)
+        or encounters <= 0
+    ):
+        return None, False
+    if not isinstance(row.get("choices"), dict):
+        return None, False
+    return row, False
+
+
+def _number(value) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _option_line_from_row(option: dict) -> str | None:
+    """Render one pre-aggregated snapshot row to a compact stats line."""
+
+    share = option.get("chosen_share")
+    if not isinstance(share, dict):
+        return None
+    share_value = share.get("value")
+    if not _number(share_value):
+        return None
+    text = f"{_SHARE_LABEL} {share_value:.1f}%"
+    association = option.get("associated_win_rate")
+    if isinstance(association, dict):
+        win_value = association.get("value")
+        if _number(win_value):
+            text += f" · {_WIN_RATE_LABEL} {win_value:.1f}%"
+    return text
+
+
+def _option_line_merged(view: dict, options: list[dict]) -> str | None:
+    """Merge several dump rows that describe the same visible decision."""
+
+    share_rows = [o.get("chosen_share") for o in options]
+    if not all(isinstance(row, dict) and _number(row.get("value")) for row in share_rows):
+        return None
+    encounters = view.get("encounters")
+    if not _number(encounters) or encounters <= 0:
+        return None
+    numerator = sum(int(row.get("numerator", 0)) for row in share_rows)
+    share_value = numerator / encounters * 100
+    text = f"{_SHARE_LABEL} {share_value:.1f}%"
+    association_rows = [
+        o.get("associated_win_rate")
+        for o in options
+        if isinstance(o.get("associated_win_rate"), dict)
+    ]
+    wins = sum(int(a.get("numerator", 0)) for a in association_rows)
+    cohort = sum(int(o.get("chosen_count", 0)) for o in options if isinstance(o.get("associated_win_rate"), dict))
+    if association_rows and cohort > 0 and _number(wins):
+        text += f" · {_WIN_RATE_LABEL} {wins / cohort * 100:.1f}%"
+    return text
+
+
+def _event_stats_choice_line(
+    event: EventRecord, slot_index: int, view: dict
+) -> str | None:
+    """Compact one-line choice stats (None when slot is exempt/no data)."""
+
+    keys = mapped_keys(event.id, slot_index)
+    if not keys:
+        return None
+    options = view.get("options")
+    if not isinstance(options, list):
+        return None
+    wanted = {key for key in keys}
+    matches = [
+        option
+        for option in options
+        if isinstance(option, dict) and option.get("choice_key") in wanted
+    ]
+    if not matches:
+        return None
+    if len(matches) == 1:
+        return _option_line_from_row(matches[0])
+    return _option_line_merged(view, matches)
+
+
+def _sts2_initial_key(event: EventRecord, choice_id: str) -> str | None:
+    """The first-screen localization key when the visible choice is real."""
+
+    pages = event.raw.get("pages")
+    if not isinstance(pages, list):
+        return None
+    for page in pages:
+        if not isinstance(page, dict) or page.get("id") != "INITIAL":
+            continue
+        options = page.get("options")
+        if not isinstance(options, list):
+            continue
+        if not any(
+            isinstance(option, dict) and option.get("id") == choice_id
+            for option in options
+        ):
+            continue
+        return f"{event.id}.pages.INITIAL.options.{choice_id}.title"
+    return None
+
+
+def _sts2_choice_stats_line(
+    event: EventRecord, choice: EventChoice, view: dict
+) -> str | None:
+    """Compact STS2 line; QQ v1 defaults to the run-weighted win rate."""
+
+    if not choice.id or choice.id.endswith("_LOCKED"):
+        return None
+    key = _sts2_initial_key(event, choice.id)
+    if key is None:
+        return None
+    choices = view.get("choices")
+    if not isinstance(choices, dict):
+        return None
+    row = choices.get(key)
+    if not isinstance(row, dict):
+        return None
+    share = row.get("occurrence_share")
+    if not isinstance(share, dict) or not _number(share.get("value")):
+        return None
+    text = f"{_STS2_SHARE_LABEL} {share['value']:.1f}%"
+    run_rate = row.get("associated_run_win_rate")
+    if isinstance(run_rate, dict) and _number(run_rate.get("value")):
+        text += f" · {_WIN_RATE_LABEL} {run_rate['value']:.1f}%"
+    return text
+
+
+def _event_stats_footer(
+    view: dict, *, cross_act: bool = False, event_level: bool = False
+) -> str | None:
+    """Sample-size footer plus the once-only metric disclaimer."""
+
+    encounters = view.get("encounters")
+    if (
+        not isinstance(encounters, int)
+        or isinstance(encounters, bool)
+        or encounters <= 0
+    ):
+        return None
+    sample = _SAMPLE_FOOTER.format(encounters)
+    markers = []
+    if cross_act:
+        markers.append("跨幕汇总")
+    if event_level:
+        markers.append("事件级")
+    if markers:
+        sample += "（" + " · ".join(markers) + "）"
+    return f"{sample}\n{_STATS_DISCLAIMER}"
+
+
+def _sts2_repeat_disclaimer_needed(view: dict, event_id: str) -> bool:
+    if event_id in _STS2_REPEATED_CHOICE_EVENTS:
+        return True
+    choices = view.get("choices")
+    if not isinstance(choices, dict):
+        return False
+    for row in choices.values():
+        if not isinstance(row, dict):
+            continue
+        share = row.get("occurrence_share")
+        if isinstance(share, dict) and _number(share.get("value")):
+            if share["value"] > 100:
+                return True
+    return False
+
+
+def _sts2_event_stats_footer(view: dict, event_id: str) -> str | None:
+    encounters = view.get("encounter_count")
+    if (
+        not isinstance(encounters, int)
+        or isinstance(encounters, bool)
+        or encounters <= 0
+    ):
+        return None
+    lines = [_SAMPLE_FOOTER.format(encounters), _STATS_DISCLAIMER]
+    if _sts2_repeat_disclaimer_needed(view, event_id):
+        lines.append(_STS2_REPEAT_DISCLAIMER)
+    return "\n".join(lines)
+
+
+@dataclass(frozen=True)
+class EventChoiceDisplay:
+    """Shared enriched choice data for query and interaction presentation."""
+
+    text: str
+    description: str
+    stats_text: str | None
+
+
+@dataclass(frozen=True)
+class EventDisplay:
+    """Shared normalized Event data without query/interaction wording."""
+
+    game_tag: str
+    context: str | None
+    description: str
+    choices: tuple[EventChoiceDisplay, ...]
+    stats_footer: str | None
+
+
+def build_event_display(
+    event: EventRecord, *, stats_snapshot: dict | None = None
+) -> EventDisplay:
+    """Enrich normalized choices once for both presentation modes."""
+
+    if stats_snapshot is not None:
+        snapshot = stats_snapshot
+    elif event.game == "sts2":
+        snapshot = _sts2_event_stats_snapshot()
+    else:
+        snapshot = _event_stats_snapshot()
+    view, cross_act = _event_stats_view(snapshot, event)
+    slot_index_by_choice = {
+        id(choice): index
+        for index, choice in enumerate(display_slots(event))
+    }
+    choice_index_by_choice = {
+        id(choice): index for index, choice in enumerate(event.choices)
+    }
+    choices: list[EventChoiceDisplay] = []
+    stats_shown = False
+    for choice, locked_text in _visible_choices(event):
+        text = _plain_choice_text(choice)
+        if not text:
+            continue
+        description = _plain_choice_description(choice)
+        entity_effects = _fixed_entity_effects(
+            event, choice, choice_index_by_choice[id(choice)]
+        )
+        if entity_effects:
+            description = (
+                f"{description}\n{entity_effects}" if description else entity_effects
+            )
+        if locked_text:
+            description = (
+                f"{description}（{locked_text}）"
+                if description
+                else f"（{locked_text}）"
+            )
+        slot_index = slot_index_by_choice.get(id(choice))
+        stats_text = None
+        if view is not None:
+            if event.game == "sts2":
+                stats_text = _sts2_choice_stats_line(event, choice, view)
+            elif slot_index is not None:
+                stats_text = _event_stats_choice_line(event, slot_index, view)
+        if stats_text:
+            stats_shown = True
+        choices.append(EventChoiceDisplay(text, description, stats_text))
+
+    footer = None
+    if view is not None:
+        if event.game == "sts2" and stats_shown:
+            footer = _sts2_event_stats_footer(view, event.id)
+        elif stats_shown:
+            footer = _event_stats_footer(
+                view, cross_act=cross_act, event_level=False
+            )
+        elif (
+            event.game == "sts1"
+            and event_level_stats_only(event.id)
+            and isinstance(view.get("encounters"), int)
+            and view["encounters"] > 0
+        ):
+            footer = _event_stats_footer(
+                view, cross_act=cross_act, event_level=True
+            )
+    return EventDisplay(
+        game_tag=event.game.upper(),
+        context=_title_context(event),
+        description=truncate_event_description(event.description_zh),
+        choices=tuple(choices),
+        stats_footer=footer,
+    )
+
+
+def _render_display_choices(display: EventDisplay) -> list[str]:
+    lines: list[str] = []
+    for index, choice in enumerate(display.choices, start=1):
+        line = f"{index}. {choice.text}"
+        if choice.description:
+            line += f" —— {choice.description}"
+        if choice.stats_text:
+            line += f"\n    {choice.stats_text}"
+        lines.append(line)
+    return lines
+
+
+def render_event(
+    event: EventRecord, *, stats_snapshot: dict | None = None
+) -> str:
+    """Render one Event catalog record as compact QQ plain text.
+
+    ``stats_snapshot`` is an optional injected validated snapshot for callers
+    that already hold one; the default loads the generated artifact through the
+    safe loader (which degrades to no stats when unavailable).
+    """
+
+    display = build_event_display(event, stats_snapshot=stats_snapshot)
+    title_suffix = f" · {display.context}" if display.context else ""
+    sections = [f"【{event.name_zh}｜{display.game_tag}{title_suffix}】"]
+
+    if display.description:
+        sections.append(display.description)
+    choice_lines = _render_display_choices(display)
+    if choice_lines:
+        sections.append("选择：\n" + "\n".join(choice_lines))
+    if display.stats_footer:
+        sections.append(display.stats_footer)
+    return "\n\n".join(sections)
+
+def render_event_unsupported(event: EventRecord, reason: str) -> str:
+    """Render catalog information without suggesting that replies are accepted."""
+
+    text = render_event(event).replace("选择：", "可能的选择：", 1)
+    return text + f"\n\n※ {reason}"
+
+
+def render_event_full_query(event: EventRecord) -> str:
+    """Compatibility entry point for the separated encyclopedia renderer."""
+
+    from card_guess.event_query import plan_event_query, render_event_query
+
+    return render_event_query(plan_event_query(event))
+
+
+def render_event_choice_outcome(choice: EventChoice, actor: str) -> str:
+    """Render the one-shot outcome shown after an interactive choice.
+
+    Uses the official zh option name and result only; when the result is empty
+    the official effect description is reused as the factual outcome line.
+    Nothing is invented and no next page is ever referenced.
+    """
+
+    option_name = strip_event_bbcode(choice.text_zh).strip() or "未知选项"
+    sections = [f"{actor}选择了「{option_name}」"]
+
+    result = strip_event_bbcode(choice.result_zh).strip()
+    if result:
+        sections.append(result)
+    else:
+        description = strip_event_bbcode(choice.description_zh).strip()
+        if description:
+            sections.append(description)
+
+    sections.append("事件结束。")
+    return "\n\n".join(sections)
+
+
+def render_event_level2_outcome(
+    choice: EventChoice,
+    actor: str,
+    result_text: str | None,
+    next_choices: tuple[EventChoice, ...],
+    *,
+    terminal: bool,
+) -> str:
+    """Render one Level 2 result and, when present, the next page choices."""
+
+    option_name = strip_event_bbcode(choice.text_zh).strip() or "未知选项"
+    sections = [f"{actor}选择了「{option_name}」"]
+
+    effect = strip_event_bbcode(choice.description_zh).strip()
+    if effect:
+        sections.append(effect)
+
+    result = strip_event_bbcode(result_text).strip()
+    if result and result != effect:
+        sections.append(result)
+
+    if next_choices:
+        lines = []
+        for index, next_choice in enumerate(next_choices, start=1):
+            text = strip_event_bbcode(next_choice.text_zh).strip() or "未知选项"
+            description = strip_event_bbcode(next_choice.description_zh).strip()
+            line = f"{index}. {text}"
+            if description:
+                line += f" —— {description}"
+            lines.append(line)
+        sections.append("选择：\n" + "\n".join(lines))
+
+    if terminal:
+        sections.append("事件结束。")
+    return "\n\n".join(sections)

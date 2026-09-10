@@ -1,0 +1,5005 @@
+{
+  "schema_version": "1.0.0",
+  "game": "sts2",
+  "kind": "event_occurrence_stats_v1",
+  "collected_at": "2026-09-09T11:58:23Z",
+  "source": {
+    "source": "https://sts2runs.com/downloads",
+    "source_url": "https://sts2runs.com/downloads",
+    "source_file": "runs-all-before-2026-06.json.gz",
+    "source_sha256": "1c207d44f497d867c2b227093fe75541cddae538ccf3c68886316a15b3ff6f32",
+    "source_build_min": "v0.98.0",
+    "source_build_max": "v0.106.1",
+    "source_schema_versions": [
+      8,
+      9
+    ]
+  },
+  "scope": {
+    "filters": {
+      "game_mode": "standard",
+      "ascension_min": 7,
+      "cheated": "excluded",
+      "abandoned": "excluded",
+      "losses": "included",
+      "modifiers": "not_used_as_exclusion"
+    },
+    "run_count_total": 6796,
+    "run_count_accepted": 3302,
+    "min_association_sample": 50
+  },
+  "events": {
+    "ABYSSAL_BATHS": {
+      "encounter_count": 254,
+      "choices": {
+        "ABYSSAL_BATHS.pages.ALL.options.EXIT_BATHS.title": {
+          "page_id": "ALL",
+          "option_id": "EXIT_BATHS",
+          "occurrence_count": 84,
+          "occurrence_share": {
+            "value": 33.07086614173229,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 84,
+            "denominator": 254,
+            "sample_size": 254
+          },
+          "associated_occurrence_wins": 25,
+          "associated_occurrence_win_rate": {
+            "value": 29.761904761904763,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 25,
+            "denominator": 84,
+            "sample_size": 84
+          },
+          "associated_run_count": 84,
+          "associated_run_wins": 25,
+          "associated_run_win_rate": {
+            "value": 29.761904761904763,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 25,
+            "denominator": 84,
+            "sample_size": 84
+          }
+        },
+        "ABYSSAL_BATHS.pages.ALL.options.LINGER.title": {
+          "page_id": "ALL",
+          "option_id": "LINGER",
+          "occurrence_count": 309,
+          "occurrence_share": {
+            "value": 121.65354330708662,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 309,
+            "denominator": 254,
+            "sample_size": 254
+          },
+          "associated_occurrence_wins": 82,
+          "associated_occurrence_win_rate": {
+            "value": 26.537216828478964,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 82,
+            "denominator": 309,
+            "sample_size": 309
+          },
+          "associated_run_count": 83,
+          "associated_run_wins": 24,
+          "associated_run_win_rate": {
+            "value": 28.915662650602407,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 24,
+            "denominator": 83,
+            "sample_size": 83
+          }
+        },
+        "ABYSSAL_BATHS.pages.INITIAL.options.ABSTAIN.title": {
+          "page_id": "INITIAL",
+          "option_id": "ABSTAIN",
+          "occurrence_count": 170,
+          "occurrence_share": {
+            "value": 66.92913385826772,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 170,
+            "denominator": 254,
+            "sample_size": 254
+          },
+          "associated_occurrence_wins": 39,
+          "associated_occurrence_win_rate": {
+            "value": 22.941176470588236,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 39,
+            "denominator": 170,
+            "sample_size": 170
+          },
+          "associated_run_count": 170,
+          "associated_run_wins": 39,
+          "associated_run_win_rate": {
+            "value": 22.941176470588236,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 39,
+            "denominator": 170,
+            "sample_size": 170
+          }
+        },
+        "ABYSSAL_BATHS.pages.INITIAL.options.IMMERSE.title": {
+          "page_id": "INITIAL",
+          "option_id": "IMMERSE",
+          "occurrence_count": 84,
+          "occurrence_share": {
+            "value": 33.07086614173229,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 84,
+            "denominator": 254,
+            "sample_size": 254
+          },
+          "associated_occurrence_wins": 25,
+          "associated_occurrence_win_rate": {
+            "value": 29.761904761904763,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 25,
+            "denominator": 84,
+            "sample_size": 84
+          },
+          "associated_run_count": 84,
+          "associated_run_wins": 25,
+          "associated_run_win_rate": {
+            "value": 29.761904761904763,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 25,
+            "denominator": 84,
+            "sample_size": 84
+          }
+        }
+      }
+    },
+    "AMALGAMATOR": {
+      "encounter_count": 169,
+      "choices": {
+        "AMALGAMATOR.pages.INITIAL.options.COMBINE_DEFENDS.title": {
+          "page_id": "INITIAL",
+          "option_id": "COMBINE_DEFENDS",
+          "occurrence_count": 69,
+          "occurrence_share": {
+            "value": 40.828402366863905,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 69,
+            "denominator": 169,
+            "sample_size": 169
+          },
+          "associated_occurrence_wins": 28,
+          "associated_occurrence_win_rate": {
+            "value": 40.57971014492754,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 28,
+            "denominator": 69,
+            "sample_size": 69
+          },
+          "associated_run_count": 69,
+          "associated_run_wins": 28,
+          "associated_run_win_rate": {
+            "value": 40.57971014492754,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 28,
+            "denominator": 69,
+            "sample_size": 69
+          }
+        },
+        "AMALGAMATOR.pages.INITIAL.options.COMBINE_STRIKES.title": {
+          "page_id": "INITIAL",
+          "option_id": "COMBINE_STRIKES",
+          "occurrence_count": 100,
+          "occurrence_share": {
+            "value": 59.171597633136095,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 100,
+            "denominator": 169,
+            "sample_size": 169
+          },
+          "associated_occurrence_wins": 38,
+          "associated_occurrence_win_rate": {
+            "value": 38.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 38,
+            "denominator": 100,
+            "sample_size": 100
+          },
+          "associated_run_count": 100,
+          "associated_run_wins": 38,
+          "associated_run_win_rate": {
+            "value": 38.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 38,
+            "denominator": 100,
+            "sample_size": 100
+          }
+        }
+      }
+    },
+    "AROMA_OF_CHAOS": {
+      "encounter_count": 201,
+      "choices": {
+        "AROMA_OF_CHAOS.pages.INITIAL.options.LET_GO.title": {
+          "page_id": "INITIAL",
+          "option_id": "LET_GO",
+          "occurrence_count": 131,
+          "occurrence_share": {
+            "value": 65.17412935323384,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 131,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 44,
+          "associated_occurrence_win_rate": {
+            "value": 33.587786259541986,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 44,
+            "denominator": 131,
+            "sample_size": 131
+          },
+          "associated_run_count": 131,
+          "associated_run_wins": 44,
+          "associated_run_win_rate": {
+            "value": 33.587786259541986,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 44,
+            "denominator": 131,
+            "sample_size": 131
+          }
+        },
+        "AROMA_OF_CHAOS.pages.INITIAL.options.MAINTAIN_CONTROL.title": {
+          "page_id": "INITIAL",
+          "option_id": "MAINTAIN_CONTROL",
+          "occurrence_count": 70,
+          "occurrence_share": {
+            "value": 34.82587064676617,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 70,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 17,
+          "associated_occurrence_win_rate": {
+            "value": 24.285714285714285,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 17,
+            "denominator": 70,
+            "sample_size": 70
+          },
+          "associated_run_count": 70,
+          "associated_run_wins": 17,
+          "associated_run_win_rate": {
+            "value": 24.285714285714285,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 17,
+            "denominator": 70,
+            "sample_size": 70
+          }
+        }
+      }
+    },
+    "BATTLEWORN_DUMMY": {
+      "encounter_count": 178,
+      "choices": {
+        "BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_1.title": {
+          "page_id": "INITIAL",
+          "option_id": "SETTING_1",
+          "occurrence_count": 36,
+          "occurrence_share": {
+            "value": 20.224719101123593,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 36,
+            "denominator": 178,
+            "sample_size": 178
+          },
+          "associated_occurrence_wins": 24,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 36,
+          "associated_run_wins": 24,
+          "associated_run_win_rate": null
+        },
+        "BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_2.title": {
+          "page_id": "INITIAL",
+          "option_id": "SETTING_2",
+          "occurrence_count": 119,
+          "occurrence_share": {
+            "value": 66.85393258426966,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 119,
+            "denominator": 178,
+            "sample_size": 178
+          },
+          "associated_occurrence_wins": 86,
+          "associated_occurrence_win_rate": {
+            "value": 72.26890756302521,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 86,
+            "denominator": 119,
+            "sample_size": 119
+          },
+          "associated_run_count": 119,
+          "associated_run_wins": 86,
+          "associated_run_win_rate": {
+            "value": 72.26890756302521,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 86,
+            "denominator": 119,
+            "sample_size": 119
+          }
+        },
+        "BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_3.title": {
+          "page_id": "INITIAL",
+          "option_id": "SETTING_3",
+          "occurrence_count": 23,
+          "occurrence_share": {
+            "value": 12.921348314606742,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 23,
+            "denominator": 178,
+            "sample_size": 178
+          },
+          "associated_occurrence_wins": 18,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 23,
+          "associated_run_wins": 18,
+          "associated_run_win_rate": null
+        }
+      }
+    },
+    "BRAIN_LEECH": {
+      "encounter_count": 593,
+      "choices": {
+        "BRAIN_LEECH.pages.INITIAL.options.RIP.title": {
+          "page_id": "INITIAL",
+          "option_id": "RIP",
+          "occurrence_count": 297,
+          "occurrence_share": {
+            "value": 50.084317032040474,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 297,
+            "denominator": 593,
+            "sample_size": 593
+          },
+          "associated_occurrence_wins": 102,
+          "associated_occurrence_win_rate": {
+            "value": 34.34343434343434,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 102,
+            "denominator": 297,
+            "sample_size": 297
+          },
+          "associated_run_count": 297,
+          "associated_run_wins": 102,
+          "associated_run_win_rate": {
+            "value": 34.34343434343434,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 102,
+            "denominator": 297,
+            "sample_size": 297
+          }
+        },
+        "BRAIN_LEECH.pages.INITIAL.options.SHARE_KNOWLEDGE.title": {
+          "page_id": "INITIAL",
+          "option_id": "SHARE_KNOWLEDGE",
+          "occurrence_count": 296,
+          "occurrence_share": {
+            "value": 49.915682967959526,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 296,
+            "denominator": 593,
+            "sample_size": 593
+          },
+          "associated_occurrence_wins": 80,
+          "associated_occurrence_win_rate": {
+            "value": 27.027027027027028,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 80,
+            "denominator": 296,
+            "sample_size": 296
+          },
+          "associated_run_count": 296,
+          "associated_run_wins": 80,
+          "associated_run_win_rate": {
+            "value": 27.027027027027028,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 80,
+            "denominator": 296,
+            "sample_size": 296
+          }
+        }
+      }
+    },
+    "BUGSLAYER": {
+      "encounter_count": 201,
+      "choices": {
+        "BUGSLAYER.pages.INITIAL.options.EXTERMINATION.title": {
+          "page_id": "INITIAL",
+          "option_id": "EXTERMINATION",
+          "occurrence_count": 101,
+          "occurrence_share": {
+            "value": 50.24875621890548,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 101,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 38,
+          "associated_occurrence_win_rate": {
+            "value": 37.62376237623762,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 38,
+            "denominator": 101,
+            "sample_size": 101
+          },
+          "associated_run_count": 101,
+          "associated_run_wins": 38,
+          "associated_run_win_rate": {
+            "value": 37.62376237623762,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 38,
+            "denominator": 101,
+            "sample_size": 101
+          }
+        },
+        "BUGSLAYER.pages.INITIAL.options.SQUASH.title": {
+          "page_id": "INITIAL",
+          "option_id": "SQUASH",
+          "occurrence_count": 100,
+          "occurrence_share": {
+            "value": 49.75124378109453,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 100,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 42,
+          "associated_occurrence_win_rate": {
+            "value": 42.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 42,
+            "denominator": 100,
+            "sample_size": 100
+          },
+          "associated_run_count": 100,
+          "associated_run_wins": 42,
+          "associated_run_win_rate": {
+            "value": 42.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 42,
+            "denominator": 100,
+            "sample_size": 100
+          }
+        }
+      }
+    },
+    "BYRDONIS_NEST": {
+      "encounter_count": 222,
+      "choices": {
+        "BYRDONIS_NEST.pages.INITIAL.options.EAT.title": {
+          "page_id": "INITIAL",
+          "option_id": "EAT",
+          "occurrence_count": 170,
+          "occurrence_share": {
+            "value": 76.57657657657657,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 170,
+            "denominator": 222,
+            "sample_size": 222
+          },
+          "associated_occurrence_wins": 49,
+          "associated_occurrence_win_rate": {
+            "value": 28.823529411764703,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 49,
+            "denominator": 170,
+            "sample_size": 170
+          },
+          "associated_run_count": 170,
+          "associated_run_wins": 49,
+          "associated_run_win_rate": {
+            "value": 28.823529411764703,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 49,
+            "denominator": 170,
+            "sample_size": 170
+          }
+        },
+        "BYRDONIS_NEST.pages.INITIAL.options.TAKE.title": {
+          "page_id": "INITIAL",
+          "option_id": "TAKE",
+          "occurrence_count": 52,
+          "occurrence_share": {
+            "value": 23.423423423423422,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 52,
+            "denominator": 222,
+            "sample_size": 222
+          },
+          "associated_occurrence_wins": 14,
+          "associated_occurrence_win_rate": {
+            "value": 26.923076923076923,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 14,
+            "denominator": 52,
+            "sample_size": 52
+          },
+          "associated_run_count": 52,
+          "associated_run_wins": 14,
+          "associated_run_win_rate": {
+            "value": 26.923076923076923,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 14,
+            "denominator": 52,
+            "sample_size": 52
+          }
+        }
+      }
+    },
+    "COLORFUL_PHILOSOPHERS": {
+      "encounter_count": 217,
+      "choices": {
+        "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.DEFECT.title": {
+          "page_id": "INITIAL",
+          "option_id": "DEFECT",
+          "occurrence_count": 27,
+          "occurrence_share": {
+            "value": 12.442396313364055,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 27,
+            "denominator": 217,
+            "sample_size": 217
+          },
+          "associated_occurrence_wins": 13,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 27,
+          "associated_run_wins": 13,
+          "associated_run_win_rate": null
+        },
+        "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.IRONCLAD.title": {
+          "page_id": "INITIAL",
+          "option_id": "IRONCLAD",
+          "occurrence_count": 57,
+          "occurrence_share": {
+            "value": 26.26728110599078,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 57,
+            "denominator": 217,
+            "sample_size": 217
+          },
+          "associated_occurrence_wins": 27,
+          "associated_occurrence_win_rate": {
+            "value": 47.368421052631575,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 27,
+            "denominator": 57,
+            "sample_size": 57
+          },
+          "associated_run_count": 57,
+          "associated_run_wins": 27,
+          "associated_run_win_rate": {
+            "value": 47.368421052631575,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 27,
+            "denominator": 57,
+            "sample_size": 57
+          }
+        },
+        "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.NECROBINDER.title": {
+          "page_id": "INITIAL",
+          "option_id": "NECROBINDER",
+          "occurrence_count": 47,
+          "occurrence_share": {
+            "value": 21.658986175115206,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 47,
+            "denominator": 217,
+            "sample_size": 217
+          },
+          "associated_occurrence_wins": 24,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 47,
+          "associated_run_wins": 24,
+          "associated_run_win_rate": null
+        },
+        "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.REGENT.title": {
+          "page_id": "INITIAL",
+          "option_id": "REGENT",
+          "occurrence_count": 10,
+          "occurrence_share": {
+            "value": 4.6082949308755765,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 10,
+            "denominator": 217,
+            "sample_size": 217
+          },
+          "associated_occurrence_wins": 7,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 10,
+          "associated_run_wins": 7,
+          "associated_run_win_rate": null
+        },
+        "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.SILENT.title": {
+          "page_id": "INITIAL",
+          "option_id": "SILENT",
+          "occurrence_count": 76,
+          "occurrence_share": {
+            "value": 35.02304147465438,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 76,
+            "denominator": 217,
+            "sample_size": 217
+          },
+          "associated_occurrence_wins": 26,
+          "associated_occurrence_win_rate": {
+            "value": 34.21052631578947,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 26,
+            "denominator": 76,
+            "sample_size": 76
+          },
+          "associated_run_count": 76,
+          "associated_run_wins": 26,
+          "associated_run_win_rate": {
+            "value": 34.21052631578947,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 26,
+            "denominator": 76,
+            "sample_size": 76
+          }
+        }
+      }
+    },
+    "COLOSSAL_FLOWER": {
+      "encounter_count": 198,
+      "choices": {
+        "COLOSSAL_FLOWER.pages.INITIAL.options.EXTRACT_CURRENT_PRIZE_1.title": {
+          "page_id": "INITIAL",
+          "option_id": "EXTRACT_CURRENT_PRIZE_1",
+          "occurrence_count": 84,
+          "occurrence_share": {
+            "value": 42.42424242424242,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 84,
+            "denominator": 198,
+            "sample_size": 198
+          },
+          "associated_occurrence_wins": 24,
+          "associated_occurrence_win_rate": {
+            "value": 28.57142857142857,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 24,
+            "denominator": 84,
+            "sample_size": 84
+          },
+          "associated_run_count": 84,
+          "associated_run_wins": 24,
+          "associated_run_win_rate": {
+            "value": 28.57142857142857,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 24,
+            "denominator": 84,
+            "sample_size": 84
+          }
+        },
+        "COLOSSAL_FLOWER.pages.INITIAL.options.REACH_DEEPER_1.title": {
+          "page_id": "INITIAL",
+          "option_id": "REACH_DEEPER_1",
+          "occurrence_count": 114,
+          "occurrence_share": {
+            "value": 57.57575757575758,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 114,
+            "denominator": 198,
+            "sample_size": 198
+          },
+          "associated_occurrence_wins": 58,
+          "associated_occurrence_win_rate": {
+            "value": 50.877192982456144,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 58,
+            "denominator": 114,
+            "sample_size": 114
+          },
+          "associated_run_count": 114,
+          "associated_run_wins": 58,
+          "associated_run_win_rate": {
+            "value": 50.877192982456144,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 58,
+            "denominator": 114,
+            "sample_size": 114
+          }
+        },
+        "COLOSSAL_FLOWER.pages.REACH_DEEPER_1.options.EXTRACT_CURRENT_PRIZE_2.title": {
+          "page_id": "REACH_DEEPER_1",
+          "option_id": "EXTRACT_CURRENT_PRIZE_2",
+          "occurrence_count": 7,
+          "occurrence_share": {
+            "value": 3.535353535353535,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 7,
+            "denominator": 198,
+            "sample_size": 198
+          },
+          "associated_occurrence_wins": 3,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 7,
+          "associated_run_wins": 3,
+          "associated_run_win_rate": null
+        },
+        "COLOSSAL_FLOWER.pages.REACH_DEEPER_1.options.REACH_DEEPER_2.title": {
+          "page_id": "REACH_DEEPER_1",
+          "option_id": "REACH_DEEPER_2",
+          "occurrence_count": 107,
+          "occurrence_share": {
+            "value": 54.04040404040404,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 107,
+            "denominator": 198,
+            "sample_size": 198
+          },
+          "associated_occurrence_wins": 55,
+          "associated_occurrence_win_rate": {
+            "value": 51.4018691588785,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 55,
+            "denominator": 107,
+            "sample_size": 107
+          },
+          "associated_run_count": 107,
+          "associated_run_wins": 55,
+          "associated_run_win_rate": {
+            "value": 51.4018691588785,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 55,
+            "denominator": 107,
+            "sample_size": 107
+          }
+        },
+        "COLOSSAL_FLOWER.pages.REACH_DEEPER_2.options.EXTRACT_INSTEAD.title": {
+          "page_id": "REACH_DEEPER_2",
+          "option_id": "EXTRACT_INSTEAD",
+          "occurrence_count": 14,
+          "occurrence_share": {
+            "value": 7.07070707070707,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 14,
+            "denominator": 198,
+            "sample_size": 198
+          },
+          "associated_occurrence_wins": 3,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 14,
+          "associated_run_wins": 3,
+          "associated_run_win_rate": null
+        },
+        "COLOSSAL_FLOWER.pages.REACH_DEEPER_2.options.POLLINOUS_CORE.title": {
+          "page_id": "REACH_DEEPER_2",
+          "option_id": "POLLINOUS_CORE",
+          "occurrence_count": 93,
+          "occurrence_share": {
+            "value": 46.96969696969697,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 93,
+            "denominator": 198,
+            "sample_size": 198
+          },
+          "associated_occurrence_wins": 52,
+          "associated_occurrence_win_rate": {
+            "value": 55.91397849462365,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 52,
+            "denominator": 93,
+            "sample_size": 93
+          },
+          "associated_run_count": 93,
+          "associated_run_wins": 52,
+          "associated_run_win_rate": {
+            "value": 55.91397849462365,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 52,
+            "denominator": 93,
+            "sample_size": 93
+          }
+        }
+      }
+    },
+    "CRYSTAL_SPHERE": {
+      "encounter_count": 246,
+      "choices": {
+        "CRYSTAL_SPHERE.pages.INITIAL.options.PAYMENT_PLAN.title": {
+          "page_id": "INITIAL",
+          "option_id": "PAYMENT_PLAN",
+          "occurrence_count": 82,
+          "occurrence_share": {
+            "value": 33.33333333333333,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 82,
+            "denominator": 246,
+            "sample_size": 246
+          },
+          "associated_occurrence_wins": 49,
+          "associated_occurrence_win_rate": {
+            "value": 59.756097560975604,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 49,
+            "denominator": 82,
+            "sample_size": 82
+          },
+          "associated_run_count": 82,
+          "associated_run_wins": 49,
+          "associated_run_win_rate": {
+            "value": 59.756097560975604,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 49,
+            "denominator": 82,
+            "sample_size": 82
+          }
+        },
+        "CRYSTAL_SPHERE.pages.INITIAL.options.UNCOVER_FUTURE.title": {
+          "page_id": "INITIAL",
+          "option_id": "UNCOVER_FUTURE",
+          "occurrence_count": 164,
+          "occurrence_share": {
+            "value": 66.66666666666666,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 164,
+            "denominator": 246,
+            "sample_size": 246
+          },
+          "associated_occurrence_wins": 90,
+          "associated_occurrence_win_rate": {
+            "value": 54.87804878048781,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 90,
+            "denominator": 164,
+            "sample_size": 164
+          },
+          "associated_run_count": 164,
+          "associated_run_wins": 90,
+          "associated_run_win_rate": {
+            "value": 54.87804878048781,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 90,
+            "denominator": 164,
+            "sample_size": 164
+          }
+        }
+      }
+    },
+    "DARV": {
+      "encounter_count": 342,
+      "choices": {}
+    },
+    "DENSE_VEGETATION": {
+      "encounter_count": 203,
+      "choices": {
+        "DENSE_VEGETATION.pages.INITIAL.options.REST.title": {
+          "page_id": "INITIAL",
+          "option_id": "REST",
+          "occurrence_count": 89,
+          "occurrence_share": {
+            "value": 43.84236453201971,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 89,
+            "denominator": 203,
+            "sample_size": 203
+          },
+          "associated_occurrence_wins": 34,
+          "associated_occurrence_win_rate": {
+            "value": 38.20224719101123,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 34,
+            "denominator": 89,
+            "sample_size": 89
+          },
+          "associated_run_count": 89,
+          "associated_run_wins": 34,
+          "associated_run_win_rate": {
+            "value": 38.20224719101123,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 34,
+            "denominator": 89,
+            "sample_size": 89
+          }
+        },
+        "DENSE_VEGETATION.pages.INITIAL.options.TRUDGE_ON.title": {
+          "page_id": "INITIAL",
+          "option_id": "TRUDGE_ON",
+          "occurrence_count": 114,
+          "occurrence_share": {
+            "value": 56.15763546798029,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 114,
+            "denominator": 203,
+            "sample_size": 203
+          },
+          "associated_occurrence_wins": 31,
+          "associated_occurrence_win_rate": {
+            "value": 27.192982456140353,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 31,
+            "denominator": 114,
+            "sample_size": 114
+          },
+          "associated_run_count": 114,
+          "associated_run_wins": 31,
+          "associated_run_win_rate": {
+            "value": 27.192982456140353,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 31,
+            "denominator": 114,
+            "sample_size": 114
+          }
+        },
+        "DENSE_VEGETATION.pages.REST.options.FIGHT.title": {
+          "page_id": "REST",
+          "option_id": "FIGHT",
+          "occurrence_count": 89,
+          "occurrence_share": {
+            "value": 43.84236453201971,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 89,
+            "denominator": 203,
+            "sample_size": 203
+          },
+          "associated_occurrence_wins": 34,
+          "associated_occurrence_win_rate": {
+            "value": 38.20224719101123,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 34,
+            "denominator": 89,
+            "sample_size": 89
+          },
+          "associated_run_count": 89,
+          "associated_run_wins": 34,
+          "associated_run_win_rate": {
+            "value": 38.20224719101123,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 34,
+            "denominator": 89,
+            "sample_size": 89
+          }
+        }
+      }
+    },
+    "DOLL_ROOM": {
+      "encounter_count": 191,
+      "choices": {
+        "DOLL_ROOM.pages.INITIAL.options.EXAMINE.title": {
+          "page_id": "INITIAL",
+          "option_id": "EXAMINE",
+          "occurrence_count": 20,
+          "occurrence_share": {
+            "value": 10.471204188481675,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 20,
+            "denominator": 191,
+            "sample_size": 191
+          },
+          "associated_occurrence_wins": 11,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 20,
+          "associated_run_wins": 11,
+          "associated_run_win_rate": null
+        },
+        "DOLL_ROOM.pages.INITIAL.options.RANDOM.title": {
+          "page_id": "INITIAL",
+          "option_id": "RANDOM",
+          "occurrence_count": 51,
+          "occurrence_share": {
+            "value": 26.701570680628272,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 51,
+            "denominator": 191,
+            "sample_size": 191
+          },
+          "associated_occurrence_wins": 14,
+          "associated_occurrence_win_rate": {
+            "value": 27.450980392156865,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 14,
+            "denominator": 51,
+            "sample_size": 51
+          },
+          "associated_run_count": 51,
+          "associated_run_wins": 14,
+          "associated_run_win_rate": {
+            "value": 27.450980392156865,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 14,
+            "denominator": 51,
+            "sample_size": 51
+          }
+        },
+        "DOLL_ROOM.pages.INITIAL.options.TAKE_SOME_TIME.title": {
+          "page_id": "INITIAL",
+          "option_id": "TAKE_SOME_TIME",
+          "occurrence_count": 120,
+          "occurrence_share": {
+            "value": 62.82722513089005,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 120,
+            "denominator": 191,
+            "sample_size": 191
+          },
+          "associated_occurrence_wins": 70,
+          "associated_occurrence_win_rate": {
+            "value": 58.333333333333336,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 70,
+            "denominator": 120,
+            "sample_size": 120
+          },
+          "associated_run_count": 120,
+          "associated_run_wins": 70,
+          "associated_run_win_rate": {
+            "value": 58.333333333333336,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 70,
+            "denominator": 120,
+            "sample_size": 120
+          }
+        }
+      }
+    },
+    "DOORS_OF_LIGHT_AND_DARK": {
+      "encounter_count": 239,
+      "choices": {
+        "DOORS_OF_LIGHT_AND_DARK.pages.INITIAL.options.DARK.title": {
+          "page_id": "INITIAL",
+          "option_id": "DARK",
+          "occurrence_count": 140,
+          "occurrence_share": {
+            "value": 58.57740585774059,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 140,
+            "denominator": 239,
+            "sample_size": 239
+          },
+          "associated_occurrence_wins": 42,
+          "associated_occurrence_win_rate": {
+            "value": 30.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 42,
+            "denominator": 140,
+            "sample_size": 140
+          },
+          "associated_run_count": 140,
+          "associated_run_wins": 42,
+          "associated_run_win_rate": {
+            "value": 30.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 42,
+            "denominator": 140,
+            "sample_size": 140
+          }
+        },
+        "DOORS_OF_LIGHT_AND_DARK.pages.INITIAL.options.LIGHT.title": {
+          "page_id": "INITIAL",
+          "option_id": "LIGHT",
+          "occurrence_count": 99,
+          "occurrence_share": {
+            "value": 41.42259414225941,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 99,
+            "denominator": 239,
+            "sample_size": 239
+          },
+          "associated_occurrence_wins": 30,
+          "associated_occurrence_win_rate": {
+            "value": 30.303030303030305,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 30,
+            "denominator": 99,
+            "sample_size": 99
+          },
+          "associated_run_count": 99,
+          "associated_run_wins": 30,
+          "associated_run_win_rate": {
+            "value": 30.303030303030305,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 30,
+            "denominator": 99,
+            "sample_size": 99
+          }
+        }
+      }
+    },
+    "DROWNING_BEACON": {
+      "encounter_count": 247,
+      "choices": {
+        "DROWNING_BEACON.pages.INITIAL.options.BOTTLE.title": {
+          "page_id": "INITIAL",
+          "option_id": "BOTTLE",
+          "occurrence_count": 40,
+          "occurrence_share": {
+            "value": 16.194331983805668,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 40,
+            "denominator": 247,
+            "sample_size": 247
+          },
+          "associated_occurrence_wins": 8,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 40,
+          "associated_run_wins": 8,
+          "associated_run_win_rate": null
+        },
+        "DROWNING_BEACON.pages.INITIAL.options.CLIMB.title": {
+          "page_id": "INITIAL",
+          "option_id": "CLIMB",
+          "occurrence_count": 207,
+          "occurrence_share": {
+            "value": 83.80566801619433,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 207,
+            "denominator": 247,
+            "sample_size": 247
+          },
+          "associated_occurrence_wins": 34,
+          "associated_occurrence_win_rate": {
+            "value": 16.425120772946862,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 34,
+            "denominator": 207,
+            "sample_size": 207
+          },
+          "associated_run_count": 207,
+          "associated_run_wins": 34,
+          "associated_run_win_rate": {
+            "value": 16.425120772946862,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 34,
+            "denominator": 207,
+            "sample_size": 207
+          }
+        }
+      }
+    },
+    "ENDLESS_CONVEYOR": {
+      "encounter_count": 106,
+      "choices": {
+        "ENDLESS_CONVEYOR.pages.ALL.options.CAVIAR.title": {
+          "page_id": "ALL",
+          "option_id": "CAVIAR",
+          "occurrence_count": 88,
+          "occurrence_share": {
+            "value": 83.01886792452831,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 88,
+            "denominator": 106,
+            "sample_size": 106
+          },
+          "associated_occurrence_wins": 25,
+          "associated_occurrence_win_rate": {
+            "value": 28.40909090909091,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 25,
+            "denominator": 88,
+            "sample_size": 88
+          },
+          "associated_run_count": 62,
+          "associated_run_wins": 19,
+          "associated_run_win_rate": {
+            "value": 30.64516129032258,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 19,
+            "denominator": 62,
+            "sample_size": 62
+          }
+        },
+        "ENDLESS_CONVEYOR.pages.ALL.options.CLAM_ROLL.title": {
+          "page_id": "ALL",
+          "option_id": "CLAM_ROLL",
+          "occurrence_count": 60,
+          "occurrence_share": {
+            "value": 56.60377358490566,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 60,
+            "denominator": 106,
+            "sample_size": 106
+          },
+          "associated_occurrence_wins": 17,
+          "associated_occurrence_win_rate": {
+            "value": 28.333333333333332,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 17,
+            "denominator": 60,
+            "sample_size": 60
+          },
+          "associated_run_count": 54,
+          "associated_run_wins": 16,
+          "associated_run_win_rate": {
+            "value": 29.629629629629626,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 16,
+            "denominator": 54,
+            "sample_size": 54
+          }
+        },
+        "ENDLESS_CONVEYOR.pages.ALL.options.FRIED_EEL.title": {
+          "page_id": "ALL",
+          "option_id": "FRIED_EEL",
+          "occurrence_count": 22,
+          "occurrence_share": {
+            "value": 20.754716981132077,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 22,
+            "denominator": 106,
+            "sample_size": 106
+          },
+          "associated_occurrence_wins": 8,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 21,
+          "associated_run_wins": 8,
+          "associated_run_win_rate": null
+        },
+        "ENDLESS_CONVEYOR.pages.ALL.options.GOLDEN_FYSH.title": {
+          "page_id": "ALL",
+          "option_id": "GOLDEN_FYSH",
+          "occurrence_count": 11,
+          "occurrence_share": {
+            "value": 10.377358490566039,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 11,
+            "denominator": 106,
+            "sample_size": 106
+          },
+          "associated_occurrence_wins": 3,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 9,
+          "associated_run_wins": 3,
+          "associated_run_win_rate": null
+        },
+        "ENDLESS_CONVEYOR.pages.ALL.options.JELLY_LIVER.title": {
+          "page_id": "ALL",
+          "option_id": "JELLY_LIVER",
+          "occurrence_count": 41,
+          "occurrence_share": {
+            "value": 38.67924528301887,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 41,
+            "denominator": 106,
+            "sample_size": 106
+          },
+          "associated_occurrence_wins": 10,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 33,
+          "associated_run_wins": 9,
+          "associated_run_win_rate": null
+        },
+        "ENDLESS_CONVEYOR.pages.ALL.options.SEAPUNK_SALAD.title": {
+          "page_id": "ALL",
+          "option_id": "SEAPUNK_SALAD",
+          "occurrence_count": 22,
+          "occurrence_share": {
+            "value": 20.754716981132077,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 22,
+            "denominator": 106,
+            "sample_size": 106
+          },
+          "associated_occurrence_wins": 7,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 21,
+          "associated_run_wins": 7,
+          "associated_run_win_rate": null
+        },
+        "ENDLESS_CONVEYOR.pages.ALL.options.SPICY_SNAPPY.title": {
+          "page_id": "ALL",
+          "option_id": "SPICY_SNAPPY",
+          "occurrence_count": 38,
+          "occurrence_share": {
+            "value": 35.84905660377358,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 38,
+            "denominator": 106,
+            "sample_size": 106
+          },
+          "associated_occurrence_wins": 12,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 34,
+          "associated_run_wins": 10,
+          "associated_run_win_rate": null
+        },
+        "ENDLESS_CONVEYOR.pages.ALL.options.SUSPICIOUS_CONDIMENT.title": {
+          "page_id": "ALL",
+          "option_id": "SUSPICIOUS_CONDIMENT",
+          "occurrence_count": 15,
+          "occurrence_share": {
+            "value": 14.150943396226415,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 15,
+            "denominator": 106,
+            "sample_size": 106
+          },
+          "associated_occurrence_wins": 3,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 15,
+          "associated_run_wins": 3,
+          "associated_run_win_rate": null
+        },
+        "ENDLESS_CONVEYOR.pages.GRAB_SOMETHING_OFF_THE_BELT.options.LEAVE.title": {
+          "page_id": "GRAB_SOMETHING_OFF_THE_BELT",
+          "option_id": "LEAVE",
+          "occurrence_count": 77,
+          "occurrence_share": {
+            "value": 72.64150943396226,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 77,
+            "denominator": 106,
+            "sample_size": 106
+          },
+          "associated_occurrence_wins": 23,
+          "associated_occurrence_win_rate": {
+            "value": 29.87012987012987,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 23,
+            "denominator": 77,
+            "sample_size": 77
+          },
+          "associated_run_count": 77,
+          "associated_run_wins": 23,
+          "associated_run_win_rate": {
+            "value": 29.87012987012987,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 23,
+            "denominator": 77,
+            "sample_size": 77
+          }
+        },
+        "ENDLESS_CONVEYOR.pages.INITIAL.options.OBSERVE_CHEF.title": {
+          "page_id": "INITIAL",
+          "option_id": "OBSERVE_CHEF",
+          "occurrence_count": 29,
+          "occurrence_share": {
+            "value": 27.358490566037734,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 29,
+            "denominator": 106,
+            "sample_size": 106
+          },
+          "associated_occurrence_wins": 7,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 29,
+          "associated_run_wins": 7,
+          "associated_run_win_rate": null
+        }
+      }
+    },
+    "FAKE_MERCHANT": {
+      "encounter_count": 267,
+      "choices": {}
+    },
+    "FIELD_OF_MAN_SIZED_HOLES": {
+      "encounter_count": 187,
+      "choices": {
+        "FIELD_OF_MAN_SIZED_HOLES.pages.INITIAL.options.ENTER_YOUR_HOLE.title": {
+          "page_id": "INITIAL",
+          "option_id": "ENTER_YOUR_HOLE",
+          "occurrence_count": 127,
+          "occurrence_share": {
+            "value": 67.9144385026738,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 127,
+            "denominator": 187,
+            "sample_size": 187
+          },
+          "associated_occurrence_wins": 58,
+          "associated_occurrence_win_rate": {
+            "value": 45.66929133858268,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 58,
+            "denominator": 127,
+            "sample_size": 127
+          },
+          "associated_run_count": 127,
+          "associated_run_wins": 58,
+          "associated_run_win_rate": {
+            "value": 45.66929133858268,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 58,
+            "denominator": 127,
+            "sample_size": 127
+          }
+        },
+        "FIELD_OF_MAN_SIZED_HOLES.pages.INITIAL.options.RESIST.title": {
+          "page_id": "INITIAL",
+          "option_id": "RESIST",
+          "occurrence_count": 60,
+          "occurrence_share": {
+            "value": 32.0855614973262,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 60,
+            "denominator": 187,
+            "sample_size": 187
+          },
+          "associated_occurrence_wins": 21,
+          "associated_occurrence_win_rate": {
+            "value": 35.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 21,
+            "denominator": 60,
+            "sample_size": 60
+          },
+          "associated_run_count": 60,
+          "associated_run_wins": 21,
+          "associated_run_win_rate": {
+            "value": 35.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 21,
+            "denominator": 60,
+            "sample_size": 60
+          }
+        }
+      }
+    },
+    "GRAVE_OF_THE_FORGOTTEN": {
+      "encounter_count": 155,
+      "choices": {
+        "GRAVE_OF_THE_FORGOTTEN.pages.INITIAL.options.ACCEPT.title": {
+          "page_id": "INITIAL",
+          "option_id": "ACCEPT",
+          "occurrence_count": 86,
+          "occurrence_share": {
+            "value": 55.483870967741936,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 86,
+            "denominator": 155,
+            "sample_size": 155
+          },
+          "associated_occurrence_wins": 63,
+          "associated_occurrence_win_rate": {
+            "value": 73.25581395348837,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 63,
+            "denominator": 86,
+            "sample_size": 86
+          },
+          "associated_run_count": 86,
+          "associated_run_wins": 63,
+          "associated_run_win_rate": {
+            "value": 73.25581395348837,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 63,
+            "denominator": 86,
+            "sample_size": 86
+          }
+        },
+        "GRAVE_OF_THE_FORGOTTEN.pages.INITIAL.options.CONFRONT.title": {
+          "page_id": "INITIAL",
+          "option_id": "CONFRONT",
+          "occurrence_count": 69,
+          "occurrence_share": {
+            "value": 44.516129032258064,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 69,
+            "denominator": 155,
+            "sample_size": 155
+          },
+          "associated_occurrence_wins": 43,
+          "associated_occurrence_win_rate": {
+            "value": 62.31884057971014,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 43,
+            "denominator": 69,
+            "sample_size": 69
+          },
+          "associated_run_count": 69,
+          "associated_run_wins": 43,
+          "associated_run_win_rate": {
+            "value": 62.31884057971014,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 43,
+            "denominator": 69,
+            "sample_size": 69
+          }
+        }
+      }
+    },
+    "HUNGRY_FOR_MUSHROOMS": {
+      "encounter_count": 156,
+      "choices": {
+        "HUNGRY_FOR_MUSHROOMS.pages.INITIAL.options.BIG_MUSHROOM.title": {
+          "page_id": "INITIAL",
+          "option_id": "BIG_MUSHROOM",
+          "occurrence_count": 62,
+          "occurrence_share": {
+            "value": 39.743589743589745,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 62,
+            "denominator": 156,
+            "sample_size": 156
+          },
+          "associated_occurrence_wins": 40,
+          "associated_occurrence_win_rate": {
+            "value": 64.51612903225806,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 40,
+            "denominator": 62,
+            "sample_size": 62
+          },
+          "associated_run_count": 62,
+          "associated_run_wins": 40,
+          "associated_run_win_rate": {
+            "value": 64.51612903225806,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 40,
+            "denominator": 62,
+            "sample_size": 62
+          }
+        },
+        "HUNGRY_FOR_MUSHROOMS.pages.INITIAL.options.FRAGRANT_MUSHROOM.title": {
+          "page_id": "INITIAL",
+          "option_id": "FRAGRANT_MUSHROOM",
+          "occurrence_count": 94,
+          "occurrence_share": {
+            "value": 60.256410256410255,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 94,
+            "denominator": 156,
+            "sample_size": 156
+          },
+          "associated_occurrence_wins": 75,
+          "associated_occurrence_win_rate": {
+            "value": 79.7872340425532,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 75,
+            "denominator": 94,
+            "sample_size": 94
+          },
+          "associated_run_count": 94,
+          "associated_run_wins": 75,
+          "associated_run_win_rate": {
+            "value": 79.7872340425532,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 75,
+            "denominator": 94,
+            "sample_size": 94
+          }
+        }
+      }
+    },
+    "INFESTED_AUTOMATON": {
+      "encounter_count": 190,
+      "choices": {
+        "INFESTED_AUTOMATON.pages.INITIAL.options.STUDY.title": {
+          "page_id": "INITIAL",
+          "option_id": "STUDY",
+          "occurrence_count": 139,
+          "occurrence_share": {
+            "value": 73.15789473684211,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 139,
+            "denominator": 190,
+            "sample_size": 190
+          },
+          "associated_occurrence_wins": 62,
+          "associated_occurrence_win_rate": {
+            "value": 44.60431654676259,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 62,
+            "denominator": 139,
+            "sample_size": 139
+          },
+          "associated_run_count": 139,
+          "associated_run_wins": 62,
+          "associated_run_win_rate": {
+            "value": 44.60431654676259,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 62,
+            "denominator": 139,
+            "sample_size": 139
+          }
+        },
+        "INFESTED_AUTOMATON.pages.INITIAL.options.TOUCH_CORE.title": {
+          "page_id": "INITIAL",
+          "option_id": "TOUCH_CORE",
+          "occurrence_count": 51,
+          "occurrence_share": {
+            "value": 26.842105263157894,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 51,
+            "denominator": 190,
+            "sample_size": 190
+          },
+          "associated_occurrence_wins": 23,
+          "associated_occurrence_win_rate": {
+            "value": 45.09803921568628,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 23,
+            "denominator": 51,
+            "sample_size": 51
+          },
+          "associated_run_count": 51,
+          "associated_run_wins": 23,
+          "associated_run_win_rate": {
+            "value": 45.09803921568628,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 23,
+            "denominator": 51,
+            "sample_size": 51
+          }
+        }
+      }
+    },
+    "JUNGLE_MAZE_ADVENTURE": {
+      "encounter_count": 211,
+      "choices": {
+        "JUNGLE_MAZE_ADVENTURE.pages.INITIAL.options.JOIN_FORCES.title": {
+          "page_id": "INITIAL",
+          "option_id": "JOIN_FORCES",
+          "occurrence_count": 145,
+          "occurrence_share": {
+            "value": 68.72037914691943,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 145,
+            "denominator": 211,
+            "sample_size": 211
+          },
+          "associated_occurrence_wins": 34,
+          "associated_occurrence_win_rate": {
+            "value": 23.448275862068964,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 34,
+            "denominator": 145,
+            "sample_size": 145
+          },
+          "associated_run_count": 145,
+          "associated_run_wins": 34,
+          "associated_run_win_rate": {
+            "value": 23.448275862068964,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 34,
+            "denominator": 145,
+            "sample_size": 145
+          }
+        },
+        "JUNGLE_MAZE_ADVENTURE.pages.INITIAL.options.SOLO_QUEST.title": {
+          "page_id": "INITIAL",
+          "option_id": "SOLO_QUEST",
+          "occurrence_count": 66,
+          "occurrence_share": {
+            "value": 31.27962085308057,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 66,
+            "denominator": 211,
+            "sample_size": 211
+          },
+          "associated_occurrence_wins": 16,
+          "associated_occurrence_win_rate": {
+            "value": 24.242424242424242,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 16,
+            "denominator": 66,
+            "sample_size": 66
+          },
+          "associated_run_count": 66,
+          "associated_run_wins": 16,
+          "associated_run_win_rate": {
+            "value": 24.242424242424242,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 16,
+            "denominator": 66,
+            "sample_size": 66
+          }
+        }
+      }
+    },
+    "LOST_WISP": {
+      "encounter_count": 205,
+      "choices": {
+        "LOST_WISP.pages.INITIAL.options.CLAIM.title": {
+          "page_id": "INITIAL",
+          "option_id": "CLAIM",
+          "occurrence_count": 43,
+          "occurrence_share": {
+            "value": 20.975609756097562,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 43,
+            "denominator": 205,
+            "sample_size": 205
+          },
+          "associated_occurrence_wins": 19,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 43,
+          "associated_run_wins": 19,
+          "associated_run_win_rate": null
+        },
+        "LOST_WISP.pages.INITIAL.options.SEARCH.title": {
+          "page_id": "INITIAL",
+          "option_id": "SEARCH",
+          "occurrence_count": 162,
+          "occurrence_share": {
+            "value": 79.02439024390245,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 162,
+            "denominator": 205,
+            "sample_size": 205
+          },
+          "associated_occurrence_wins": 70,
+          "associated_occurrence_win_rate": {
+            "value": 43.20987654320987,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 70,
+            "denominator": 162,
+            "sample_size": 162
+          },
+          "associated_run_count": 162,
+          "associated_run_wins": 70,
+          "associated_run_win_rate": {
+            "value": 43.20987654320987,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 70,
+            "denominator": 162,
+            "sample_size": 162
+          }
+        }
+      }
+    },
+    "LUMINOUS_CHOIR": {
+      "encounter_count": 37,
+      "choices": {
+        "LUMINOUS_CHOIR.pages.INITIAL.options.OFFER_TRIBUTE.title": {
+          "page_id": "INITIAL",
+          "option_id": "OFFER_TRIBUTE",
+          "occurrence_count": 4,
+          "occurrence_share": {
+            "value": 10.81081081081081,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 4,
+            "denominator": 37,
+            "sample_size": 37
+          },
+          "associated_occurrence_wins": 0,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 4,
+          "associated_run_wins": 0,
+          "associated_run_win_rate": null
+        },
+        "LUMINOUS_CHOIR.pages.INITIAL.options.REACH_INTO_THE_FLESH.title": {
+          "page_id": "INITIAL",
+          "option_id": "REACH_INTO_THE_FLESH",
+          "occurrence_count": 33,
+          "occurrence_share": {
+            "value": 89.1891891891892,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 33,
+            "denominator": 37,
+            "sample_size": 37
+          },
+          "associated_occurrence_wins": 14,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 33,
+          "associated_run_wins": 14,
+          "associated_run_win_rate": null
+        }
+      }
+    },
+    "MORPHIC_GROVE": {
+      "encounter_count": 176,
+      "choices": {
+        "MORPHIC_GROVE.pages.INITIAL.options.GROUP.title": {
+          "page_id": "INITIAL",
+          "option_id": "GROUP",
+          "occurrence_count": 116,
+          "occurrence_share": {
+            "value": 65.9090909090909,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 116,
+            "denominator": 176,
+            "sample_size": 176
+          },
+          "associated_occurrence_wins": 52,
+          "associated_occurrence_win_rate": {
+            "value": 44.827586206896555,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 52,
+            "denominator": 116,
+            "sample_size": 116
+          },
+          "associated_run_count": 116,
+          "associated_run_wins": 52,
+          "associated_run_win_rate": {
+            "value": 44.827586206896555,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 52,
+            "denominator": 116,
+            "sample_size": 116
+          }
+        },
+        "MORPHIC_GROVE.pages.INITIAL.options.LONER.title": {
+          "page_id": "INITIAL",
+          "option_id": "LONER",
+          "occurrence_count": 60,
+          "occurrence_share": {
+            "value": 34.090909090909086,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 60,
+            "denominator": 176,
+            "sample_size": 176
+          },
+          "associated_occurrence_wins": 21,
+          "associated_occurrence_win_rate": {
+            "value": 35.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 21,
+            "denominator": 60,
+            "sample_size": 60
+          },
+          "associated_run_count": 60,
+          "associated_run_wins": 21,
+          "associated_run_win_rate": {
+            "value": 35.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 21,
+            "denominator": 60,
+            "sample_size": 60
+          }
+        }
+      }
+    },
+    "NEOW": {
+      "encounter_count": 3301,
+      "choices": {}
+    },
+    "NONUPEIPE": {
+      "encounter_count": 414,
+      "choices": {}
+    },
+    "OROBAS": {
+      "encounter_count": 635,
+      "choices": {}
+    },
+    "PAEL": {
+      "encounter_count": 655,
+      "choices": {}
+    },
+    "POTION_COURIER": {
+      "encounter_count": 350,
+      "choices": {
+        "POTION_COURIER.pages.INITIAL.options.GRAB_POTIONS.title": {
+          "page_id": "INITIAL",
+          "option_id": "GRAB_POTIONS",
+          "occurrence_count": 146,
+          "occurrence_share": {
+            "value": 41.714285714285715,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 146,
+            "denominator": 350,
+            "sample_size": 350
+          },
+          "associated_occurrence_wins": 84,
+          "associated_occurrence_win_rate": {
+            "value": 57.534246575342465,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 84,
+            "denominator": 146,
+            "sample_size": 146
+          },
+          "associated_run_count": 146,
+          "associated_run_wins": 84,
+          "associated_run_win_rate": {
+            "value": 57.534246575342465,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 84,
+            "denominator": 146,
+            "sample_size": 146
+          }
+        },
+        "POTION_COURIER.pages.INITIAL.options.RANSACK.title": {
+          "page_id": "INITIAL",
+          "option_id": "RANSACK",
+          "occurrence_count": 204,
+          "occurrence_share": {
+            "value": 58.285714285714285,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 204,
+            "denominator": 350,
+            "sample_size": 350
+          },
+          "associated_occurrence_wins": 108,
+          "associated_occurrence_win_rate": {
+            "value": 52.94117647058824,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 108,
+            "denominator": 204,
+            "sample_size": 204
+          },
+          "associated_run_count": 204,
+          "associated_run_wins": 108,
+          "associated_run_win_rate": {
+            "value": 52.94117647058824,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 108,
+            "denominator": 204,
+            "sample_size": 204
+          }
+        }
+      }
+    },
+    "PUNCH_OFF": {
+      "encounter_count": 109,
+      "choices": {
+        "PUNCH_OFF.pages.INITIAL.options.I_CAN_TAKE_THEM.title": {
+          "page_id": "INITIAL",
+          "option_id": "I_CAN_TAKE_THEM",
+          "occurrence_count": 51,
+          "occurrence_share": {
+            "value": 46.788990825688074,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 51,
+            "denominator": 109,
+            "sample_size": 109
+          },
+          "associated_occurrence_wins": 18,
+          "associated_occurrence_win_rate": {
+            "value": 35.294117647058826,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 18,
+            "denominator": 51,
+            "sample_size": 51
+          },
+          "associated_run_count": 51,
+          "associated_run_wins": 18,
+          "associated_run_win_rate": {
+            "value": 35.294117647058826,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 18,
+            "denominator": 51,
+            "sample_size": 51
+          }
+        },
+        "PUNCH_OFF.pages.INITIAL.options.NAB.title": {
+          "page_id": "INITIAL",
+          "option_id": "NAB",
+          "occurrence_count": 58,
+          "occurrence_share": {
+            "value": 53.21100917431193,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 58,
+            "denominator": 109,
+            "sample_size": 109
+          },
+          "associated_occurrence_wins": 9,
+          "associated_occurrence_win_rate": {
+            "value": 15.517241379310345,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 9,
+            "denominator": 58,
+            "sample_size": 58
+          },
+          "associated_run_count": 58,
+          "associated_run_wins": 9,
+          "associated_run_win_rate": {
+            "value": 15.517241379310345,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 9,
+            "denominator": 58,
+            "sample_size": 58
+          }
+        },
+        "PUNCH_OFF.pages.I_CAN_TAKE_THEM.options.FIGHT.title": {
+          "page_id": "I_CAN_TAKE_THEM",
+          "option_id": "FIGHT",
+          "occurrence_count": 51,
+          "occurrence_share": {
+            "value": 46.788990825688074,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 51,
+            "denominator": 109,
+            "sample_size": 109
+          },
+          "associated_occurrence_wins": 18,
+          "associated_occurrence_win_rate": {
+            "value": 35.294117647058826,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 18,
+            "denominator": 51,
+            "sample_size": 51
+          },
+          "associated_run_count": 51,
+          "associated_run_wins": 18,
+          "associated_run_win_rate": {
+            "value": 35.294117647058826,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 18,
+            "denominator": 51,
+            "sample_size": 51
+          }
+        }
+      }
+    },
+    "RANWID_THE_ELDER": {
+      "encounter_count": 220,
+      "choices": {
+        "RANWID_THE_ELDER.pages.INITIAL.options.GOLD.title": {
+          "page_id": "INITIAL",
+          "option_id": "GOLD",
+          "occurrence_count": 57,
+          "occurrence_share": {
+            "value": 25.90909090909091,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 57,
+            "denominator": 220,
+            "sample_size": 220
+          },
+          "associated_occurrence_wins": 31,
+          "associated_occurrence_win_rate": {
+            "value": 54.385964912280706,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 31,
+            "denominator": 57,
+            "sample_size": 57
+          },
+          "associated_run_count": 57,
+          "associated_run_wins": 31,
+          "associated_run_win_rate": {
+            "value": 54.385964912280706,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 31,
+            "denominator": 57,
+            "sample_size": 57
+          }
+        },
+        "RANWID_THE_ELDER.pages.INITIAL.options.POTION.title": {
+          "page_id": "INITIAL",
+          "option_id": "POTION",
+          "occurrence_count": 91,
+          "occurrence_share": {
+            "value": 41.36363636363637,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 91,
+            "denominator": 220,
+            "sample_size": 220
+          },
+          "associated_occurrence_wins": 51,
+          "associated_occurrence_win_rate": {
+            "value": 56.043956043956044,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 51,
+            "denominator": 91,
+            "sample_size": 91
+          },
+          "associated_run_count": 91,
+          "associated_run_wins": 51,
+          "associated_run_win_rate": {
+            "value": 56.043956043956044,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 51,
+            "denominator": 91,
+            "sample_size": 91
+          }
+        },
+        "RANWID_THE_ELDER.pages.INITIAL.options.RELIC.title": {
+          "page_id": "INITIAL",
+          "option_id": "RELIC",
+          "occurrence_count": 72,
+          "occurrence_share": {
+            "value": 32.72727272727273,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 72,
+            "denominator": 220,
+            "sample_size": 220
+          },
+          "associated_occurrence_wins": 39,
+          "associated_occurrence_win_rate": {
+            "value": 54.166666666666664,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 39,
+            "denominator": 72,
+            "sample_size": 72
+          },
+          "associated_run_count": 72,
+          "associated_run_wins": 39,
+          "associated_run_win_rate": {
+            "value": 54.166666666666664,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 39,
+            "denominator": 72,
+            "sample_size": 72
+          }
+        }
+      }
+    },
+    "REFLECTIONS": {
+      "encounter_count": 193,
+      "choices": {
+        "REFLECTIONS.pages.INITIAL.options.SHATTER.title": {
+          "page_id": "INITIAL",
+          "option_id": "SHATTER",
+          "occurrence_count": 46,
+          "occurrence_share": {
+            "value": 23.83419689119171,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 46,
+            "denominator": 193,
+            "sample_size": 193
+          },
+          "associated_occurrence_wins": 22,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 46,
+          "associated_run_wins": 22,
+          "associated_run_win_rate": null
+        },
+        "REFLECTIONS.pages.INITIAL.options.TOUCH_A_MIRROR.title": {
+          "page_id": "INITIAL",
+          "option_id": "TOUCH_A_MIRROR",
+          "occurrence_count": 147,
+          "occurrence_share": {
+            "value": 76.16580310880829,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 147,
+            "denominator": 193,
+            "sample_size": 193
+          },
+          "associated_occurrence_wins": 104,
+          "associated_occurrence_win_rate": {
+            "value": 70.74829931972789,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 104,
+            "denominator": 147,
+            "sample_size": 147
+          },
+          "associated_run_count": 147,
+          "associated_run_wins": 104,
+          "associated_run_win_rate": {
+            "value": 70.74829931972789,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 104,
+            "denominator": 147,
+            "sample_size": 147
+          }
+        }
+      }
+    },
+    "RELIC_TRADER": {
+      "encounter_count": 227,
+      "choices": {
+        "RELIC_TRADER.pages.INITIAL.options.BOTTOM.title": {
+          "page_id": "INITIAL",
+          "option_id": "BOTTOM",
+          "occurrence_count": 72,
+          "occurrence_share": {
+            "value": 31.718061674008812,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 72,
+            "denominator": 227,
+            "sample_size": 227
+          },
+          "associated_occurrence_wins": 51,
+          "associated_occurrence_win_rate": {
+            "value": 70.83333333333334,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 51,
+            "denominator": 72,
+            "sample_size": 72
+          },
+          "associated_run_count": 72,
+          "associated_run_wins": 51,
+          "associated_run_win_rate": {
+            "value": 70.83333333333334,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 51,
+            "denominator": 72,
+            "sample_size": 72
+          }
+        },
+        "RELIC_TRADER.pages.INITIAL.options.MIDDLE.title": {
+          "page_id": "INITIAL",
+          "option_id": "MIDDLE",
+          "occurrence_count": 78,
+          "occurrence_share": {
+            "value": 34.36123348017621,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 78,
+            "denominator": 227,
+            "sample_size": 227
+          },
+          "associated_occurrence_wins": 52,
+          "associated_occurrence_win_rate": {
+            "value": 66.66666666666666,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 52,
+            "denominator": 78,
+            "sample_size": 78
+          },
+          "associated_run_count": 78,
+          "associated_run_wins": 52,
+          "associated_run_win_rate": {
+            "value": 66.66666666666666,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 52,
+            "denominator": 78,
+            "sample_size": 78
+          }
+        },
+        "RELIC_TRADER.pages.INITIAL.options.TOP.title": {
+          "page_id": "INITIAL",
+          "option_id": "TOP",
+          "occurrence_count": 77,
+          "occurrence_share": {
+            "value": 33.92070484581498,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 77,
+            "denominator": 227,
+            "sample_size": 227
+          },
+          "associated_occurrence_wins": 43,
+          "associated_occurrence_win_rate": {
+            "value": 55.84415584415584,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 43,
+            "denominator": 77,
+            "sample_size": 77
+          },
+          "associated_run_count": 77,
+          "associated_run_wins": 43,
+          "associated_run_win_rate": {
+            "value": 55.84415584415584,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 43,
+            "denominator": 77,
+            "sample_size": 77
+          }
+        }
+      }
+    },
+    "ROOM_FULL_OF_CHEESE": {
+      "encounter_count": 595,
+      "choices": {
+        "ROOM_FULL_OF_CHEESE.pages.INITIAL.options.GORGE.title": {
+          "page_id": "INITIAL",
+          "option_id": "GORGE",
+          "occurrence_count": 355,
+          "occurrence_share": {
+            "value": 59.66386554621849,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 355,
+            "denominator": 595,
+            "sample_size": 595
+          },
+          "associated_occurrence_wins": 116,
+          "associated_occurrence_win_rate": {
+            "value": 32.67605633802817,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 116,
+            "denominator": 355,
+            "sample_size": 355
+          },
+          "associated_run_count": 355,
+          "associated_run_wins": 116,
+          "associated_run_win_rate": {
+            "value": 32.67605633802817,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 116,
+            "denominator": 355,
+            "sample_size": 355
+          }
+        },
+        "ROOM_FULL_OF_CHEESE.pages.INITIAL.options.SEARCH.title": {
+          "page_id": "INITIAL",
+          "option_id": "SEARCH",
+          "occurrence_count": 239,
+          "occurrence_share": {
+            "value": 40.168067226890756,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 239,
+            "denominator": 595,
+            "sample_size": 595
+          },
+          "associated_occurrence_wins": 83,
+          "associated_occurrence_win_rate": {
+            "value": 34.72803347280335,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 83,
+            "denominator": 239,
+            "sample_size": 239
+          },
+          "associated_run_count": 239,
+          "associated_run_wins": 83,
+          "associated_run_win_rate": {
+            "value": 34.72803347280335,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 83,
+            "denominator": 239,
+            "sample_size": 239
+          }
+        }
+      }
+    },
+    "ROUND_TEA_PARTY": {
+      "encounter_count": 190,
+      "choices": {
+        "ROUND_TEA_PARTY.pages.INITIAL.options.ENJOY_TEA.title": {
+          "page_id": "INITIAL",
+          "option_id": "ENJOY_TEA",
+          "occurrence_count": 28,
+          "occurrence_share": {
+            "value": 14.736842105263156,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 28,
+            "denominator": 190,
+            "sample_size": 190
+          },
+          "associated_occurrence_wins": 18,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 28,
+          "associated_run_wins": 18,
+          "associated_run_win_rate": null
+        },
+        "ROUND_TEA_PARTY.pages.INITIAL.options.PICK_FIGHT.title": {
+          "page_id": "INITIAL",
+          "option_id": "PICK_FIGHT",
+          "occurrence_count": 162,
+          "occurrence_share": {
+            "value": 85.26315789473684,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 162,
+            "denominator": 190,
+            "sample_size": 190
+          },
+          "associated_occurrence_wins": 114,
+          "associated_occurrence_win_rate": {
+            "value": 70.37037037037037,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 114,
+            "denominator": 162,
+            "sample_size": 162
+          },
+          "associated_run_count": 162,
+          "associated_run_wins": 114,
+          "associated_run_win_rate": {
+            "value": 70.37037037037037,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 114,
+            "denominator": 162,
+            "sample_size": 162
+          }
+        }
+      }
+    },
+    "SAPPHIRE_SEED": {
+      "encounter_count": 192,
+      "choices": {
+        "SAPPHIRE_SEED.pages.INITIAL.options.EAT.title": {
+          "page_id": "INITIAL",
+          "option_id": "EAT",
+          "occurrence_count": 75,
+          "occurrence_share": {
+            "value": 39.0625,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 75,
+            "denominator": 192,
+            "sample_size": 192
+          },
+          "associated_occurrence_wins": 26,
+          "associated_occurrence_win_rate": {
+            "value": 34.66666666666667,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 26,
+            "denominator": 75,
+            "sample_size": 75
+          },
+          "associated_run_count": 75,
+          "associated_run_wins": 26,
+          "associated_run_win_rate": {
+            "value": 34.66666666666667,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 26,
+            "denominator": 75,
+            "sample_size": 75
+          }
+        },
+        "SAPPHIRE_SEED.pages.INITIAL.options.PLANT.title": {
+          "page_id": "INITIAL",
+          "option_id": "PLANT",
+          "occurrence_count": 117,
+          "occurrence_share": {
+            "value": 60.9375,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 117,
+            "denominator": 192,
+            "sample_size": 192
+          },
+          "associated_occurrence_wins": 39,
+          "associated_occurrence_win_rate": {
+            "value": 33.33333333333333,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 39,
+            "denominator": 117,
+            "sample_size": 117
+          },
+          "associated_run_count": 117,
+          "associated_run_wins": 39,
+          "associated_run_win_rate": {
+            "value": 33.33333333333333,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 39,
+            "denominator": 117,
+            "sample_size": 117
+          }
+        }
+      }
+    },
+    "SELF_HELP_BOOK": {
+      "encounter_count": 795,
+      "choices": {
+        "SELF_HELP_BOOK.pages.INITIAL.options.READ_ENTIRE_BOOK.title": {
+          "page_id": "INITIAL",
+          "option_id": "READ_ENTIRE_BOOK",
+          "occurrence_count": 270,
+          "occurrence_share": {
+            "value": 33.9622641509434,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 270,
+            "denominator": 795,
+            "sample_size": 795
+          },
+          "associated_occurrence_wins": 143,
+          "associated_occurrence_win_rate": {
+            "value": 52.96296296296297,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 143,
+            "denominator": 270,
+            "sample_size": 270
+          },
+          "associated_run_count": 270,
+          "associated_run_wins": 143,
+          "associated_run_win_rate": {
+            "value": 52.96296296296297,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 143,
+            "denominator": 270,
+            "sample_size": 270
+          }
+        },
+        "SELF_HELP_BOOK.pages.INITIAL.options.READ_PASSAGE.title": {
+          "page_id": "INITIAL",
+          "option_id": "READ_PASSAGE",
+          "occurrence_count": 261,
+          "occurrence_share": {
+            "value": 32.83018867924528,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 261,
+            "denominator": 795,
+            "sample_size": 795
+          },
+          "associated_occurrence_wins": 73,
+          "associated_occurrence_win_rate": {
+            "value": 27.969348659003828,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 73,
+            "denominator": 261,
+            "sample_size": 261
+          },
+          "associated_run_count": 261,
+          "associated_run_wins": 73,
+          "associated_run_win_rate": {
+            "value": 27.969348659003828,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 73,
+            "denominator": 261,
+            "sample_size": 261
+          }
+        },
+        "SELF_HELP_BOOK.pages.INITIAL.options.READ_THE_BACK.title": {
+          "page_id": "INITIAL",
+          "option_id": "READ_THE_BACK",
+          "occurrence_count": 264,
+          "occurrence_share": {
+            "value": 33.20754716981132,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 264,
+            "denominator": 795,
+            "sample_size": 795
+          },
+          "associated_occurrence_wins": 91,
+          "associated_occurrence_win_rate": {
+            "value": 34.46969696969697,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 91,
+            "denominator": 264,
+            "sample_size": 264
+          },
+          "associated_run_count": 264,
+          "associated_run_wins": 91,
+          "associated_run_win_rate": {
+            "value": 34.46969696969697,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 91,
+            "denominator": 264,
+            "sample_size": 264
+          }
+        }
+      }
+    },
+    "SLIPPERY_BRIDGE": {
+      "encounter_count": 510,
+      "choices": {
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_0.options.HOLD_ON_1.title": {
+          "page_id": "HOLD_ON_0",
+          "option_id": "HOLD_ON_1",
+          "occurrence_count": 188,
+          "occurrence_share": {
+            "value": 36.86274509803922,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 188,
+            "denominator": 510,
+            "sample_size": 510
+          },
+          "associated_occurrence_wins": 83,
+          "associated_occurrence_win_rate": {
+            "value": 44.148936170212764,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 83,
+            "denominator": 188,
+            "sample_size": 188
+          },
+          "associated_run_count": 188,
+          "associated_run_wins": 83,
+          "associated_run_win_rate": {
+            "value": 44.148936170212764,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 83,
+            "denominator": 188,
+            "sample_size": 188
+          }
+        },
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_1.options.HOLD_ON_2.title": {
+          "page_id": "HOLD_ON_1",
+          "option_id": "HOLD_ON_2",
+          "occurrence_count": 72,
+          "occurrence_share": {
+            "value": 14.117647058823529,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 72,
+            "denominator": 510,
+            "sample_size": 510
+          },
+          "associated_occurrence_wins": 31,
+          "associated_occurrence_win_rate": {
+            "value": 43.05555555555556,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 31,
+            "denominator": 72,
+            "sample_size": 72
+          },
+          "associated_run_count": 72,
+          "associated_run_wins": 31,
+          "associated_run_win_rate": {
+            "value": 43.05555555555556,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 31,
+            "denominator": 72,
+            "sample_size": 72
+          }
+        },
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_2.options.HOLD_ON_3.title": {
+          "page_id": "HOLD_ON_2",
+          "option_id": "HOLD_ON_3",
+          "occurrence_count": 27,
+          "occurrence_share": {
+            "value": 5.294117647058823,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 27,
+            "denominator": 510,
+            "sample_size": 510
+          },
+          "associated_occurrence_wins": 8,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 27,
+          "associated_run_wins": 8,
+          "associated_run_win_rate": null
+        },
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_3.options.HOLD_ON_4.title": {
+          "page_id": "HOLD_ON_3",
+          "option_id": "HOLD_ON_4",
+          "occurrence_count": 10,
+          "occurrence_share": {
+            "value": 1.9607843137254901,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 10,
+            "denominator": 510,
+            "sample_size": 510
+          },
+          "associated_occurrence_wins": 3,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 10,
+          "associated_run_wins": 3,
+          "associated_run_win_rate": null
+        },
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_4.options.HOLD_ON_5.title": {
+          "page_id": "HOLD_ON_4",
+          "option_id": "HOLD_ON_5",
+          "occurrence_count": 2,
+          "occurrence_share": {
+            "value": 0.39215686274509803,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 2,
+            "denominator": 510,
+            "sample_size": 510
+          },
+          "associated_occurrence_wins": 0,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 2,
+          "associated_run_wins": 0,
+          "associated_run_win_rate": null
+        },
+        "SLIPPERY_BRIDGE.pages.INITIAL.options.HOLD_ON_0.title": {
+          "page_id": "INITIAL",
+          "option_id": "HOLD_ON_0",
+          "occurrence_count": 378,
+          "occurrence_share": {
+            "value": 74.11764705882354,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 378,
+            "denominator": 510,
+            "sample_size": 510
+          },
+          "associated_occurrence_wins": 169,
+          "associated_occurrence_win_rate": {
+            "value": 44.70899470899471,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 169,
+            "denominator": 378,
+            "sample_size": 378
+          },
+          "associated_run_count": 378,
+          "associated_run_wins": 169,
+          "associated_run_win_rate": {
+            "value": 44.70899470899471,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 169,
+            "denominator": 378,
+            "sample_size": 378
+          }
+        },
+        "SLIPPERY_BRIDGE.pages.INITIAL.options.OVERCOME.title": {
+          "page_id": "INITIAL",
+          "option_id": "OVERCOME",
+          "occurrence_count": 509,
+          "occurrence_share": {
+            "value": 99.80392156862746,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 509,
+            "denominator": 510,
+            "sample_size": 510
+          },
+          "associated_occurrence_wins": 227,
+          "associated_occurrence_win_rate": {
+            "value": 44.59724950884086,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 227,
+            "denominator": 509,
+            "sample_size": 509
+          },
+          "associated_run_count": 509,
+          "associated_run_wins": 227,
+          "associated_run_win_rate": {
+            "value": 44.59724950884086,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 227,
+            "denominator": 509,
+            "sample_size": 509
+          }
+        }
+      }
+    },
+    "SPIRALING_WHIRLPOOL": {
+      "encounter_count": 232,
+      "choices": {
+        "SPIRALING_WHIRLPOOL.pages.INITIAL.options.DRINK.title": {
+          "page_id": "INITIAL",
+          "option_id": "DRINK",
+          "occurrence_count": 84,
+          "occurrence_share": {
+            "value": 36.206896551724135,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 84,
+            "denominator": 232,
+            "sample_size": 232
+          },
+          "associated_occurrence_wins": 17,
+          "associated_occurrence_win_rate": {
+            "value": 20.238095238095237,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 17,
+            "denominator": 84,
+            "sample_size": 84
+          },
+          "associated_run_count": 84,
+          "associated_run_wins": 17,
+          "associated_run_win_rate": {
+            "value": 20.238095238095237,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 17,
+            "denominator": 84,
+            "sample_size": 84
+          }
+        },
+        "SPIRALING_WHIRLPOOL.pages.INITIAL.options.OBSERVE.title": {
+          "page_id": "INITIAL",
+          "option_id": "OBSERVE",
+          "occurrence_count": 148,
+          "occurrence_share": {
+            "value": 63.793103448275865,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 148,
+            "denominator": 232,
+            "sample_size": 232
+          },
+          "associated_occurrence_wins": 54,
+          "associated_occurrence_win_rate": {
+            "value": 36.486486486486484,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 54,
+            "denominator": 148,
+            "sample_size": 148
+          },
+          "associated_run_count": 148,
+          "associated_run_wins": 54,
+          "associated_run_win_rate": {
+            "value": 36.486486486486484,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 54,
+            "denominator": 148,
+            "sample_size": 148
+          }
+        }
+      }
+    },
+    "SPIRIT_GRAFTER": {
+      "encounter_count": 201,
+      "choices": {
+        "SPIRIT_GRAFTER.pages.INITIAL.options.LET_IT_IN.title": {
+          "page_id": "INITIAL",
+          "option_id": "LET_IT_IN",
+          "occurrence_count": 51,
+          "occurrence_share": {
+            "value": 25.37313432835821,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 51,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 16,
+          "associated_occurrence_win_rate": {
+            "value": 31.372549019607842,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 16,
+            "denominator": 51,
+            "sample_size": 51
+          },
+          "associated_run_count": 51,
+          "associated_run_wins": 16,
+          "associated_run_win_rate": {
+            "value": 31.372549019607842,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 16,
+            "denominator": 51,
+            "sample_size": 51
+          }
+        },
+        "SPIRIT_GRAFTER.pages.INITIAL.options.REJECTION.title": {
+          "page_id": "INITIAL",
+          "option_id": "REJECTION",
+          "occurrence_count": 150,
+          "occurrence_share": {
+            "value": 74.6268656716418,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 150,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 69,
+          "associated_occurrence_win_rate": {
+            "value": 46.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 69,
+            "denominator": 150,
+            "sample_size": 150
+          },
+          "associated_run_count": 150,
+          "associated_run_wins": 69,
+          "associated_run_win_rate": {
+            "value": 46.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 69,
+            "denominator": 150,
+            "sample_size": 150
+          }
+        }
+      }
+    },
+    "STONE_OF_ALL_TIME": {
+      "encounter_count": 192,
+      "choices": {
+        "STONE_OF_ALL_TIME.pages.INITIAL.options.LIFT.title": {
+          "page_id": "INITIAL",
+          "option_id": "LIFT",
+          "occurrence_count": 127,
+          "occurrence_share": {
+            "value": 66.14583333333334,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 127,
+            "denominator": 192,
+            "sample_size": 192
+          },
+          "associated_occurrence_wins": 54,
+          "associated_occurrence_win_rate": {
+            "value": 42.51968503937008,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 54,
+            "denominator": 127,
+            "sample_size": 127
+          },
+          "associated_run_count": 127,
+          "associated_run_wins": 54,
+          "associated_run_win_rate": {
+            "value": 42.51968503937008,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 54,
+            "denominator": 127,
+            "sample_size": 127
+          }
+        },
+        "STONE_OF_ALL_TIME.pages.INITIAL.options.PUSH.title": {
+          "page_id": "INITIAL",
+          "option_id": "PUSH",
+          "occurrence_count": 65,
+          "occurrence_share": {
+            "value": 33.85416666666667,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 65,
+            "denominator": 192,
+            "sample_size": 192
+          },
+          "associated_occurrence_wins": 38,
+          "associated_occurrence_win_rate": {
+            "value": 58.46153846153847,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 38,
+            "denominator": 65,
+            "sample_size": 65
+          },
+          "associated_run_count": 65,
+          "associated_run_wins": 38,
+          "associated_run_win_rate": {
+            "value": 58.46153846153847,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 38,
+            "denominator": 65,
+            "sample_size": 65
+          }
+        }
+      }
+    },
+    "SUNKEN_STATUE": {
+      "encounter_count": 423,
+      "choices": {
+        "SUNKEN_STATUE.pages.INITIAL.options.DIVE_INTO_WATER.title": {
+          "page_id": "INITIAL",
+          "option_id": "DIVE_INTO_WATER",
+          "occurrence_count": 283,
+          "occurrence_share": {
+            "value": 66.903073286052,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 283,
+            "denominator": 423,
+            "sample_size": 423
+          },
+          "associated_occurrence_wins": 78,
+          "associated_occurrence_win_rate": {
+            "value": 27.56183745583039,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 78,
+            "denominator": 283,
+            "sample_size": 283
+          },
+          "associated_run_count": 283,
+          "associated_run_wins": 78,
+          "associated_run_win_rate": {
+            "value": 27.56183745583039,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 78,
+            "denominator": 283,
+            "sample_size": 283
+          }
+        },
+        "SUNKEN_STATUE.pages.INITIAL.options.GRAB_SWORD.title": {
+          "page_id": "INITIAL",
+          "option_id": "GRAB_SWORD",
+          "occurrence_count": 140,
+          "occurrence_share": {
+            "value": 33.09692671394799,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 140,
+            "denominator": 423,
+            "sample_size": 423
+          },
+          "associated_occurrence_wins": 40,
+          "associated_occurrence_win_rate": {
+            "value": 28.57142857142857,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 40,
+            "denominator": 140,
+            "sample_size": 140
+          },
+          "associated_run_count": 140,
+          "associated_run_wins": 40,
+          "associated_run_win_rate": {
+            "value": 28.57142857142857,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 40,
+            "denominator": 140,
+            "sample_size": 140
+          }
+        }
+      }
+    },
+    "SUNKEN_TREASURY": {
+      "encounter_count": 264,
+      "choices": {
+        "SUNKEN_TREASURY.pages.INITIAL.options.FIRST_CHEST.title": {
+          "page_id": "INITIAL",
+          "option_id": "FIRST_CHEST",
+          "occurrence_count": 179,
+          "occurrence_share": {
+            "value": 67.8030303030303,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 179,
+            "denominator": 264,
+            "sample_size": 264
+          },
+          "associated_occurrence_wins": 48,
+          "associated_occurrence_win_rate": {
+            "value": 26.81564245810056,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 48,
+            "denominator": 179,
+            "sample_size": 179
+          },
+          "associated_run_count": 179,
+          "associated_run_wins": 48,
+          "associated_run_win_rate": {
+            "value": 26.81564245810056,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 48,
+            "denominator": 179,
+            "sample_size": 179
+          }
+        },
+        "SUNKEN_TREASURY.pages.INITIAL.options.SECOND_CHEST.title": {
+          "page_id": "INITIAL",
+          "option_id": "SECOND_CHEST",
+          "occurrence_count": 85,
+          "occurrence_share": {
+            "value": 32.196969696969695,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 85,
+            "denominator": 264,
+            "sample_size": 264
+          },
+          "associated_occurrence_wins": 20,
+          "associated_occurrence_win_rate": {
+            "value": 23.52941176470588,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 20,
+            "denominator": 85,
+            "sample_size": 85
+          },
+          "associated_run_count": 85,
+          "associated_run_wins": 20,
+          "associated_run_win_rate": {
+            "value": 23.52941176470588,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 20,
+            "denominator": 85,
+            "sample_size": 85
+          }
+        }
+      }
+    },
+    "SYMBIOTE": {
+      "encounter_count": 372,
+      "choices": {
+        "SYMBIOTE.pages.INITIAL.options.APPROACH.title": {
+          "page_id": "INITIAL",
+          "option_id": "APPROACH",
+          "occurrence_count": 96,
+          "occurrence_share": {
+            "value": 25.806451612903224,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 96,
+            "denominator": 372,
+            "sample_size": 372
+          },
+          "associated_occurrence_wins": 52,
+          "associated_occurrence_win_rate": {
+            "value": 54.166666666666664,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 52,
+            "denominator": 96,
+            "sample_size": 96
+          },
+          "associated_run_count": 96,
+          "associated_run_wins": 52,
+          "associated_run_win_rate": {
+            "value": 54.166666666666664,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 52,
+            "denominator": 96,
+            "sample_size": 96
+          }
+        },
+        "SYMBIOTE.pages.INITIAL.options.KILL_WITH_FIRE.title": {
+          "page_id": "INITIAL",
+          "option_id": "KILL_WITH_FIRE",
+          "occurrence_count": 276,
+          "occurrence_share": {
+            "value": 74.19354838709677,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 276,
+            "denominator": 372,
+            "sample_size": 372
+          },
+          "associated_occurrence_wins": 173,
+          "associated_occurrence_win_rate": {
+            "value": 62.68115942028986,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 173,
+            "denominator": 276,
+            "sample_size": 276
+          },
+          "associated_run_count": 276,
+          "associated_run_wins": 173,
+          "associated_run_win_rate": {
+            "value": 62.68115942028986,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 173,
+            "denominator": 276,
+            "sample_size": 276
+          }
+        }
+      }
+    },
+    "TABLET_OF_TRUTH": {
+      "encounter_count": 189,
+      "choices": {
+        "TABLET_OF_TRUTH.pages.DECIPHER.options.GIVE_UP.title": {
+          "page_id": "DECIPHER",
+          "option_id": "GIVE_UP",
+          "occurrence_count": 65,
+          "occurrence_share": {
+            "value": 34.39153439153439,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 65,
+            "denominator": 189,
+            "sample_size": 189
+          },
+          "associated_occurrence_wins": 17,
+          "associated_occurrence_win_rate": {
+            "value": 26.153846153846157,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 17,
+            "denominator": 65,
+            "sample_size": 65
+          },
+          "associated_run_count": 65,
+          "associated_run_wins": 17,
+          "associated_run_win_rate": {
+            "value": 26.153846153846157,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 17,
+            "denominator": 65,
+            "sample_size": 65
+          }
+        },
+        "TABLET_OF_TRUTH.pages.DECIPHER_1.options.DECIPHER.title": {
+          "page_id": "DECIPHER_1",
+          "option_id": "DECIPHER",
+          "occurrence_count": 61,
+          "occurrence_share": {
+            "value": 32.27513227513227,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 61,
+            "denominator": 189,
+            "sample_size": 189
+          },
+          "associated_occurrence_wins": 15,
+          "associated_occurrence_win_rate": {
+            "value": 24.59016393442623,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 15,
+            "denominator": 61,
+            "sample_size": 61
+          },
+          "associated_run_count": 61,
+          "associated_run_wins": 15,
+          "associated_run_win_rate": {
+            "value": 24.59016393442623,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 15,
+            "denominator": 61,
+            "sample_size": 61
+          }
+        },
+        "TABLET_OF_TRUTH.pages.DECIPHER_2.options.DECIPHER.title": {
+          "page_id": "DECIPHER_2",
+          "option_id": "DECIPHER",
+          "occurrence_count": 21,
+          "occurrence_share": {
+            "value": 11.11111111111111,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 21,
+            "denominator": 189,
+            "sample_size": 189
+          },
+          "associated_occurrence_wins": 3,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 21,
+          "associated_run_wins": 3,
+          "associated_run_win_rate": null
+        },
+        "TABLET_OF_TRUTH.pages.DECIPHER_3.options.DECIPHER.title": {
+          "page_id": "DECIPHER_3",
+          "option_id": "DECIPHER",
+          "occurrence_count": 8,
+          "occurrence_share": {
+            "value": 4.232804232804233,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 8,
+            "denominator": 189,
+            "sample_size": 189
+          },
+          "associated_occurrence_wins": 0,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 8,
+          "associated_run_wins": 0,
+          "associated_run_win_rate": null
+        },
+        "TABLET_OF_TRUTH.pages.DECIPHER_4.options.DECIPHER.title": {
+          "page_id": "DECIPHER_4",
+          "option_id": "DECIPHER",
+          "occurrence_count": 7,
+          "occurrence_share": {
+            "value": 3.7037037037037033,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 7,
+            "denominator": 189,
+            "sample_size": 189
+          },
+          "associated_occurrence_wins": 0,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 7,
+          "associated_run_wins": 0,
+          "associated_run_win_rate": null
+        },
+        "TABLET_OF_TRUTH.pages.INITIAL.options.DECIPHER_1.title": {
+          "page_id": "INITIAL",
+          "option_id": "DECIPHER_1",
+          "occurrence_count": 72,
+          "occurrence_share": {
+            "value": 38.095238095238095,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 72,
+            "denominator": 189,
+            "sample_size": 189
+          },
+          "associated_occurrence_wins": 17,
+          "associated_occurrence_win_rate": {
+            "value": 23.61111111111111,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 17,
+            "denominator": 72,
+            "sample_size": 72
+          },
+          "associated_run_count": 72,
+          "associated_run_wins": 17,
+          "associated_run_win_rate": {
+            "value": 23.61111111111111,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 17,
+            "denominator": 72,
+            "sample_size": 72
+          }
+        },
+        "TABLET_OF_TRUTH.pages.INITIAL.options.SMASH.title": {
+          "page_id": "INITIAL",
+          "option_id": "SMASH",
+          "occurrence_count": 117,
+          "occurrence_share": {
+            "value": 61.904761904761905,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 117,
+            "denominator": 189,
+            "sample_size": 189
+          },
+          "associated_occurrence_wins": 37,
+          "associated_occurrence_win_rate": {
+            "value": 31.62393162393162,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 37,
+            "denominator": 117,
+            "sample_size": 117
+          },
+          "associated_run_count": 117,
+          "associated_run_wins": 37,
+          "associated_run_win_rate": {
+            "value": 31.62393162393162,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 37,
+            "denominator": 117,
+            "sample_size": 117
+          }
+        }
+      }
+    },
+    "TANX": {
+      "encounter_count": 414,
+      "choices": {}
+    },
+    "TEA_MASTER": {
+      "encounter_count": 196,
+      "choices": {
+        "TEA_MASTER.pages.INITIAL.options.BONE_TEA.title": {
+          "page_id": "INITIAL",
+          "option_id": "BONE_TEA",
+          "occurrence_count": 77,
+          "occurrence_share": {
+            "value": 39.285714285714285,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 77,
+            "denominator": 196,
+            "sample_size": 196
+          },
+          "associated_occurrence_wins": 22,
+          "associated_occurrence_win_rate": {
+            "value": 28.57142857142857,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 22,
+            "denominator": 77,
+            "sample_size": 77
+          },
+          "associated_run_count": 77,
+          "associated_run_wins": 22,
+          "associated_run_win_rate": {
+            "value": 28.57142857142857,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 22,
+            "denominator": 77,
+            "sample_size": 77
+          }
+        },
+        "TEA_MASTER.pages.INITIAL.options.EMBER_TEA.title": {
+          "page_id": "INITIAL",
+          "option_id": "EMBER_TEA",
+          "occurrence_count": 46,
+          "occurrence_share": {
+            "value": 23.46938775510204,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 46,
+            "denominator": 196,
+            "sample_size": 196
+          },
+          "associated_occurrence_wins": 17,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 46,
+          "associated_run_wins": 17,
+          "associated_run_win_rate": null
+        },
+        "TEA_MASTER.pages.INITIAL.options.TEA_OF_DISCOURTESY.title": {
+          "page_id": "INITIAL",
+          "option_id": "TEA_OF_DISCOURTESY",
+          "occurrence_count": 73,
+          "occurrence_share": {
+            "value": 37.244897959183675,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 73,
+            "denominator": 196,
+            "sample_size": 196
+          },
+          "associated_occurrence_wins": 26,
+          "associated_occurrence_win_rate": {
+            "value": 35.61643835616438,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 26,
+            "denominator": 73,
+            "sample_size": 73
+          },
+          "associated_run_count": 73,
+          "associated_run_wins": 26,
+          "associated_run_win_rate": {
+            "value": 35.61643835616438,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 26,
+            "denominator": 73,
+            "sample_size": 73
+          }
+        }
+      }
+    },
+    "TEZCATARA": {
+      "encounter_count": 622,
+      "choices": {}
+    },
+    "THE_FUTURE_OF_POTIONS": {
+      "encounter_count": 345,
+      "choices": {
+        "THE_FUTURE_OF_POTIONS.pages.INITIAL.options.POTION.title": {
+          "page_id": "INITIAL",
+          "option_id": "POTION",
+          "occurrence_count": 345,
+          "occurrence_share": {
+            "value": 100.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 345,
+            "denominator": 345,
+            "sample_size": 345
+          },
+          "associated_occurrence_wins": 178,
+          "associated_occurrence_win_rate": {
+            "value": 51.59420289855072,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 178,
+            "denominator": 345,
+            "sample_size": 345
+          },
+          "associated_run_count": 345,
+          "associated_run_wins": 178,
+          "associated_run_win_rate": {
+            "value": 51.59420289855072,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 178,
+            "denominator": 345,
+            "sample_size": 345
+          }
+        }
+      }
+    },
+    "THE_LANTERN_KEY": {
+      "encounter_count": 214,
+      "choices": {
+        "THE_LANTERN_KEY.pages.INITIAL.options.KEEP_THE_KEY.title": {
+          "page_id": "INITIAL",
+          "option_id": "KEEP_THE_KEY",
+          "occurrence_count": 92,
+          "occurrence_share": {
+            "value": 42.99065420560748,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 92,
+            "denominator": 214,
+            "sample_size": 214
+          },
+          "associated_occurrence_wins": 53,
+          "associated_occurrence_win_rate": {
+            "value": 57.608695652173914,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 53,
+            "denominator": 92,
+            "sample_size": 92
+          },
+          "associated_run_count": 92,
+          "associated_run_wins": 53,
+          "associated_run_win_rate": {
+            "value": 57.608695652173914,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 53,
+            "denominator": 92,
+            "sample_size": 92
+          }
+        },
+        "THE_LANTERN_KEY.pages.INITIAL.options.RETURN_THE_KEY.title": {
+          "page_id": "INITIAL",
+          "option_id": "RETURN_THE_KEY",
+          "occurrence_count": 122,
+          "occurrence_share": {
+            "value": 57.009345794392516,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 122,
+            "denominator": 214,
+            "sample_size": 214
+          },
+          "associated_occurrence_wins": 50,
+          "associated_occurrence_win_rate": {
+            "value": 40.98360655737705,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 50,
+            "denominator": 122,
+            "sample_size": 122
+          },
+          "associated_run_count": 122,
+          "associated_run_wins": 50,
+          "associated_run_win_rate": {
+            "value": 40.98360655737705,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 50,
+            "denominator": 122,
+            "sample_size": 122
+          }
+        },
+        "THE_LANTERN_KEY.pages.KEEP_THE_KEY.options.FIGHT.title": {
+          "page_id": "KEEP_THE_KEY",
+          "option_id": "FIGHT",
+          "occurrence_count": 92,
+          "occurrence_share": {
+            "value": 42.99065420560748,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 92,
+            "denominator": 214,
+            "sample_size": 214
+          },
+          "associated_occurrence_wins": 53,
+          "associated_occurrence_win_rate": {
+            "value": 57.608695652173914,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 53,
+            "denominator": 92,
+            "sample_size": 92
+          },
+          "associated_run_count": 92,
+          "associated_run_wins": 53,
+          "associated_run_win_rate": {
+            "value": 57.608695652173914,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 53,
+            "denominator": 92,
+            "sample_size": 92
+          }
+        }
+      }
+    },
+    "THE_LEGENDS_WERE_TRUE": {
+      "encounter_count": 465,
+      "choices": {
+        "THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.NAB_THE_MAP.title": {
+          "page_id": "INITIAL",
+          "option_id": "NAB_THE_MAP",
+          "occurrence_count": 343,
+          "occurrence_share": {
+            "value": 73.76344086021506,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 343,
+            "denominator": 465,
+            "sample_size": 465
+          },
+          "associated_occurrence_wins": 96,
+          "associated_occurrence_win_rate": {
+            "value": 27.988338192419825,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 96,
+            "denominator": 343,
+            "sample_size": 343
+          },
+          "associated_run_count": 343,
+          "associated_run_wins": 96,
+          "associated_run_win_rate": {
+            "value": 27.988338192419825,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 96,
+            "denominator": 343,
+            "sample_size": 343
+          }
+        },
+        "THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.SLOWLY_FIND_AN_EXIT.title": {
+          "page_id": "INITIAL",
+          "option_id": "SLOWLY_FIND_AN_EXIT",
+          "occurrence_count": 122,
+          "occurrence_share": {
+            "value": 26.236559139784948,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 122,
+            "denominator": 465,
+            "sample_size": 465
+          },
+          "associated_occurrence_wins": 33,
+          "associated_occurrence_win_rate": {
+            "value": 27.049180327868854,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 33,
+            "denominator": 122,
+            "sample_size": 122
+          },
+          "associated_run_count": 122,
+          "associated_run_wins": 33,
+          "associated_run_win_rate": {
+            "value": 27.049180327868854,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 33,
+            "denominator": 122,
+            "sample_size": 122
+          }
+        }
+      }
+    },
+    "THIS_OR_THAT": {
+      "encounter_count": 770,
+      "choices": {
+        "THIS_OR_THAT.pages.INITIAL.options.ORNATE.title": {
+          "page_id": "INITIAL",
+          "option_id": "ORNATE",
+          "occurrence_count": 431,
+          "occurrence_share": {
+            "value": 55.97402597402598,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 431,
+            "denominator": 770,
+            "sample_size": 770
+          },
+          "associated_occurrence_wins": 150,
+          "associated_occurrence_win_rate": {
+            "value": 34.80278422273782,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 150,
+            "denominator": 431,
+            "sample_size": 431
+          },
+          "associated_run_count": 431,
+          "associated_run_wins": 150,
+          "associated_run_win_rate": {
+            "value": 34.80278422273782,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 150,
+            "denominator": 431,
+            "sample_size": 431
+          }
+        },
+        "THIS_OR_THAT.pages.INITIAL.options.PLAIN.title": {
+          "page_id": "INITIAL",
+          "option_id": "PLAIN",
+          "occurrence_count": 339,
+          "occurrence_share": {
+            "value": 44.02597402597402,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 339,
+            "denominator": 770,
+            "sample_size": 770
+          },
+          "associated_occurrence_wins": 138,
+          "associated_occurrence_win_rate": {
+            "value": 40.707964601769916,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 138,
+            "denominator": 339,
+            "sample_size": 339
+          },
+          "associated_run_count": 339,
+          "associated_run_wins": 138,
+          "associated_run_win_rate": {
+            "value": 40.707964601769916,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 138,
+            "denominator": 339,
+            "sample_size": 339
+          }
+        }
+      }
+    },
+    "TINKER_TIME": {
+      "encounter_count": 201,
+      "choices": {
+        "TINKER_TIME.pages.CHOOSE_CARD_TYPE.options.ATTACK.title": {
+          "page_id": "CHOOSE_CARD_TYPE",
+          "option_id": "ATTACK",
+          "occurrence_count": 15,
+          "occurrence_share": {
+            "value": 7.462686567164178,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 15,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 9,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 15,
+          "associated_run_wins": 9,
+          "associated_run_win_rate": null
+        },
+        "TINKER_TIME.pages.CHOOSE_CARD_TYPE.options.POWER.title": {
+          "page_id": "CHOOSE_CARD_TYPE",
+          "option_id": "POWER",
+          "occurrence_count": 100,
+          "occurrence_share": {
+            "value": 49.75124378109453,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 100,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 63,
+          "associated_occurrence_win_rate": {
+            "value": 63.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 63,
+            "denominator": 100,
+            "sample_size": 100
+          },
+          "associated_run_count": 100,
+          "associated_run_wins": 63,
+          "associated_run_win_rate": {
+            "value": 63.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 63,
+            "denominator": 100,
+            "sample_size": 100
+          }
+        },
+        "TINKER_TIME.pages.CHOOSE_CARD_TYPE.options.SKILL.title": {
+          "page_id": "CHOOSE_CARD_TYPE",
+          "option_id": "SKILL",
+          "occurrence_count": 86,
+          "occurrence_share": {
+            "value": 42.78606965174129,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 86,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 66,
+          "associated_occurrence_win_rate": {
+            "value": 76.74418604651163,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 66,
+            "denominator": 86,
+            "sample_size": 86
+          },
+          "associated_run_count": 86,
+          "associated_run_wins": 66,
+          "associated_run_win_rate": {
+            "value": 76.74418604651163,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 66,
+            "denominator": 86,
+            "sample_size": 86
+          }
+        },
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.CHAOS.title": {
+          "page_id": "CHOOSE_RIDER",
+          "option_id": "CHAOS",
+          "occurrence_count": 7,
+          "occurrence_share": {
+            "value": 3.482587064676617,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 7,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 6,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 7,
+          "associated_run_wins": 6,
+          "associated_run_win_rate": null
+        },
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.CHOKING.title": {
+          "page_id": "CHOOSE_RIDER",
+          "option_id": "CHOKING",
+          "occurrence_count": 1,
+          "occurrence_share": {
+            "value": 0.4975124378109453,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 1,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 1,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 1,
+          "associated_run_wins": 1,
+          "associated_run_win_rate": null
+        },
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.CURIOUS.title": {
+          "page_id": "CHOOSE_RIDER",
+          "option_id": "CURIOUS",
+          "occurrence_count": 46,
+          "occurrence_share": {
+            "value": 22.885572139303484,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 46,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 33,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 46,
+          "associated_run_wins": 33,
+          "associated_run_win_rate": null
+        },
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.ENERGIZED.title": {
+          "page_id": "CHOOSE_RIDER",
+          "option_id": "ENERGIZED",
+          "occurrence_count": 42,
+          "occurrence_share": {
+            "value": 20.8955223880597,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 42,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 32,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 42,
+          "associated_run_wins": 32,
+          "associated_run_win_rate": null
+        },
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.EXPERTISE.title": {
+          "page_id": "CHOOSE_RIDER",
+          "option_id": "EXPERTISE",
+          "occurrence_count": 39,
+          "occurrence_share": {
+            "value": 19.402985074626866,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 39,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 24,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 39,
+          "associated_run_wins": 24,
+          "associated_run_win_rate": null
+        },
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.IMPROVEMENT.title": {
+          "page_id": "CHOOSE_RIDER",
+          "option_id": "IMPROVEMENT",
+          "occurrence_count": 15,
+          "occurrence_share": {
+            "value": 7.462686567164178,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 15,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 6,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 15,
+          "associated_run_wins": 6,
+          "associated_run_win_rate": null
+        },
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.SAPPING.title": {
+          "page_id": "CHOOSE_RIDER",
+          "option_id": "SAPPING",
+          "occurrence_count": 12,
+          "occurrence_share": {
+            "value": 5.970149253731343,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 12,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 7,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 12,
+          "associated_run_wins": 7,
+          "associated_run_win_rate": null
+        },
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.VIOLENCE.title": {
+          "page_id": "CHOOSE_RIDER",
+          "option_id": "VIOLENCE",
+          "occurrence_count": 2,
+          "occurrence_share": {
+            "value": 0.9950248756218906,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 2,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 1,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 2,
+          "associated_run_wins": 1,
+          "associated_run_win_rate": null
+        },
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.WISDOM.title": {
+          "page_id": "CHOOSE_RIDER",
+          "option_id": "WISDOM",
+          "occurrence_count": 37,
+          "occurrence_share": {
+            "value": 18.407960199004975,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 37,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 28,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 37,
+          "associated_run_wins": 28,
+          "associated_run_win_rate": null
+        },
+        "TINKER_TIME.pages.INITIAL.options.CHOOSE_CARD_TYPE.title": {
+          "page_id": "INITIAL",
+          "option_id": "CHOOSE_CARD_TYPE",
+          "occurrence_count": 201,
+          "occurrence_share": {
+            "value": 100.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 201,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_occurrence_wins": 138,
+          "associated_occurrence_win_rate": {
+            "value": 68.65671641791045,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 138,
+            "denominator": 201,
+            "sample_size": 201
+          },
+          "associated_run_count": 201,
+          "associated_run_wins": 138,
+          "associated_run_win_rate": {
+            "value": 68.65671641791045,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 138,
+            "denominator": 201,
+            "sample_size": 201
+          }
+        }
+      }
+    },
+    "TRASH_HEAP": {
+      "encounter_count": 247,
+      "choices": {
+        "TRASH_HEAP.pages.INITIAL.options.DIVE_IN.title": {
+          "page_id": "INITIAL",
+          "option_id": "DIVE_IN",
+          "occurrence_count": 152,
+          "occurrence_share": {
+            "value": 61.53846153846154,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 152,
+            "denominator": 247,
+            "sample_size": 247
+          },
+          "associated_occurrence_wins": 32,
+          "associated_occurrence_win_rate": {
+            "value": 21.052631578947366,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 32,
+            "denominator": 152,
+            "sample_size": 152
+          },
+          "associated_run_count": 152,
+          "associated_run_wins": 32,
+          "associated_run_win_rate": {
+            "value": 21.052631578947366,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 32,
+            "denominator": 152,
+            "sample_size": 152
+          }
+        },
+        "TRASH_HEAP.pages.INITIAL.options.GRAB.title": {
+          "page_id": "INITIAL",
+          "option_id": "GRAB",
+          "occurrence_count": 95,
+          "occurrence_share": {
+            "value": 38.46153846153847,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 95,
+            "denominator": 247,
+            "sample_size": 247
+          },
+          "associated_occurrence_wins": 23,
+          "associated_occurrence_win_rate": {
+            "value": 24.210526315789473,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 23,
+            "denominator": 95,
+            "sample_size": 95
+          },
+          "associated_run_count": 95,
+          "associated_run_wins": 23,
+          "associated_run_win_rate": {
+            "value": 24.210526315789473,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 23,
+            "denominator": 95,
+            "sample_size": 95
+          }
+        }
+      }
+    },
+    "TRIAL": {
+      "encounter_count": 183,
+      "choices": {
+        "TRIAL.pages.INITIAL.options.ACCEPT.title": {
+          "page_id": "INITIAL",
+          "option_id": "ACCEPT",
+          "occurrence_count": 175,
+          "occurrence_share": {
+            "value": 95.62841530054644,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 175,
+            "denominator": 183,
+            "sample_size": 183
+          },
+          "associated_occurrence_wins": 117,
+          "associated_occurrence_win_rate": {
+            "value": 66.85714285714286,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 117,
+            "denominator": 175,
+            "sample_size": 175
+          },
+          "associated_run_count": 175,
+          "associated_run_wins": 117,
+          "associated_run_win_rate": {
+            "value": 66.85714285714286,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 117,
+            "denominator": 175,
+            "sample_size": 175
+          }
+        },
+        "TRIAL.pages.INITIAL.options.REJECT.title": {
+          "page_id": "INITIAL",
+          "option_id": "REJECT",
+          "occurrence_count": 8,
+          "occurrence_share": {
+            "value": 4.371584699453552,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 8,
+            "denominator": 183,
+            "sample_size": 183
+          },
+          "associated_occurrence_wins": 4,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 8,
+          "associated_run_wins": 4,
+          "associated_run_win_rate": null
+        },
+        "TRIAL.pages.MERCHANT.options.GUILTY.title": {
+          "page_id": "MERCHANT",
+          "option_id": "GUILTY",
+          "occurrence_count": 33,
+          "occurrence_share": {
+            "value": 18.0327868852459,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 33,
+            "denominator": 183,
+            "sample_size": 183
+          },
+          "associated_occurrence_wins": 20,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 33,
+          "associated_run_wins": 20,
+          "associated_run_win_rate": null
+        },
+        "TRIAL.pages.MERCHANT.options.INNOCENT.title": {
+          "page_id": "MERCHANT",
+          "option_id": "INNOCENT",
+          "occurrence_count": 18,
+          "occurrence_share": {
+            "value": 9.836065573770492,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 18,
+            "denominator": 183,
+            "sample_size": 183
+          },
+          "associated_occurrence_wins": 10,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 18,
+          "associated_run_wins": 10,
+          "associated_run_win_rate": null
+        },
+        "TRIAL.pages.NOBLE.options.GUILTY.title": {
+          "page_id": "NOBLE",
+          "option_id": "GUILTY",
+          "occurrence_count": 43,
+          "occurrence_share": {
+            "value": 23.497267759562842,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 43,
+            "denominator": 183,
+            "sample_size": 183
+          },
+          "associated_occurrence_wins": 28,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 43,
+          "associated_run_wins": 28,
+          "associated_run_win_rate": null
+        },
+        "TRIAL.pages.NOBLE.options.INNOCENT.title": {
+          "page_id": "NOBLE",
+          "option_id": "INNOCENT",
+          "occurrence_count": 26,
+          "occurrence_share": {
+            "value": 14.207650273224044,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 26,
+            "denominator": 183,
+            "sample_size": 183
+          },
+          "associated_occurrence_wins": 22,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 26,
+          "associated_run_wins": 22,
+          "associated_run_win_rate": null
+        },
+        "TRIAL.pages.NONDESCRIPT.options.GUILTY.title": {
+          "page_id": "NONDESCRIPT",
+          "option_id": "GUILTY",
+          "occurrence_count": 17,
+          "occurrence_share": {
+            "value": 9.289617486338798,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 17,
+            "denominator": 183,
+            "sample_size": 183
+          },
+          "associated_occurrence_wins": 11,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 17,
+          "associated_run_wins": 11,
+          "associated_run_win_rate": null
+        },
+        "TRIAL.pages.NONDESCRIPT.options.INNOCENT.title": {
+          "page_id": "NONDESCRIPT",
+          "option_id": "INNOCENT",
+          "occurrence_count": 46,
+          "occurrence_share": {
+            "value": 25.136612021857925,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 46,
+            "denominator": 183,
+            "sample_size": 183
+          },
+          "associated_occurrence_wins": 30,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 46,
+          "associated_run_wins": 30,
+          "associated_run_win_rate": null
+        },
+        "TRIAL.pages.REJECT.options.ACCEPT.title": {
+          "page_id": "REJECT",
+          "option_id": "ACCEPT",
+          "occurrence_count": 8,
+          "occurrence_share": {
+            "value": 4.371584699453552,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 8,
+            "denominator": 183,
+            "sample_size": 183
+          },
+          "associated_occurrence_wins": 4,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 8,
+          "associated_run_wins": 4,
+          "associated_run_win_rate": null
+        }
+      }
+    },
+    "UNREST_SITE": {
+      "encounter_count": 98,
+      "choices": {
+        "UNREST_SITE.pages.INITIAL.options.KILL.title": {
+          "page_id": "INITIAL",
+          "option_id": "KILL",
+          "occurrence_count": 60,
+          "occurrence_share": {
+            "value": 61.224489795918366,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 60,
+            "denominator": 98,
+            "sample_size": 98
+          },
+          "associated_occurrence_wins": 14,
+          "associated_occurrence_win_rate": {
+            "value": 23.333333333333332,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 14,
+            "denominator": 60,
+            "sample_size": 60
+          },
+          "associated_run_count": 60,
+          "associated_run_wins": 14,
+          "associated_run_win_rate": {
+            "value": 23.333333333333332,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 14,
+            "denominator": 60,
+            "sample_size": 60
+          }
+        },
+        "UNREST_SITE.pages.INITIAL.options.REST.title": {
+          "page_id": "INITIAL",
+          "option_id": "REST",
+          "occurrence_count": 38,
+          "occurrence_share": {
+            "value": 38.775510204081634,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 38,
+            "denominator": 98,
+            "sample_size": 98
+          },
+          "associated_occurrence_wins": 11,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 38,
+          "associated_run_wins": 11,
+          "associated_run_win_rate": null
+        }
+      }
+    },
+    "VAKUU": {
+      "encounter_count": 406,
+      "choices": {}
+    },
+    "WAR_HISTORIAN_REPY": {
+      "encounter_count": 62,
+      "choices": {
+        "WAR_HISTORIAN_REPY.pages.INITIAL.options.UNLOCK_CAGE.title": {
+          "page_id": "INITIAL",
+          "option_id": "UNLOCK_CAGE",
+          "occurrence_count": 61,
+          "occurrence_share": {
+            "value": 98.38709677419355,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 61,
+            "denominator": 62,
+            "sample_size": 62
+          },
+          "associated_occurrence_wins": 52,
+          "associated_occurrence_win_rate": {
+            "value": 85.24590163934425,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 52,
+            "denominator": 61,
+            "sample_size": 61
+          },
+          "associated_run_count": 61,
+          "associated_run_wins": 52,
+          "associated_run_win_rate": {
+            "value": 85.24590163934425,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 52,
+            "denominator": 61,
+            "sample_size": 61
+          }
+        },
+        "WAR_HISTORIAN_REPY.pages.INITIAL.options.UNLOCK_CHEST.title": {
+          "page_id": "INITIAL",
+          "option_id": "UNLOCK_CHEST",
+          "occurrence_count": 1,
+          "occurrence_share": {
+            "value": 1.6129032258064515,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 1,
+            "denominator": 62,
+            "sample_size": 62
+          },
+          "associated_occurrence_wins": 1,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 1,
+          "associated_run_wins": 1,
+          "associated_run_win_rate": null
+        }
+      }
+    },
+    "WATERLOGGED_SCRIPTORIUM": {
+      "encounter_count": 188,
+      "choices": {
+        "WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.BLOODY_INK.title": {
+          "page_id": "INITIAL",
+          "option_id": "BLOODY_INK",
+          "occurrence_count": 85,
+          "occurrence_share": {
+            "value": 45.21276595744681,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 85,
+            "denominator": 188,
+            "sample_size": 188
+          },
+          "associated_occurrence_wins": 25,
+          "associated_occurrence_win_rate": {
+            "value": 29.411764705882355,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 25,
+            "denominator": 85,
+            "sample_size": 85
+          },
+          "associated_run_count": 85,
+          "associated_run_wins": 25,
+          "associated_run_win_rate": {
+            "value": 29.411764705882355,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 25,
+            "denominator": 85,
+            "sample_size": 85
+          }
+        },
+        "WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.PRICKLY_SPONGE.title": {
+          "page_id": "INITIAL",
+          "option_id": "PRICKLY_SPONGE",
+          "occurrence_count": 43,
+          "occurrence_share": {
+            "value": 22.872340425531913,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 43,
+            "denominator": 188,
+            "sample_size": 188
+          },
+          "associated_occurrence_wins": 15,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 43,
+          "associated_run_wins": 15,
+          "associated_run_win_rate": null
+        },
+        "WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.TENTACLE_QUILL.title": {
+          "page_id": "INITIAL",
+          "option_id": "TENTACLE_QUILL",
+          "occurrence_count": 60,
+          "occurrence_share": {
+            "value": 31.914893617021278,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 60,
+            "denominator": 188,
+            "sample_size": 188
+          },
+          "associated_occurrence_wins": 16,
+          "associated_occurrence_win_rate": {
+            "value": 26.666666666666668,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 16,
+            "denominator": 60,
+            "sample_size": 60
+          },
+          "associated_run_count": 60,
+          "associated_run_wins": 16,
+          "associated_run_win_rate": {
+            "value": 26.666666666666668,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 16,
+            "denominator": 60,
+            "sample_size": 60
+          }
+        }
+      }
+    },
+    "WELCOME_TO_WONGOS": {
+      "encounter_count": 148,
+      "choices": {
+        "WELCOME_TO_WONGOS.pages.INITIAL.options.BARGAIN_BIN.title": {
+          "page_id": "INITIAL",
+          "option_id": "BARGAIN_BIN",
+          "occurrence_count": 96,
+          "occurrence_share": {
+            "value": 64.86486486486487,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 96,
+            "denominator": 148,
+            "sample_size": 148
+          },
+          "associated_occurrence_wins": 39,
+          "associated_occurrence_win_rate": {
+            "value": 40.625,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 39,
+            "denominator": 96,
+            "sample_size": 96
+          },
+          "associated_run_count": 96,
+          "associated_run_wins": 39,
+          "associated_run_win_rate": {
+            "value": 40.625,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 39,
+            "denominator": 96,
+            "sample_size": 96
+          }
+        },
+        "WELCOME_TO_WONGOS.pages.INITIAL.options.FEATURED_ITEM.title": {
+          "page_id": "INITIAL",
+          "option_id": "FEATURED_ITEM",
+          "occurrence_count": 38,
+          "occurrence_share": {
+            "value": 25.675675675675674,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 38,
+            "denominator": 148,
+            "sample_size": 148
+          },
+          "associated_occurrence_wins": 22,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 38,
+          "associated_run_wins": 22,
+          "associated_run_win_rate": null
+        },
+        "WELCOME_TO_WONGOS.pages.INITIAL.options.LEAVE.title": {
+          "page_id": "INITIAL",
+          "option_id": "LEAVE",
+          "occurrence_count": 3,
+          "occurrence_share": {
+            "value": 2.027027027027027,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 3,
+            "denominator": 148,
+            "sample_size": 148
+          },
+          "associated_occurrence_wins": 1,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 3,
+          "associated_run_wins": 1,
+          "associated_run_win_rate": null
+        },
+        "WELCOME_TO_WONGOS.pages.INITIAL.options.MYSTERY_BOX.title": {
+          "page_id": "INITIAL",
+          "option_id": "MYSTERY_BOX",
+          "occurrence_count": 11,
+          "occurrence_share": {
+            "value": 7.4324324324324325,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 11,
+            "denominator": 148,
+            "sample_size": 148
+          },
+          "associated_occurrence_wins": 4,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 11,
+          "associated_run_wins": 4,
+          "associated_run_win_rate": null
+        }
+      }
+    },
+    "WELLSPRING": {
+      "encounter_count": 176,
+      "choices": {
+        "WELLSPRING.pages.INITIAL.options.BATHE.title": {
+          "page_id": "INITIAL",
+          "option_id": "BATHE",
+          "occurrence_count": 146,
+          "occurrence_share": {
+            "value": 82.95454545454545,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 146,
+            "denominator": 176,
+            "sample_size": 176
+          },
+          "associated_occurrence_wins": 35,
+          "associated_occurrence_win_rate": {
+            "value": 23.972602739726025,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 35,
+            "denominator": 146,
+            "sample_size": 146
+          },
+          "associated_run_count": 146,
+          "associated_run_wins": 35,
+          "associated_run_win_rate": {
+            "value": 23.972602739726025,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 35,
+            "denominator": 146,
+            "sample_size": 146
+          }
+        },
+        "WELLSPRING.pages.INITIAL.options.BOTTLE.title": {
+          "page_id": "INITIAL",
+          "option_id": "BOTTLE",
+          "occurrence_count": 30,
+          "occurrence_share": {
+            "value": 17.045454545454543,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 30,
+            "denominator": 176,
+            "sample_size": 176
+          },
+          "associated_occurrence_wins": 5,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 30,
+          "associated_run_wins": 5,
+          "associated_run_win_rate": null
+        }
+      }
+    },
+    "WHISPERING_HOLLOW": {
+      "encounter_count": 166,
+      "choices": {
+        "WHISPERING_HOLLOW.pages.INITIAL.options.GOLD.title": {
+          "page_id": "INITIAL",
+          "option_id": "GOLD",
+          "occurrence_count": 30,
+          "occurrence_share": {
+            "value": 18.072289156626507,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 30,
+            "denominator": 166,
+            "sample_size": 166
+          },
+          "associated_occurrence_wins": 4,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 30,
+          "associated_run_wins": 4,
+          "associated_run_win_rate": null
+        },
+        "WHISPERING_HOLLOW.pages.INITIAL.options.HUG.title": {
+          "page_id": "INITIAL",
+          "option_id": "HUG",
+          "occurrence_count": 136,
+          "occurrence_share": {
+            "value": 81.92771084337349,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 136,
+            "denominator": 166,
+            "sample_size": 166
+          },
+          "associated_occurrence_wins": 32,
+          "associated_occurrence_win_rate": {
+            "value": 23.52941176470588,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 32,
+            "denominator": 136,
+            "sample_size": 136
+          },
+          "associated_run_count": 136,
+          "associated_run_wins": 32,
+          "associated_run_win_rate": {
+            "value": 23.52941176470588,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 32,
+            "denominator": 136,
+            "sample_size": 136
+          }
+        }
+      }
+    },
+    "WOOD_CARVINGS": {
+      "encounter_count": 198,
+      "choices": {
+        "WOOD_CARVINGS.pages.INITIAL.options.BIRD.title": {
+          "page_id": "INITIAL",
+          "option_id": "BIRD",
+          "occurrence_count": 50,
+          "occurrence_share": {
+            "value": 25.252525252525253,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 50,
+            "denominator": 198,
+            "sample_size": 198
+          },
+          "associated_occurrence_wins": 19,
+          "associated_occurrence_win_rate": {
+            "value": 38.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 19,
+            "denominator": 50,
+            "sample_size": 50
+          },
+          "associated_run_count": 50,
+          "associated_run_wins": 19,
+          "associated_run_win_rate": {
+            "value": 38.0,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 19,
+            "denominator": 50,
+            "sample_size": 50
+          }
+        },
+        "WOOD_CARVINGS.pages.INITIAL.options.SNAKE.title": {
+          "page_id": "INITIAL",
+          "option_id": "SNAKE",
+          "occurrence_count": 81,
+          "occurrence_share": {
+            "value": 40.909090909090914,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 81,
+            "denominator": 198,
+            "sample_size": 198
+          },
+          "associated_occurrence_wins": 34,
+          "associated_occurrence_win_rate": {
+            "value": 41.9753086419753,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 34,
+            "denominator": 81,
+            "sample_size": 81
+          },
+          "associated_run_count": 81,
+          "associated_run_wins": 34,
+          "associated_run_win_rate": {
+            "value": 41.9753086419753,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 34,
+            "denominator": 81,
+            "sample_size": 81
+          }
+        },
+        "WOOD_CARVINGS.pages.INITIAL.options.TORUS.title": {
+          "page_id": "INITIAL",
+          "option_id": "TORUS",
+          "occurrence_count": 67,
+          "occurrence_share": {
+            "value": 33.83838383838384,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 67,
+            "denominator": 198,
+            "sample_size": 198
+          },
+          "associated_occurrence_wins": 18,
+          "associated_occurrence_win_rate": {
+            "value": 26.865671641791046,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 18,
+            "denominator": 67,
+            "sample_size": 67
+          },
+          "associated_run_count": 67,
+          "associated_run_wins": 18,
+          "associated_run_win_rate": {
+            "value": 26.865671641791046,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 18,
+            "denominator": 67,
+            "sample_size": 67
+          }
+        }
+      }
+    },
+    "ZEN_WEAVER": {
+      "encounter_count": 111,
+      "choices": {
+        "ZEN_WEAVER.pages.INITIAL.options.ARACHNID_ACUPUNCTURE.title": {
+          "page_id": "INITIAL",
+          "option_id": "ARACHNID_ACUPUNCTURE",
+          "occurrence_count": 25,
+          "occurrence_share": {
+            "value": 22.52252252252252,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 25,
+            "denominator": 111,
+            "sample_size": 111
+          },
+          "associated_occurrence_wins": 9,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 25,
+          "associated_run_wins": 9,
+          "associated_run_win_rate": null
+        },
+        "ZEN_WEAVER.pages.INITIAL.options.BREATHING_TECHNIQUES.title": {
+          "page_id": "INITIAL",
+          "option_id": "BREATHING_TECHNIQUES",
+          "occurrence_count": 15,
+          "occurrence_share": {
+            "value": 13.513513513513514,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 15,
+            "denominator": 111,
+            "sample_size": 111
+          },
+          "associated_occurrence_wins": 6,
+          "associated_occurrence_win_rate": null,
+          "associated_run_count": 15,
+          "associated_run_wins": 6,
+          "associated_run_win_rate": null
+        },
+        "ZEN_WEAVER.pages.INITIAL.options.EMOTIONAL_AWARENESS.title": {
+          "page_id": "INITIAL",
+          "option_id": "EMOTIONAL_AWARENESS",
+          "occurrence_count": 71,
+          "occurrence_share": {
+            "value": 63.96396396396396,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 71,
+            "denominator": 111,
+            "sample_size": 111
+          },
+          "associated_occurrence_wins": 33,
+          "associated_occurrence_win_rate": {
+            "value": 46.478873239436616,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 33,
+            "denominator": 71,
+            "sample_size": 71
+          },
+          "associated_run_count": 71,
+          "associated_run_wins": 33,
+          "associated_run_win_rate": {
+            "value": 46.478873239436616,
+            "unit": "percent",
+            "provenance": "computed",
+            "numerator": 33,
+            "denominator": 71,
+            "sample_size": 71
+          }
+        }
+      }
+    }
+  }
+}

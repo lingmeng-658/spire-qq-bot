@@ -124,7 +124,7 @@ def test_only_three_formal_help_subcommands(monkeypatch):
 
 def test_query_subhelp_text():
     text = bot.HELP_SUBCOMMANDS["查询"]
-    assert "直接发卡名或遗物名即可查询" in text
+    assert "直接发卡名、遗物名或事件名即可查询" in text
     assert "只在某一代存在 → 直接查询" in text
     assert "两代同名 → 提示加 1 / 2" in text
     assert "空格可以忽略" in text

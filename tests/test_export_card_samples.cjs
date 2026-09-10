@@ -208,6 +208,149 @@ test('collectCardsForExport skips existing image files', () => {
   assert.equal(result[0].reason, 'already_exists');
 });
 
+test('collectCardsForExport regenerates an existing PNG when raw catalog is newer', () => {
+  const cards = [{ id: 'A', type: 'Attack', description: 'A', color: 'ironclad' }];
+
+  const result = collectCardsForExport(
+    'sts1',
+    cards,
+    new Set(['data/images/sts1/A.png']),
+    {
+      rawMtimeMs: 2000,
+      imageMtimes: { 'data/images/sts1/A.png': 1000 },
+    },
+  );
+
+  assert.equal(result[0].status, 'pending');
+  assert.equal(result[0].reason, 'stale');
+  assert.equal(result[0].detail.includes('older'), true);
+});
+
+test('collectCardsForExport skips an existing PNG when it is newer than raw catalog', () => {
+  const cards = [{ id: 'A', type: 'Attack', description: 'A', color: 'ironclad' }];
+
+  const result = collectCardsForExport(
+    'sts1',
+    cards,
+    new Set(['data/images/sts1/A.png']),
+    {
+      rawMtimeMs: 1000,
+      imageMtimes: { 'data/images/sts1/A.png': 2000 },
+    },
+  );
+
+  assert.equal(result[0].status, 'skipped');
+  assert.equal(result[0].reason, 'already_exists');
+});
+
+test('collectCardsForExport keeps a missing PNG pending even when raw catalog is older', () => {
+  const cards = [{ id: 'A', type: 'Attack', description: 'A', color: 'ironclad' }];
+
+  const result = collectCardsForExport(
+    'sts1',
+    cards,
+    new Set(),
+    {
+      rawMtimeMs: 1000,
+      imageMtimes: {},
+    },
+  );
+
+  assert.equal(result[0].status, 'pending');
+  assert.equal(result[0].reason, null);
+});
+
+test('collectCardsForExport judges base and upgraded PNG freshness independently', () => {
+  const cards = [{
+    id: 'A',
+    type: 'Attack',
+    description: 'A',
+    color: 'ironclad',
+    upgrade: { damage: 2 },
+  }];
+
+  const shared = new Set([
+    'data/images/sts1/A.png',
+    'data/images/sts1/upgraded/A.png',
+  ]);
+  const baseResult = collectCardsForExport('sts1', cards, shared, {
+    rawMtimeMs: 2000,
+    imageMtimes: {
+      'data/images/sts1/A.png': 1000,
+      'data/images/sts1/upgraded/A.png': 3000,
+    },
+  });
+  const upgradedResult = collectCardsForExport('sts1', cards, shared, {
+    upgraded: true,
+    rawMtimeMs: 2000,
+    imageMtimes: {
+      'data/images/sts1/A.png': 1000,
+      'data/images/sts1/upgraded/A.png': 3000,
+    },
+  });
+
+  assert.equal(baseResult[0].status, 'pending');
+  assert.equal(baseResult[0].reason, 'stale');
+  assert.equal(upgradedResult[0].status, 'skipped');
+  assert.equal(upgradedResult[0].reason, 'already_exists');
+});
+
+test('collectCardsForExport regenerates when localization input is newer than PNG', () => {
+  const cards = [{ id: 'A', type: 'Attack', description: 'A', color: 'ironclad' }];
+
+  const result = collectCardsForExport(
+    'sts1',
+    cards,
+    new Set(['data/images/sts1/A.png']),
+    {
+      inputMtimes: { localization: 4000 },
+      imageMtimes: { 'data/images/sts1/A.png': 2000 },
+    },
+  );
+
+  assert.equal(result[0].status, 'pending');
+  assert.equal(result[0].reason, 'stale');
+});
+
+test('collectCardsForExport regenerates when renderer input is newer than PNG', () => {
+  const cards = [{ id: 'A', type: 'Attack', description: 'A', color: 'ironclad' }];
+
+  const result = collectCardsForExport(
+    'sts1',
+    cards,
+    new Set(['data/images/sts1/A.png']),
+    {
+      inputMtimes: { renderer: 5000 },
+      imageMtimes: { 'data/images/sts1/A.png': 2000 },
+    },
+  );
+
+  assert.equal(result[0].status, 'pending');
+  assert.equal(result[0].reason, 'stale');
+});
+
+test('collectCardsForExport honors an ids filter without changing freshness behavior', () => {
+  const cards = [
+    { id: 'A', type: 'Attack', description: 'A', color: 'ironclad' },
+    { id: 'B', type: 'Skill', description: 'B', color: 'silent' },
+  ];
+
+  const result = collectCardsForExport(
+    'sts1',
+    cards,
+    new Set(['data/images/sts1/A.png']),
+    {
+      cardIds: new Set(['A']),
+      rawMtimeMs: 3000,
+      imageMtimes: { 'data/images/sts1/A.png': 2000 },
+    },
+  );
+
+  assert.deepEqual(result.map((item) => item.card.id), ['A']);
+  assert.equal(result[0].status, 'pending');
+  assert.equal(result[0].reason, 'stale');
+});
+
 test('collectCardsForExport upgraded mode uses separate directory and skips cards without upgrade', () => {
   const cards = [
     { id: 'A', type: 'Attack', description: 'A', color: 'ironclad', upgrade: { damage: 2 } },

@@ -1,12 +1,32 @@
 import asyncio
 import json
 import logging
+import random
 import re
 
 from card_guess.cards import load_cards
+from card_guess.event_presentation import (
+    render_event,
+    render_event_unsupported,
+    render_event_choice_outcome,
+    render_event_level2_outcome,
+)
+from card_guess.event_query import plan_event_query, render_event_query
+from card_guess.event_interaction import (
+    EventInteractionKind,
+    interaction_plan,
+    supported_interaction_events,
+)
+from card_guess.events import (
+    EventCatalogError,
+    default_random_pool,
+    find_events_by_name,
+    get_event,
+)
 from card_guess.relics import find_relics_by_name, load_relics
 from card_guess import leaderboard as lb
 from card_guess.puzzle import POOL_NAMES, format_rarity
+from card_guess.qq import event_sessions
 from card_guess.qq import sessions
 from card_guess.qq import renderer as qq_renderer
 from card_guess.qq.onebot import (
@@ -33,10 +53,17 @@ ANCIENT_OVERVIEW_COMMAND = "先古遗民"
 ANCIENT_OVERVIEW_COMMANDS = frozenset({"先古遗民", "先古之民"})
 START_SUFFIX_MODES = {"": "mixed", "1": "sts1", "2": "sts2"}
 END_COMMANDS = {"结束"}
+RANDOM_EVENT_COMMANDS = {"事件": None, "事件1": 1, "事件2": 2}
+TYPED_QUERY_LABELS = {"卡牌": "card", "遗物": "relic", "事件": "event"}
+EVENT_SESSION_BUSY_REPLY = "当前已有互动事件进行中，回复选项数字即可参与；发送「结束」可结束互动事件。"
+EVENT_SESSION_INVALID_REPLY = "互动事件进行中，请回复选项对应的数字。"
+EVENT_SESSION_ENDED_REPLY = "互动事件已结束。"
 HELP_TEXT = """=== 帮助 ===
 
-直接发送名字即可查询卡牌 / 遗物
+直接发送名字即可查询卡牌 / 遗物 / 事件
 例：白噪声 / 赤牛
+
+随机事件：事件 / 事件1 / 事件2
 
 也可查询卡牌或遗物在特定场景下的排行
 例：观者1普通 / Boss1 / 达弗2
@@ -73,7 +100,7 @@ HELP_SUBCOMMANDS = {
 想强制查询时用 卡名1 / 卡名2""",
     "查询": """=== 帮助 查询 ===
 
-直接发卡名或遗物名即可查询
+直接发卡名、遗物名或事件名即可查询
 无后缀时自动判断代际：
 只在某一代存在 → 直接查询
 两代同名 → 提示加 1 / 2
@@ -390,6 +417,17 @@ def _find_sts2_relics_by_name(name):
     return find_relics_by_name(_load_sts2_query_relics(), name, generation=2)
 
 
+def _find_generation_relics_by_name(name, generation):
+    if generation == 2:
+        return _find_sts2_relics_by_name(name)
+    return _find_relics_by_name(name, generation=1)
+
+
+def _find_events_by_name(name, generation=None):
+    game = f"sts{generation}" if generation is not None else None
+    return find_events_by_name(name, game=game)
+
+
 def _render_relic_generation_query(name, generation, role=None):
     """显式遗物查询（遗物名+1/2）。
 
@@ -462,6 +500,242 @@ def _render_generation_query(name, generation, role=None):
 _ROUTE_WS_RE = re.compile(r"\s+")
 
 
+def _parse_typed_query(text):
+    if not isinstance(text, str):
+        return None
+    match = re.fullmatch(r"(卡牌|遗物|事件)\s+(.+)", text.strip())
+    if match is None:
+        return None
+    return TYPED_QUERY_LABELS[match.group(1)], match.group(2).strip()
+
+
+def _games_for_cards(matches):
+    return {
+        str(item.get("game", "")).strip()
+        for item in matches
+        if isinstance(item, dict)
+    }
+
+
+def _games_for_events(matches):
+    return {event.game for event in matches}
+
+
+def _render_event_matches(name, matches):
+    if not matches:
+        return None
+    if {"sts1", "sts2"}.issubset(_games_for_events(matches)):
+        return RenderedReply(_cross_generation_hint(name))
+    return RenderedReply(render_event_query(plan_event_query(matches[0])))
+
+
+def _render_direct_event_query(command):
+    """Resolve an exact Event query before interactive-session input."""
+
+    name, generation, role = _parse_generation_selector(command)
+    if name is None or role is not None:
+        return None
+    event_matches = _find_events_by_name(name, generation)
+    if not event_matches:
+        return None
+
+    matches = {
+        "card": _find_cards_by_name(name, generation),
+        "relic": (
+            _find_relics_by_name(name)
+            if generation is None
+            else _find_generation_relics_by_name(name, generation)
+        ),
+        "event": event_matches,
+    }
+    display_name = f"{name}{generation}" if generation is not None else name
+    ambiguity = _entity_disambiguation(display_name, matches)
+    if ambiguity is not None:
+        return ambiguity
+    return _render_event_matches(name, event_matches)
+
+
+def _render_typed_query(command):
+    parsed = _parse_typed_query(command)
+    if parsed is None:
+        return None
+    entity_type, query = parsed
+    name, generation, role = _parse_generation_selector(query)
+    if not name:
+        return RenderedReply(UNKNOWN_COMMAND_REPLY)
+
+    if entity_type == "card":
+        if generation is not None:
+            return _render_generation_query(name, generation, role) or RenderedReply(
+                UNKNOWN_COMMAND_REPLY
+            )
+        matches = _find_cards_by_name(name)
+        if {"sts1", "sts2"}.issubset(_games_for_cards(matches)):
+            return RenderedReply(_cross_generation_hint(name))
+        return render_card_query_reply(matches) if matches else RenderedReply(UNKNOWN_COMMAND_REPLY)
+
+    if role is not None:
+        return RenderedReply(UNKNOWN_COMMAND_REPLY)
+    if entity_type == "relic":
+        matches = (
+            _find_relics_by_name(name)
+            if generation is None
+            else _find_generation_relics_by_name(name, generation)
+        )
+        if {"sts1", "sts2"}.issubset(_games_for_cards(matches)):
+            return RenderedReply(_cross_generation_hint(name))
+        if generation is not None:
+            return _render_relic_generation_query(name, generation) or RenderedReply(
+                UNKNOWN_COMMAND_REPLY
+            )
+        return render_relic_query_reply(matches) if matches else RenderedReply(UNKNOWN_COMMAND_REPLY)
+
+    matches = _find_events_by_name(name, generation)
+    return _render_event_matches(name, matches) or RenderedReply(UNKNOWN_COMMAND_REPLY)
+
+
+def _actor_label(actor):
+    label = (actor or "").strip()
+    return label or "群友"
+
+
+def _resolve_event_for_session(session):
+    """Load the EventRecord for a session (None when catalog is unavailable)."""
+    try:
+        return get_event(session.game, session.event_id)
+    except EventCatalogError:
+        return None
+
+
+def _active_event_session_reply(group_id, command, actor=None):
+    """Route a message while an interactive event round is pending.
+
+    Level 2 (whitelisted multi-stage events) stays alive after each choice
+    until the player reaches a terminal page.
+    Level 1 (everything else) is choice -> result -> end.
+    """
+
+    session = event_sessions.get(group_id)
+    if session is None:
+        return None
+    if command in END_COMMANDS:
+        event_sessions.end(group_id)
+        return RenderedReply(EVENT_SESSION_ENDED_REPLY)
+    if command in RANDOM_EVENT_COMMANDS:
+        return RenderedReply(EVENT_SESSION_BUSY_REPLY)
+    choice = event_sessions.resolve_choice(session, command)
+    if choice is None:
+        return RenderedReply(EVENT_SESSION_INVALID_REPLY)
+
+    if not session.is_level2:
+        event_sessions.end(group_id)
+        return RenderedReply(render_event_choice_outcome(choice, _actor_label(actor)))
+
+    # Level 2 resolution
+    event = _resolve_event_for_session(session)
+    if event is None:
+        event_sessions.end(group_id)
+        return RenderedReply(render_event_choice_outcome(choice, _actor_label(actor)))
+
+    resolved = event_sessions.advance(group_id, event, choice)
+    next_session = event_sessions.get(group_id)
+    next_choices = next_session.visible_choices if next_session is not None else ()
+    return RenderedReply(
+        render_event_level2_outcome(
+            choice,
+            _actor_label(actor),
+            resolved.result_text,
+            next_choices,
+            terminal=resolved.terminal,
+        )
+    )
+
+
+def _render_random_event_reply(command, group_id=None):
+    if command not in RANDOM_EVENT_COMMANDS:
+        return None
+    generation = RANDOM_EVENT_COMMANDS[command]
+    game = f"sts{generation}" if generation is not None else random.choice(("sts1", "sts2"))
+    event = random.choice(supported_interaction_events(default_random_pool(game)))
+    plan = interaction_plan(event)
+    if plan.kind is EventInteractionKind.UNSUPPORTED:
+        rendered = render_event(event)
+        # Keep simple renderer substitutions backward-compatible while the
+        # production renderer gets the explicit non-interactive notice.
+        if rendered == event.id:
+            reply = RenderedReply(rendered)
+        else:
+            reply = RenderedReply(
+                render_event_unsupported(event, plan.unsupported_reason or "暂不支持完整互动。")
+            )
+    else:
+        reply = RenderedReply(render_event(event))
+    if group_id is not None and plan.kind is not EventInteractionKind.UNSUPPORTED:
+        event_sessions.open_if_idle(group_id, event)
+    return reply
+
+
+def _entity_disambiguation(name, typed_matches):
+    labels = {"card": "卡牌", "relic": "遗物", "event": "事件"}
+    available = [kind for kind in ("card", "relic", "event") if typed_matches[kind]]
+    if len(available) < 2:
+        return None
+    label_text = " / ".join(labels[kind] for kind in available)
+    choices = " / ".join(f"{labels[kind]} {name}" for kind in available)
+    return RenderedReply(f"“{name}”同时是{label_text}。\n请选择：{choices}")
+
+
+def _query_matches(name, generation=None):
+    return {
+        "card": _find_cards_by_name(name, generation),
+        "relic": (
+            _find_relics_by_name(name)
+            if generation is None
+            else _find_generation_relics_by_name(name, generation)
+        ),
+        "event": _find_events_by_name(name, generation),
+    }
+
+
+def _render_untyped_query(name, generation=None, role=None):
+    if role is not None:
+        if generation is None:
+            return None
+        return _render_generation_query(name, generation, role)
+
+    matches = _query_matches(name, generation)
+    display_name = f"{name}{generation}" if generation is not None else name
+    ambiguity = _entity_disambiguation(display_name, matches)
+    if ambiguity is not None:
+        return ambiguity
+
+    if matches["card"]:
+        if generation is not None:
+            return _render_generation_query(name, generation)
+        if generation is None and {"sts1", "sts2"}.issubset(
+            _games_for_cards(matches["card"])
+        ):
+            return RenderedReply(_cross_generation_hint(name))
+        return render_card_query_reply(matches["card"])
+    if matches["relic"]:
+        if generation is not None:
+            return _render_relic_generation_query(name, generation)
+        if generation is None and {"sts1", "sts2"}.issubset(
+            _games_for_cards(matches["relic"])
+        ):
+            return RenderedReply(_cross_generation_hint(name))
+        return render_relic_query_reply(matches["relic"])
+    event_reply = _render_event_matches(name, matches["event"])
+    if event_reply is not None:
+        return event_reply
+    if generation is not None:
+        card_reply = _render_generation_query(name, generation)
+        if card_reply is not None:
+            return card_reply
+        return _render_relic_generation_query(name, generation)
+    return None
+
+
 def _ancient_board_shape(text):
     snapshot = qq_renderer.load_sts2_ancient_choice_stats()
     return _parse_ancient_choice_request(snapshot, text) is not None
@@ -491,6 +765,10 @@ def _command_kind(text):
         return 2
     if text in END_COMMANDS:
         return 2
+    if text in RANDOM_EVENT_COMMANDS:
+        return 2
+    if _parse_typed_query(text) is not None:
+        return 2
     _name, generation, _role = _parse_generation_selector(text)
     return 1 if generation is not None else 0
 
@@ -507,6 +785,8 @@ def _route_command_text(text):
     compact = _ROUTE_WS_RE.sub("", command)
     if compact == command:
         return command
+    if compact in RANDOM_EVENT_COMMANDS:
+        return compact
     if _command_kind(compact) > _command_kind(command):
         return compact
     return command
@@ -515,10 +795,27 @@ def _cross_generation_hint(name):
     return f"找到两代同名内容：\n{name}1\n{name}2"
 
 
-def route_group_command(group_id, text):
+def route_group_command(group_id, text, actor=None):
     command = _route_command_text(text)
-    if command.split(None, 1)[0].lower() in HELP_COMMANDS:
+    if command and command.split(None, 1)[0].lower() in HELP_COMMANDS:
         return render_help(command)
+
+    typed_query = _render_typed_query(command)
+    if typed_query is not None:
+        return typed_query
+
+    if event_sessions.get(group_id) is not None:
+        event_query = _render_direct_event_query(command)
+        if event_query is not None:
+            return event_query
+
+    active_event_reply = _active_event_session_reply(group_id, command, actor)
+    if active_event_reply is not None:
+        return active_event_reply
+
+    random_event = _render_random_event_reply(command, group_id)
+    if random_event is not None:
+        return random_event
 
     if command in ANCIENT_OVERVIEW_COMMANDS:
         return RenderedReply(
@@ -573,44 +870,22 @@ def route_group_command(group_id, text):
     if game is None:
         parsed_name, generation, role = _parse_generation_selector(command)
         if parsed_name is not None and generation is not None:
-            reply = _render_generation_query(parsed_name, generation, role)
-            if reply is None:
-                reply = _render_relic_generation_query(parsed_name, generation, role)
+            reply = _render_untyped_query(parsed_name, generation, role)
             if reply is not None:
                 return reply
             return RenderedReply(UNKNOWN_COMMAND_REPLY)
 
         if parsed_name is not None:
-            all_matches = _find_cards_by_name(parsed_name)
-            card_games = {
-                str(card.get("game", "")).strip()
-                for card in all_matches
-                if isinstance(card, dict)
-            }
-            if {"sts1", "sts2"}.issubset(card_games):
-                return RenderedReply(_cross_generation_hint(parsed_name))
-            if all_matches:
-                return render_card_query_reply(all_matches)
-
-            relic_matches = _find_relics_by_name(parsed_name)
-            relic_games = {
-                str(relic.get("game", "")).strip()
-                for relic in relic_matches
-                if isinstance(relic, dict)
-            }
-            if {"sts1", "sts2"}.issubset(relic_games):
-                return RenderedReply(_cross_generation_hint(parsed_name))
-            if relic_matches:
-                return render_relic_query_reply(relic_matches)
+            reply = _render_untyped_query(parsed_name)
+            if reply is not None:
+                return reply
             return RenderedReply(UNKNOWN_COMMAND_REPLY)
 
         return RenderedReply(UNKNOWN_COMMAND_REPLY)
 
     parsed_name, generation, role = _parse_generation_selector(command)
     if parsed_name is not None and generation is not None:
-        reply = _render_generation_query(parsed_name, generation, role)
-        if reply is None:
-            reply = _render_relic_generation_query(parsed_name, generation, role)
+        reply = _render_untyped_query(parsed_name, generation, role)
         if reply is not None:
             return reply
 
@@ -724,6 +999,7 @@ async def handle_event(websocket, event: dict):
         return
 
     message_type = event.get("message_type")
+    actor = None
     if message_type == "group":
         text = extract_mentioned_text(event)
         if text is None:
@@ -731,6 +1007,9 @@ async def handle_event(websocket, event: dict):
         target_id = event["group_id"]
         send_message = send_group_message
         send_reply = _send_group_reply
+        sender = event.get("sender")
+        if isinstance(sender, dict):
+            actor = sender.get("card") or sender.get("nickname")
     elif message_type == "private":
         text = extract_private_text(event)
         if text is None:
@@ -738,6 +1017,7 @@ async def handle_event(websocket, event: dict):
         target_id = event.get("user_id")
         if target_id is None:
             return
+        actor = "你"
         send_message = send_private_message
         send_reply = _send_private_reply
     else:
@@ -747,6 +1027,6 @@ async def handle_event(websocket, event: dict):
         await send_message(websocket, target_id, "pong")
         return
 
-    reply = route_group_command(target_id, text)
+    reply = route_group_command(target_id, text, actor=actor)
     if reply:
         await send_reply(websocket, target_id, reply)

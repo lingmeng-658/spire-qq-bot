@@ -1,0 +1,3731 @@
+{
+  "schema_version": "1.0.0",
+  "game": "sts1",
+  "source": [
+    "local spire-archive/data/sts1/events.json (en structure)",
+    "local spire-archive/data/sts1/localization/zh.json (events zh)"
+  ],
+  "source_version": "unknown",
+  "events": [
+    {
+      "game": "sts1",
+      "id": "NOTEFORYOURSELF",
+      "name_zh": "留给自己的讯息",
+      "name_en": "A Note For Yourself",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "一根柱子吸引了你的注意，你发现上面有一块松动的砖块。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "取之与之",
+          "description_zh": "获得 然后存放一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Take and Give] Receive and Store a Card.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "无视",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Ignore]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "NOTEFORYOURSELF",
+        "name": "A Note For Yourself",
+        "act": "shrines",
+        "description": "You spot a loose brick within a pillar that catches your eye.",
+        "choices": [
+          {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Take and Give] Receive and Store a Card.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Ignore]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "BACK_TO_BASICS",
+      "name_zh": "古老文字",
+      "name_en": "Ancient Writing",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "在攀爬城市区时，你注意到一面墙壁上写满了 先古之民 的文字。你正在努力推理这些奇怪的符号和图案可能的意思，却发现文字开始 发起了光 。 \n 突然之间，文字的意义变得清晰了……",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "简约",
+          "description_zh": "从你的牌组中移除一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Elegance] Remove a card from your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "质朴",
+          "description_zh": "升级所有 打击 与 防御 。 选择一张牌移除。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Simplicity] Upgrade all Strikes and Defends.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "BACK_TO_BASICS",
+        "name": "Ancient Writing",
+        "act": "city",
+        "description": "Scaling the city, you notice a wall covered in the writing of Ancients. As you try to wrap your head around what the puzzling symbols and glyphs could mean, the writing begins to glow. \n Suddenly, the message becomes clear...",
+        "choices": [
+          {
+            "option": "[Elegance] Remove a card from your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Simplicity] Upgrade all Strikes and Defends.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "DRUG_DEALER",
+      "name_zh": "增益研究者",
+      "name_en": "Augmenter",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "一个戴着眼罩的邪笑着的男人大摇大摆地走到你面前： \n “嘿陌生人，想不想试试高端的科技？ 可会让你变得比任何训练和祝福都要强哦。 如果你是那种一心求死的英雄的话可不能没有它呢。 \n 你说怎么样？ 想不想试一下？”",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "试一下J.A.X.",
+          "description_zh": "来点猛药。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Test J.A.X.] Get JAXXED.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "当一下实验对象",
+          "description_zh": "选择2张牌进行变化。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Become Test Subject] Transform 2 cards.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "喝一下突变剂",
+          "description_zh": "获得一件特殊遗物。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Ingest Mutagens] Obtain a special relic.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "DRUG_DEALER",
+        "name": "Augmenter",
+        "act": "city",
+        "description": "A man with an eyepatch and a devilish grin strides up to you. \n \"Hey there, stranger. Interested in advancing science? I can make you stronger than any training or blessing. You're gonna need it if you're one of those heroes with a death wish.\" \n \n \"Whad'ya say?\"",
+        "choices": [
+          {
+            "option": "[Test J.A.X.] Get JAXXED.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Become Test Subject] Transform 2 cards.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Ingest Mutagens] Obtain a special relic.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "BIG_FISH",
+      "name_zh": "大鱼",
+      "name_en": "Big Fish",
+      "category": "event",
+      "act": 1,
+      "pool": "act_specific",
+      "description_zh": "当你走过一条长廊时，你看见空中 漂浮 着 一根香蕉 ， 一个甜甜圈 ， 和 一个盒子 。 不……仔细一看，它们都是被用绳子系着，从天花板上的几个洞里悬挂下来的。你在接近这几样东西时，上方似乎传来一阵 咯咯 的笑声。 \n 你会怎么做？",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "香蕉",
+          "description_zh": "回复最大生命值的 1/3。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Banana] Heal ⅓ Max HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "甜甜圈",
+          "description_zh": "最大生命值 +5。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Donut] Max HP +5.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "盒子",
+          "description_zh": "获得一件遗物。 被诅咒——悔恨。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Box] Obtain a Relic. Become Cursed - Regret.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "BIG_FISH",
+        "name": "Big Fish",
+        "act": "exordium",
+        "description": "As you make your way down a long corridor you see a banana, a donut, and a box floating about. No... upon closer inspection they are tied to strings coming from holes in the ceiling. There is a quiet cackling from above as you approach the objects. \n What do you do?",
+        "choices": [
+          {
+            "option": "[Banana] Heal ⅓ Max HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Donut] Max HP +5.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Box] Obtain a Relic. Become Cursed - Regret.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "BONFIRE_ELEMENTALS",
+      "name_zh": "篝火精灵",
+      "name_en": "Bonfire Spirits",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "你遇见一群看似是 紫色火精灵 的东西在一个巨大的篝火堆旁 起舞 。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "献上",
+          "description_zh": "根据献上的贡品获得相应的奖励。 选择一张牌献上。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Offer] Receive a reward based on the offer.",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "BONFIRE_ELEMENTALS",
+        "name": "Bonfire Spirits",
+        "act": "shrines",
+        "description": "You happen upon a group of what looks like purple fire spirits dancing around a large bonfire.",
+        "choices": [
+          {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Offer] Receive a reward based on the offer.",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "GHOSTS",
+      "name_zh": "幽灵议会",
+      "name_en": "Council of Ghosts",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "在你向上攀升时，突然四周的墙壁和地面开始冒出 浓重的黑烟 ，逐渐聚成了三个戴着面具的形状，它们交头接耳地说起话来。 “看来这又是一个 涅奥 的玩偶。” \n “我看也是！ 她总能做出最有趣的玩具！” \n \n 你注意到第三个存在有着巨大的嘴，它露出了一个大到夸张的微笑对你说： \n “别管那两个家伙……总之，你想不想尝试一下我们的 力量 呢？”",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "接受",
+          "description_zh": "获得5张 灵体 牌。 失去 最大生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Accept] Receive Apparitions. Lose Max HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "拒绝",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Refuse]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "GHOSTS",
+        "name": "Council of Ghosts",
+        "act": "city",
+        "description": "As you continue your ascent, thick black smoke begins to billow out of the ground and walls around you, coalescing into three masked forms that start to speak. \n \n \"Another puppet of Neow I think.\" \n \"AGREED! SHE ALWAYS MAKES THE FUNNEST TOYS!\" \n \n You notice an over-sized grin as the third addresses you. \n \"Ignore the others... Would you like a taste of our power?\"",
+        "choices": [
+          {
+            "option": "[Accept] Receive Apparitions. Lose Max HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Refuse]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "CURSED_TOME",
+      "name_zh": "诅咒书本",
+      "name_en": "Cursed Tome",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "在一所被遗弃的神庙里，你找到一本翻开着的巨大书本，里面满是 神秘的文字 。 \n \n 你刚试着想要解读这些复杂的文本，它就自己开始 移动变化 成了你熟悉的文字。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "阅读",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Read]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": "失去 1 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue] Lose 1 HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": "失去 2 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue] Lose 2 HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": "失去 3 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue] Lose 3 HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "停止",
+          "description_zh": "失去 3 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Stop] Lose 3 HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "拿走",
+          "description_zh": "获得书。 失去 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Take] Obtain the Book. Lose HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "CURSED_TOME",
+        "name": "Cursed Tome",
+        "act": "city",
+        "description": "In an abandoned temple, you find a giant book, open, riddled with cryptic writings. \n \n As you try to interpret the elaborate script, it begins to shift and morph into writing you are familiar with.",
+        "choices": [
+          {
+            "option": "[Read]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Continue] Lose 1 HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Continue] Lose 2 HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Continue] Lose 3 HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Stop] Lose 3 HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Take] Obtain the Book. Lose HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "DEAD_ADVENTURER",
+      "name_zh": "冒险者尸体",
+      "name_en": "Dead Adventurer",
+      "category": "event",
+      "act": 1,
+      "pool": "act_specific",
+      "description_zh": "在搜刮冒险者时你被偷袭了！",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "搜索",
+          "description_zh": "寻找东西。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Search] Find Loot. Chance of combat.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "DEAD_ADVENTURER",
+        "name": "Dead Adventurer",
+        "act": "exordium",
+        "description": "While searching the adventurer you are caught off guard!",
+        "choices": [
+          {
+            "option": "[Search] Find Loot. Chance of combat.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "DESIGNER",
+      "name_zh": "“尖端”设计师",
+      "name_en": "Designer In-Spire",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "你发现一家 五彩斑斓 的店，横幅上挂着大大的“尖端”两个字，就走进去想看看里面有什么。 \n “等等，别，不行。你不能进来！” \n \n 一个穿着打扮无比荒唐的男人出现在门口把你拦了下来。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "小修一下",
+          "description_zh": "失去 40 金币。 升级一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Adjustments] Lose 40 Gold. Upgrade a card.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "清洁一下",
+          "description_zh": "失去 60 金币。 移除一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Clean Up] Lose 60 Gold. Remove a card.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "全套服务",
+          "description_zh": "失去 90 金币。 移除一张牌，然后随机升级一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Full Service] Lose 90 Gold. Remove a card and upgrade a card.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "一拳过去",
+          "description_zh": "失去 5 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Punch] Lose 5 HP.",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "DESIGNER",
+        "name": "Designer In-Spire",
+        "act": "shrines",
+        "description": "You discover a colorful shop with the banner \"IN-SPIRE\" and walk in to see what's inside. \n \"No, no way. Nope. Can't let you in!\" \n \n A man with ridiculous clothing appears at the entrance to bar you.",
+        "choices": [
+          {
+            "option": "[Adjustments] Lose 40 Gold. Upgrade a card.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Clean Up] Lose 60 Gold. Remove a card.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Full Service] Lose 90 Gold. Remove a card and upgrade a card.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Punch] Lose 5 HP.",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "DUPLICATOR",
+      "name_zh": "复制祭坛",
+      "name_en": "Duplicator",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "在你面前是一个用来崇拜某种古老存在的华丽祭坛。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "祈祷",
+          "description_zh": "从你的牌组中复制一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Pray] Duplicate a card in your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": "选择一张牌复制。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "DUPLICATOR",
+        "name": "Duplicator",
+        "act": "shrines",
+        "description": "Before you lies a decorated altar to some ancient entity.",
+        "choices": [
+          {
+            "option": "[Pray] Duplicate a card in your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "FACETRADER",
+      "name_zh": "换脸商",
+      "name_en": "Face Trader",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "你经过一尊举着许多不同的面具的奇怪雕像，但没走几步…… \n 你就听见身后传来一个轻柔的声音： \n “请留步。”",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "触碰",
+          "description_zh": "失去 金币。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Touch] Lose Gold.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "交易",
+          "description_zh": "50%：获得好脸。 50%：获得坏脸。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Trade] 50%: Good Face. 50%: Bad Face.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": "生命， 获得",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue] HP, gain",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "FACETRADER",
+        "name": "Face Trader",
+        "act": "shrines",
+        "description": "You walk by an eerie statue holding several masks... \n Something behind you softly whispers, \n \"Stop.\"",
+        "choices": [
+          {
+            "option": "[Touch] Lose Gold.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Trade] 50%: Good Face. 50%: Bad Face.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Continue] HP, gain",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "FALLING",
+      "name_zh": "坠落",
+      "name_en": "Falling",
+      "category": "event",
+      "act": 3,
+      "pool": "act_specific",
+      "description_zh": "你在悬浮在空中的平台上往上跳跃时，不慎滑了一跤。 \n \n 你开始坠落。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": "[落地] 失去",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Land] Lose a Skill card.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "锁定",
+          "description_zh": "需要： 技能牌 [释放] 失去",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Channel] Lose a Power card.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "锁定",
+          "description_zh": "需要： 能力牌 [猛击] 失去",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Strike] Lose an Attack card.",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "FALLING",
+        "name": "Falling",
+        "act": "beyond",
+        "description": "As you head upwards hopping from one floating shape to another, you slip. \n \n You begin to fall.",
+        "choices": [
+          {
+            "option": "[Land] Lose a Skill card.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Channel] Lose a Power card.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Strike] Lose an Attack card.",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "FORGOTTEN_ALTAR",
+      "name_zh": "被遗忘的祭坛",
+      "name_en": "Forgotten Altar",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "在你面前是一个早已被遗忘的神祇的祭坛。 \n 在祭坛上方，是一尊双手伸出的精致女性雕像。 \n 她呼唤着你，要求你献上祭品。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": null,
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Offer] Gain Darkstone Periapt (Relic).",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": null,
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Sacrifice] Gain 5 Max HP. Lose HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": null,
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Desecrate] Become Cursed - Decay.",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "FORGOTTEN_ALTAR",
+        "name": "Forgotten Altar",
+        "act": "city",
+        "description": "In front of you sits an altar to a forgotten god. \n Atop the altar sits an ornate female statue with arms outstretched. \n She calls out to you, demanding sacrifice.",
+        "choices": [
+          {
+            "option": "[Offer] Gain Darkstone Periapt (Relic).",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Sacrifice] Gain 5 Max HP. Lose HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Desecrate] Become Cursed - Decay.",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "GOLDEN_IDOL",
+      "name_zh": "金神像",
+      "name_en": "Golden Idol",
+      "category": "event",
+      "act": 1,
+      "pool": "act_specific",
+      "description_zh": "在一个不引人注意的小高台上，你发现了一个 闪闪发光的金神像 安然放置在上面，看起来非常值钱。 \n \n 周围看起来完全没有什么陷阱的样子。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": null,
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Take] Gain the Golden Idol (Relic).",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": null,
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Run] Gain the Golden Idol. Take 25% Max HP damage.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": null,
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "GOLDEN_IDOL",
+        "name": "Golden Idol",
+        "act": "exordium",
+        "description": "You come across an inconspicuous pedestal with a shining gold idol sitting peacefully atop. It looks incredibly valuable. \n \n You sure don't see any traps nearby.",
+        "choices": [
+          {
+            "option": "[Take] Gain the Golden Idol (Relic).",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Run] Gain the Golden Idol. Take 25% Max HP damage.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "GOLDEN_SHRINE",
+      "name_zh": "金色神龛",
+      "name_en": "Golden Shrine",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "在你面前是一座古老神灵的精巧神龛。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "祈祷",
+          "description_zh": "获得 金币。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Pray] Gain Gold.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "亵渎",
+          "description_zh": "获得 275 金币。 被诅咒——悔恨。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Desecrate] Gain 275 Gold. Become Cursed - Regret.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "GOLDEN_SHRINE",
+        "name": "Golden Shrine",
+        "act": "shrines",
+        "description": "Before you lies an elaborate shrine to an ancient spirit.",
+        "choices": [
+          {
+            "option": "[Pray] Gain Gold.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Desecrate] Gain 275 Gold. Become Cursed - Regret.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "KNOWING_SKULL",
+      "name_zh": "全知头骨",
+      "name_en": "Knowing Skull",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "你发现自己在一个古老的有装饰的房间里，在房间正中央，有一个巨大的头骨被放在精致的高台上，在你靠近时，头骨 迸发出火焰 转向了你。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "信息？",
+          "description_zh": "告知 Boss 身份。 失去",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Information?] Reveal the Boss. Lose HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "成功？",
+          "description_zh": "获得一张无色牌。 失去 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Success?] Get a Colorless Card. Lose HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "来点喝的？",
+          "description_zh": "获得一瓶药水。 失去 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[A Pick Me Up?] Get a Potion. Lose HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "财富？",
+          "description_zh": "获得 90 金币。 失去 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Riches?] Gain 90 Gold. Lose HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "我要怎么离开？",
+          "description_zh": "失去 6 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[How do I leave?] Lose 6 HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "KNOWING_SKULL",
+        "name": "Knowing Skull",
+        "act": "city",
+        "description": "You find yourself in an old, decorated chamber. In the center of the room, a large skull sits atop an ornate pedestal. As you approach, the skull bursts into flames and turns to face you.",
+        "choices": [
+          {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Information?] Reveal the Boss. Lose HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Success?] Get a Colorless Card. Lose HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[A Pick Me Up?] Get a Potion. Lose HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Riches?] Gain 90 Gold. Lose HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[How do I leave?] Lose 6 HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "LAB",
+      "name_zh": "实验室",
+      "name_en": "Lab",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "你发现了一个满是试管、烧杯、烧瓶、药瓶、钳子、夹子、玻璃棒、手术钳、眼镜、漏斗、吸液管、玻璃筒、冷凝器甚至还有螺旋玻璃管的房间。 \n \n 你怎么会知道这些工具都叫什么名字的？这不重要，你四处翻找了起来。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "搜索",
+          "description_zh": "找到一些药水！",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Search] Find some Potions!",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "LAB",
+        "name": "Lab",
+        "act": "shrines",
+        "description": "You find yourself in a room filled with racks of test tubes, beakers, flasks, forceps, pinch clamps, stirring rods, tongs, goggles, funnels, pipets, cylinders, condensers, and even a rare spiral tube of glass. \n \n Why do you know the name of all these tools? It doesn't matter, you take a look around.",
+        "choices": [
+          {
+            "option": "[Search] Find some Potions!",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "LIVING_WALL",
+      "name_zh": "活墙壁",
+      "name_en": "Living Wall",
+      "category": "event",
+      "act": 1,
+      "pool": "act_specific",
+      "description_zh": "你走进一条死路，正准备要回头时，四周突然有墙壁从天花板上 哐 地一下 砸了下来 ！ \n \n 三张脸出现在墙壁上，开始对你说话： \n “忘记你所知道的，我就让你走。” \n “有所改变，我就让你看见新的道路。” \n “如果你想要从我这里通过，你就必须有所成长。”",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "遗忘",
+          "description_zh": "移除你牌组中的一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Forget] Remove a card from your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "改变",
+          "description_zh": "变化你牌组中的一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Change] Transform a card in your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "成长",
+          "description_zh": "升级你牌组中的一张牌。 选择一张牌移除。 选择一张牌变化。 选择一张牌升级。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Grow] Upgrade a card in your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "LIVING_WALL",
+        "name": "Living Wall",
+        "act": "exordium",
+        "description": "As you come to a dead-end and begin to turn around, walls slam down from the ceiling, trapping you! \n \n Three faces materialize from the walls and speak. \n \"Forget what you know, and I'll let you go.\" \n \"I require change to see a new space.\" \n \"If you want to pass me, then you must grow.\"",
+        "choices": [
+          {
+            "option": "[Forget] Remove a card from your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Change] Transform a card in your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Grow] Upgrade a card in your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "MASKED_BANDITS",
+      "name_zh": "蒙面强盗",
+      "name_en": "Masked Bandits",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "嘿嘿嘿……谢谢你的 金币 啦！ \n 哎呀，我最喜欢 金币 了，那是多好的东西啊。 \n 闪闪亮的 小可爱们！",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "付钱",
+          "description_zh": "失去所有 金币 。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Pay] Lose ALL of your Gold.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "战斗！",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Fight!]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "MASKED_BANDITS",
+        "name": "Masked Bandits",
+        "act": "city",
+        "description": "Hehehe.. Thanks for the gold! \n Oh, I love gold. It's so nice. \n shiny shiny chits they are!",
+        "choices": [
+          {
+            "option": "[Pay] Lose ALL of your Gold.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Fight!]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "MATCH_AND_KEEP",
+      "name_zh": "对对碰！",
+      "name_en": "Match and Keep!",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "“ 十二张牌！ 搭对就拿走！ 五次机会，没有重来！ \n 准备好了吗？开始！”",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "玩小游戏",
+          "description_zh": "剩余次数：",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Play] Remaining Attempts:",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "MATCH_AND_KEEP",
+        "name": "Match and Keep!",
+        "act": "shrines",
+        "description": "\" Twelve cards! Match them to keep them! Five tries, no do-overs. \n Are you ready? Let's start!\"",
+        "choices": [
+          {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Play] Remaining Attempts:",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "MINDBLOOM",
+      "name_zh": "心灵绽放",
+      "name_en": "Mind Bloom",
+      "category": "event",
+      "act": 3,
+      "pool": "act_specific",
+      "description_zh": "你在高塔的混沌深处不断攀行，不知不觉间，你愕然发现自己的思绪开始变得非常…… 真实…… \n \n 各种 怪物 与 财宝 的影像开始有了实体。 \n 这些感觉稍纵即逝，你准备怎么做？",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "我必凯旋",
+          "description_zh": "与一名第一阶段的 Boss 战斗。 获得一件稀有遗物。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[I am War] Fight a Boss from Act 1. Obtain a Rare Relic.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "我将富有",
+          "description_zh": "获得 999 金币。 被诅咒—— 2 张凡庸。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[I am Rich] Gain 999 Gold. Cursed - 2 Normality.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "我无伤痛",
+          "description_zh": "回复所有生命. 被诅咒——疑虑。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[I am Healthy] Heal to full HP. Cursed - Doubt.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "我已觉醒",
+          "description_zh": "升级所有牌。 你无法再回复生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[I am Awake] Upgrade all Cards. You can no longer heal.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "MINDBLOOM",
+        "name": "Mind Bloom",
+        "act": "beyond",
+        "description": "While walking and traversing through the chaos of the Spire, your thoughts suddenly begin to feel very... real... \n \n Imaginings of monsters and riches begin to manifest themselves into reality. \n The sensation is quickly fleeting. What do you do?",
+        "choices": [
+          {
+            "option": "[I am War] Fight a Boss from Act 1. Obtain a Rare Relic.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[I am Rich] Gain 999 Gold. Cursed - 2 Normality.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[I am Healthy] Heal to full HP. Cursed - Doubt.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[I am Awake] Upgrade all Cards. You can no longer heal.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "MUSHROOMS",
+      "name_zh": "蘑菇",
+      "name_en": "Mushrooms",
+      "category": "event",
+      "act": 1,
+      "pool": "act_specific",
+      "description_zh": "你顺从了这份不自然的食欲，吃下一个又一个蘑菇后，你觉得自己有点晕晕的，然后就失去了意识。当你醒来时，你觉得有点怪怪的 \n 你 回复 生命值的 25% ，但同时被 感染 了。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "踩扁",
+          "description_zh": "激怒蘑菇们。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Stomp] Anger the Mushrooms.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "吃下",
+          "description_zh": "回复 点生命。 被诅咒——寄生。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Eat] Heal HP. Become Cursed - Parasite.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "战斗",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Fight]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "MUSHROOMS",
+        "name": "Mushrooms",
+        "act": "exordium",
+        "description": "You give in to the unnatural desire to eat. As you consume mushroom after mushroom, you feel yourself entering into a daze and pass out. As you awake, you feel very odd. \n You Heal 25% of your HP, but you also get infected.",
+        "choices": [
+          {
+            "option": "[Stomp] Anger the Mushrooms.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Eat] Heal HP. Become Cursed - Parasite.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Fight]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "MYSTERIOUS_SPHERE",
+      "name_zh": "神秘圆球",
+      "name_en": "Mysterious Sphere",
+      "category": "event",
+      "act": 3,
+      "pool": "act_specific",
+      "description_zh": "在四周混乱的地形中间，一个骨质圆球伫立在地上，似乎包裹着一样神秘的发光物体。 \n 你很好奇里面有什么东西，但你注意到圆球周围有一些哨兵正在看守。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "打开圆球",
+          "description_zh": "战斗。 奖励：稀有遗物。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Open Sphere] Fight. Reward: Rare Relic.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "战斗",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Fight]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "MYSTERIOUS_SPHERE",
+        "name": "Mysterious Sphere",
+        "act": "beyond",
+        "description": "Jutting from the chaotic terrain around you, a bony sphere surrounds a mysterious glowing object within. \n While you are curious what lies inside, you notice some sentries keeping an eye on it.",
+        "choices": [
+          {
+            "option": "[Open Sphere] Fight. Reward: Rare Relic.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Fight]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "N_LOTH",
+      "name_zh": "恩洛斯",
+      "name_en": "N'loth",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "一个驼着背、背后长出几条触手的奇怪生物正在你面前的垃圾堆和废墟里来回地翻找些什么。当你靠近时，他可怜巴巴地拖着脚走到了你面前。 \n “恩洛斯好饿，喂喂恩洛斯。”",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "交出：",
+          "description_zh": "失去这件遗物。 获得一件特别的遗物。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "Exchange a Relic for a special reward.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "N_LOTH",
+        "name": "N'loth",
+        "act": "shrines",
+        "description": "An odd creature with a hunched back sprouting several tentacles is scrounging through a pile of trash and debris in front of you. As you approach, he shuffles towards you in a non-threatening manner. \n \"N'loth hungry. Feed N'loth.\"",
+        "choices": [
+          {
+            "option": "Exchange a Relic for a special reward.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "BEGGAR",
+      "name_zh": "老乞丐",
+      "name_en": "Old Beggar",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "一个裹着毛衣的老乞丐在你经过时向你伸出了双手，他对你说：“施舍点钱吧，孩子？”",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "给金币",
+          "description_zh": "75 金币： 从你的牌组中移除一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Offer Gold] 75 Gold: Remove a card from your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "BEGGAR",
+        "name": "Old Beggar",
+        "act": "city",
+        "description": "An old beggar cloaked in fur reaches his hands out towards you as you pass. \"Spare some coin, child?\"",
+        "choices": [
+          {
+            "option": "[Offer Gold] 75 Gold: Remove a card from your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "ACCURSED_BLACKSMITH",
+      "name_zh": "邪恶熔炉",
+      "name_en": "Ominous Forge",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "你钻进一个小屋，在里面似乎有一个锻造熔炉，旁边的铁匠工具都已经布满了灰尘，可是炉中的火却仍然熊熊燃烧。你觉得有些不安……",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "锻造",
+          "description_zh": "升级你牌组中的一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Forge] Upgrade a card in your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "翻查",
+          "description_zh": "获得一件特别遗物。 被诅咒——疼痛。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Rummage] Obtain a special Relic. Become Cursed - Pain.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": "选择一张牌升级",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "ACCURSED_BLACKSMITH",
+        "name": "Ominous Forge",
+        "act": "shrines",
+        "description": "You duck into a small hut. Inside, you find what appears to be a forge. The smithing tools are covered with dust, yet a fire roars inside the furnace. You feel on edge...",
+        "choices": [
+          {
+            "option": "[Forge] Upgrade a card in your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Rummage] Obtain a special Relic. Become Cursed - Pain.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "ADDICT",
+      "name_zh": "流浪汉的恳求",
+      "name_en": "Pleading Vagrant",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "你想要从一群披着斗篷的人旁边偷偷潜行过去，其中一个跑到了你面前。 \n “你能给我点儿什么吗，朋友？ 求求你了……一点 小钱 就好？” \n “我只是需要找个地方过夜，我身上有财宝可以交换……” \n 他看起来有点疯疯癫癫的，但似乎并不危险。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "给他金币",
+          "description_zh": "85 金币： 获得一件遗物。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Offer Gold] 85 Gold: Obtain a Relic.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "抢夺",
+          "description_zh": "获得一件遗物。 被诅咒——羞耻。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Rob] Obtain a Relic. Become Cursed - Shame.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "ADDICT",
+        "name": "Pleading Vagrant",
+        "act": "city",
+        "description": "While sneaking past a group of shrouded figures, one of them approaches you. \n \"Got anything for me friend? Please... maybe some Coin?\" \n \"I just need somewhere to stay, I have treasures I can trade...\" \n He seems delusional, but harmless.",
+        "choices": [
+          {
+            "option": "[Offer Gold] 85 Gold: Obtain a Relic.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Rob] Obtain a Relic. Become Cursed - Shame.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "PURIFIER",
+      "name_zh": "净化",
+      "name_en": "Purifier",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "在你面前是一个被遗忘神灵的精致神龛。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "祈祷",
+          "description_zh": "从你的牌组中移除一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Pray] Remove a card from your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": "选择一张牌移除。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "PURIFIER",
+        "name": "Purifier",
+        "act": "shrines",
+        "description": "Before you lies an elaborate shrine to a forgotten spirit.",
+        "choices": [
+          {
+            "option": "[Pray] Remove a card from your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "SCRAP_OOZE",
+      "name_zh": "破烂软泥",
+      "name_en": "Scrap Ooze",
+      "category": "event",
+      "act": 1,
+      "pool": "act_specific",
+      "description_zh": "你刚走进房间，就听见奇怪的 咕嘟声 和金属的 摩擦声 。在你面前的是一个史莱姆状的生物，它显然是吃了太多的破铜烂铁，消化不良了。 你在这个生物的中央见到了奇怪的光芒，或许是什么有魔法的物品？看起来只要你愿意把手伸进这东西的……开口，你就能得到什么 财宝 。当然，酸液和尖锐的破烂有可能会让你 受伤。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "伸手进去",
+          "description_zh": "失去 生命。 %: 找到一件遗物。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Reach Inside] Take damage. Chance to find a Relic.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "SCRAP_OOZE",
+        "name": "Scrap Ooze",
+        "act": "exordium",
+        "description": "As you walk into the room you hear a gurgling and the grinding of metals. Before you is a slime-like creature that ate too much scrap for its own good. From the center of the creature you see glints of strange light, perhaps something magical? It looks like you can get some treasure if you just reach inside its... opening. However, the acid and sharp objects may hurt.",
+        "choices": [
+          {
+            "option": "[Reach Inside] Take damage. Chance to find a Relic.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "SECRETPORTAL",
+      "name_zh": "秘密传送门",
+      "name_en": "Secret Portal",
+      "category": "event",
+      "act": 3,
+      "pool": "act_specific",
+      "description_zh": "在你面前有一样与周围奇异景观完全不符合的东西：在深处地区一面活墙壁上，奇怪地出现了一道石做的拱门，里面有一个 旋转的魔法传送门 。 \n \n 你不知道它会通向哪里，但它应该能够节约你爬塔的时间。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "进入传送门",
+          "description_zh": "立即传送到Boss房间。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Enter the Portal] IMMEDIATELY travel to the boss.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "SECRETPORTAL",
+        "name": "Secret Portal",
+        "act": "beyond",
+        "description": "Before you is a sight that seems out of place in the alien landscape around you. Strangely placed into one of the living walls of the Beyond is an enclosed stone entrance filled with a swirling magical portal. \n \n You aren't sure where it leads, but maybe it could speed your journey through the Spire.",
+        "choices": [
+          {
+            "option": "[Enter the Portal] IMMEDIATELY travel to the boss.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "SENSORYSTONE",
+      "name_zh": "感知石",
+      "name_en": "Sensory Stone",
+      "category": "event",
+      "act": 3,
+      "pool": "act_specific",
+      "description_zh": "你在高塔深处前进时，你遇到一个悬浮在空中缓慢 旋转 且 变幻 着的 发光超立方体 。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "回忆",
+          "description_zh": "在你的牌组中加入 1 张无色牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Recall (1)] Add 1 Colorless card to your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "回忆",
+          "description_zh": "在你的牌组中加入 2 张无色牌。 失去 点生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Recall (2)] Add 2 Colorless cards to your deck. Lose HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "回忆",
+          "description_zh": "在你的牌组中加入 3 张无色牌。 失去 点生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Recall (3)] Add 3 Colorless cards to your deck. Lose HP.",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "SENSORYSTONE",
+        "name": "Sensory Stone",
+        "act": "beyond",
+        "description": "Navigating through the Beyond, you discover a glowing tesseract spinning and shifting gently in the air.",
+        "choices": [
+          {
+            "option": "[Recall (1)] Add 1 Colorless card to your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Recall (2)] Add 2 Colorless cards to your deck. Lose HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Recall (3)] Add 3 Colorless cards to your deck. Lose HP.",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "SHINING_LIGHT",
+      "name_zh": "闪耀之光",
+      "name_en": "Shining Light",
+      "category": "event",
+      "act": 1,
+      "pool": "act_specific",
+      "description_zh": "你发现在房间中央围绕着 一束很粗的光柱 。 \n \n 光柱上有着 温暖而闪烁的美丽花纹 仿佛在邀请你进入。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "走进",
+          "description_zh": "随机升级 2 张牌。 失去 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Enter] Upgrade 2 random cards. Take 20% Max HP damage.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "SHINING_LIGHT",
+        "name": "Shining Light",
+        "act": "exordium",
+        "description": "You find a shimmering mass of light encompassing the center of the room. \n \n Its warm glow and enchanting patterns invite you in.",
+        "choices": [
+          {
+            "option": "[Enter] Upgrade 2 random cards. Take 20% Max HP damage.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "SPIRE_HEART",
+      "name_zh": "高塔之心",
+      "name_en": "Spire Heart",
+      "category": "event",
+      "act": 3,
+      "pool": "scripted",
+      "description_zh": "砰咚 …… 砰咚 …… 砰咚 …… \n 整个房间里弥漫着脉动的恐惧…… \n 这就是高塔的 心脏 吗？ 这一切邪恶的源头？",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "SPIRE_HEART",
+        "name": "Spire Heart",
+        "act": "beyond",
+        "description": "tu-thump ... tu-thump ... tu-thump ... \n A deep pulsing dread can be felt throughout the room... \n Is this the heart of the Spire? The source of this evil?",
+        "choices": [
+          {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "THE_CLERIC",
+      "name_zh": "牧师",
+      "name_en": "The Cleric",
+      "category": "event",
+      "act": 1,
+      "pool": "act_specific",
+      "description_zh": "一个戴着金头盔（？）的奇怪蓝色人形生物脸上带着大大的微笑走到了你面前。 \n “ 你好啊朋友！ 我是 牧师 ！你想不想试试我的服务呐？！”那个生物大声喊叫起来。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "治疗",
+          "description_zh": "35 金币 ： 回复最大生命值的 1/3。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Heal] 35 Gold: Heal ⅓ Max HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "净化",
+          "description_zh": "50 金币 : 从你的牌组中 移除一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Purify] 50 Gold: Remove a card from your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "THE_CLERIC",
+        "name": "The Cleric",
+        "act": "exordium",
+        "description": "A strange blue humanoid with a golden helm(?) approaches you with a huge smile. \n \"Hello friend! I am Cleric! Are you interested in my services?!\" the creature shouts, loudly.",
+        "choices": [
+          {
+            "option": "[Heal] 35 Gold: Heal ⅓ Max HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Purify] 50 Gold: Remove a card from your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "COLOSSEUM",
+      "name_zh": "竞技场",
+      "name_en": "The Colosseum",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "哐！！！ \n … \n ……… \n …… \n 你被 打晕了 ……",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "战斗",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Fight]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "怂了",
+          "description_zh": "逃跑。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[COWARDICE] Escape.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "战斗到底",
+          "description_zh": "进行一场艰难的战斗，赢得众多奖赏。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[VICTORY] A powerful fight with many rewards.",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "COLOSSEUM",
+        "name": "The Colosseum",
+        "act": "city",
+        "description": "Thwack!!! \n .. \n ...... \n ... \n You were knocked unconscious...",
+        "choices": [
+          {
+            "option": "[Continue]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Fight]",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[COWARDICE] Escape.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[VICTORY] A powerful fight with many rewards.",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "FOUNTAIN_OF_CLEANSING",
+      "name_zh": "神圣泉水",
+      "name_en": "The Divine Fountain",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "你经过墙壁上的一处饮水池，里面流淌着源源不断 闪着光的水 。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "喝水",
+          "description_zh": "移除所有诅咒牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Drink] Remove all Curses from your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "FOUNTAIN_OF_CLEANSING",
+        "name": "The Divine Fountain",
+        "act": "shrines",
+        "description": "You come across shimmering water flowing endlessly from a fountain on a nearby wall.",
+        "choices": [
+          {
+            "option": "[Drink] Remove all Curses from your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "THE_JOUST",
+      "name_zh": "长枪决斗",
+      "name_en": "The Joust",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "你在巨大的建筑物间穿行时，遇见了一条长长的窄桥，两头似乎都有一名骑士彼此对望着。你走上前去…… \n “停步！” \n \n 一名骑士用手中的长枪对你比划着，强硬地让你停下。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "继续",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Bet on Owner] 50 Gold: Win 100 Gold.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "主人",
+          "description_zh": "赌 金币 —— 30%: 赢得 金币。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Bet on Murderer] 50 Gold: Win 250 Gold (risky).",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "观战",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "THE_JOUST",
+        "name": "The Joust",
+        "act": "city",
+        "description": "As you make your way through the large buildings you come across a long narrow bridge and spot knights on either side, facing one another. You approach... \n \"Halt!\" \n \n A knight forcefully gestures you to stop with its giant lance.",
+        "choices": [
+          {
+            "option": "[Bet on Owner] 50 Gold: Win 100 Gold.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Bet on Murderer] 50 Gold: Win 250 Gold (risky).",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "THE_LIBRARY",
+      "name_zh": "大图书馆",
+      "name_en": "The Library",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "你经过一栋被遗弃的华美建筑物。 \n 墙上的标牌掉在了地上，上面写着 “大图书馆” 几个大字。 \n 你走进建筑物中，看见了无数卷轴、手稿和书籍。 \n 你拿起一本，舒服地坐在沙发椅上看了好一会儿。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "阅读",
+          "description_zh": "从 20 张牌中选择一张加入你的牌组。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Read] Choose 1 of 20 cards to add to your deck.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "睡觉",
+          "description_zh": "回复 点生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Sleep] Heal ⅓ Max HP.",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "THE_LIBRARY",
+        "name": "The Library",
+        "act": "city",
+        "description": "You come across an ornate building which appears abandoned. \n A plaque that has been torn free from a wall is on the floor. It reads, \"THE LIBRARY\". \n Inside, you find countless rows of scrolls, manuscripts, and books. \n You pick one and cozy yourself into a chair for some quiet time.",
+        "choices": [
+          {
+            "option": "[Read] Choose 1 of 20 cards to add to your deck.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Sleep] Heal ⅓ Max HP.",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "THE_MAUSOLEUM",
+      "name_zh": "陵墓",
+      "name_en": "The Mausoleum",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "你在一系列坟墓间穿行，前方出现了一个圆形房间，中间是一口 镶嵌着许多宝石的 巨大石棺。 \n 你辨认不出石棺上的字迹，但你能注意到有 黑色的雾气 从石棺的两侧渗透出来。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "打开棺材",
+          "description_zh": "获得一件遗物。 %: 被诅咒——苦恼。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Open Coffin] Obtain a Relic. 50%: Become Cursed - Writhe.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "THE_MAUSOLEUM",
+        "name": "The Mausoleum",
+        "act": "city",
+        "description": "Venturing through a series of tombs, you are faced with a large sarcophagus studded with gems in the center of a circular room. \n You cannot make out the writing on the coffin, however, you do notice black fog seeping out from the sides.",
+        "choices": [
+          {
+            "option": "[Open Coffin] Obtain a Relic. 50%: Become Cursed - Writhe.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "THE_MOAI_HEAD",
+      "name_zh": "摩艾石像",
+      "name_en": "The Moai Head",
+      "category": "event",
+      "act": 3,
+      "pool": "act_specific",
+      "description_zh": "你遇到了一个和四周*完全不搭*的东西。在你面前有一道与周围不同，没有在移动和变化的墙壁，一个巨大的石制头像从墙壁上凸出来。 \n 石像的嘴大张着，里面有许多巨大的染着血迹的牙齿。石像表面上写着许多象形文字，似乎是说有许多人会自己跳进嘴里被石像吞噬。为什么会有人这样做呢？",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "跳进去",
+          "description_zh": "回复所有生命。 失去 最大生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Jump Inside] Heal to full HP. Lose Max HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "献上：金神像",
+          "description_zh": "获得 333 金币。 失去金神像。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Offer: Golden Idol] Gain 333 Gold. Lose Golden Idol.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": null,
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "THE_MOAI_HEAD",
+        "name": "The Moai Head",
+        "act": "beyond",
+        "description": "You stumble across something that feels *very* out of place. Before you, an enormous stony head emerges from a large wall segment that does not shift and change like the rest of this area. \n The head's mouth is wide open, and it reveals large intimidating teeth stained red with blood. The surface of the statue is riddled with pictographs that seem to indicate people throwing themselves into the mouth of this head and being devoured. Why would anyone do that?",
+        "choices": [
+          {
+            "option": "[Jump Inside] Heal to full HP. Lose Max HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Offer: Golden Idol] Gain 333 Gold. Lose Golden Idol.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "NEST",
+      "name_zh": "巢穴",
+      "name_en": "The Nest",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "你看见一长串 戴着兜帽的人们 正鱼贯走进一座 看起来没什么特别的大教堂。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "留在队伍中",
+          "description_zh": "获得 仪式匕首 。 失去 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Smash and Grab] Gain 99 Gold. Obtain Ritual Dagger. Fight Nests.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "抢了钱就跑",
+          "description_zh": "获得",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "NEST",
+        "name": "The Nest",
+        "act": "city",
+        "description": "A long line of hooded figures can be seen entering \n an unassuming cathedral.",
+        "choices": [
+          {
+            "option": "[Smash and Grab] Gain 99 Gold. Obtain Ritual Dagger. Fight Nests.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "LIARS_GAME",
+      "name_zh": "蛇～",
+      "name_en": "The Ssssserpent",
+      "category": "event",
+      "act": 1,
+      "pool": "act_specific",
+      "description_zh": "你走进一间房间，看见地上有一个大洞。当你靠近洞时，一条巨大的蛇形生物从里面钻了出来。 \n \n “嚯嚯嚯！你好，你好啊！这是谁呀？ 哎呀呀，你好冒险者，我就问一个简单的问题。 \n 最幸福的人生当然就是 什么东西都能买得起 的土豪生活了！　 \n 你同意吗？”",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "同意",
+          "description_zh": "获得 150 金币。 被诅咒——疑虑。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Agree] Gain 150 Gold. Become Cursed - Doubt.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "反对",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Disagree]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "LIARS_GAME",
+        "name": "The Ssssserpent",
+        "act": "exordium",
+        "description": "You walk into a room to find a large hole in the ground. As you approach the hole, an enormous serpent creature appears from within. \n \n \"Ho hooo! Hello hello! what have we got here? Hello adventurer, I ask a simple question. \n The most fulfilling of lives is that in which you can buy anything! \n Do you agree?\"",
+        "choices": [
+          {
+            "option": "[Agree] Gain 150 Gold. Become Cursed - Doubt.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Disagree]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "THE_WOMAN_IN_BLUE",
+      "name_zh": "蓝衣女子",
+      "name_en": "The Woman in Blue",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "从黑暗中，一只手伸出来把你拉进了一家小店。眼睛适应了这里的亮度之后，你看见一个穿着鲜艳衣服的苍白女子正伸手展示整整一墙壁的药水。 \n “来买药水，快点！”她对你说。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "买 1 瓶药水",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Buy 1 Potion] Lose 20 Gold. Obtain a Potion.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "买 2 瓶药水",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Buy 2 Potions] Lose 30 Gold. Obtain 2 Potions.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "买 3 瓶药水",
+          "description_zh": "金币 。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Buy 3 Potions] Lose 40 Gold. Obtain 3 Potions.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "THE_WOMAN_IN_BLUE",
+        "name": "The Woman in Blue",
+        "act": "shrines",
+        "description": "From the darkness, an arm pulls you into a small shop. As your eyes adjust, you see a pale woman in sharp clothes gesturing towards a wall of potions. \n \"Buy a potion. Now!\" she states.",
+        "choices": [
+          {
+            "option": "[Buy 1 Potion] Lose 20 Gold. Obtain a Potion.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Buy 2 Potions] Lose 30 Gold. Obtain 2 Potions.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Buy 3 Potions] Lose 40 Gold. Obtain 3 Potions.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "TOMB_OF_LORD_RED_MASK",
+      "name_zh": "红面具大人之墓",
+      "name_en": "Tomb of Lord Red Mask",
+      "category": "event",
+      "act": 3,
+      "pool": "act_specific",
+      "description_zh": "在一条悬浮道路的尽头，你可以看见一处装饰华丽的古墓，当你到达古墓时，你看到有一个可以投放 金币 的开口，但上面的铭文已经被划得看不清楚了。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "戴上红面具",
+          "description_zh": "获得 222 金币。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Don the Red Mask] Gain 222 Gold.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "献上: 金币",
+          "description_zh": "失去所有金币。 获得遗物。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Offer: Gold] Lose all Gold. Obtain a Relic.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "TOMB_OF_LORD_RED_MASK",
+        "name": "Tomb of Lord Red Mask",
+        "act": "beyond",
+        "description": "A highly ornamented tomb can be seen on the other side of a floating path. Upon reaching the tomb, you notice a slot for gold coins with a scratched out inscription above it.",
+        "choices": [
+          {
+            "option": "[Don the Red Mask] Gain 222 Gold.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Offer: Gold] Lose all Gold. Obtain a Relic.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "TRANSMORGRIFIER",
+      "name_zh": "转化神龛",
+      "name_en": "Transmogrifier",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "在你面前是一个被遗忘神灵的精致神龛。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "祈祷",
+          "description_zh": "变化一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Pray] Transform a card.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": "选择一张牌变化。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "TRANSMORGRIFIER",
+        "name": "Transmogrifier",
+        "act": "shrines",
+        "description": "Before you lies an elaborate shrine to a forgotten spirit.",
+        "choices": [
+          {
+            "option": "[Pray] Transform a card.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "UPGRADE_SHRINE",
+      "name_zh": "升级神龛",
+      "name_en": "Upgrade Shrine",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "在你面前是一个被遗忘神灵的精致神龛。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "祈祷",
+          "description_zh": "升级一张牌。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Pray] Upgrade a card.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": "选择一张牌升级。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "UPGRADE_SHRINE",
+        "name": "Upgrade Shrine",
+        "act": "shrines",
+        "description": "Before you lies an elaborate shrine to a forgotten spirit.",
+        "choices": [
+          {
+            "option": "[Pray] Upgrade a card.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "VAMPIRES",
+      "name_zh": "吸血鬼（？）",
+      "name_en": "Vampires(?)",
+      "category": "event",
+      "act": 2,
+      "pool": "act_specific",
+      "description_zh": "在一条昏暗的街上，你遇见几个戴着兜帽的人在进行某种黑暗的仪式。当你靠近时，他们全都同时转身面对你，让你觉得十分诡异。 其中个子最高的一个微微一笑，露出了长长的尖牙，向你伸出了一只苍白而瘦长的手： \n “加入我们，兄弟。一起来感受高塔的温暖吧。”",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "接受",
+          "description_zh": "移除所有 打击 牌。 获得5张 噬咬 牌。 失去 最大生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Accept] Remove all Strikes. Receive 5 Bites. Lose 30% Max HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "拒绝",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Refuse]",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "zh_choice": "[离开]"
+          }
+        }
+      ],
+      "raw": {
+        "id": "VAMPIRES",
+        "name": "Vampires(?)",
+        "act": "city",
+        "description": "Navigating an unlit street, you come across several hooded figures in the midst of some dark ritual. As you approach, they turn to you in eerie unison. The tallest among them bares fanged teeth and extends a long, pale hand towards you. \n \"Join us brother, and feel the warmth of the Spire.\"",
+        "choices": [
+          {
+            "option": "[Accept] Remove all Strikes. Receive 5 Bites. Lose 30% Max HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Refuse]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "WEMEETAGAIN",
+      "name_zh": "我们又见面了！",
+      "name_en": "We Meet Again!",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "“我们又见面了！” \n 一个蓬头垢面的男子欢快地出现在你面前向你问好。你不认识这个男人。 \n \n “是我， 兰伟德 啊！所以今天有什么好东西给我吗？和往常一样？哎呀呀，像我这样的人，独自一个可实在不好混啊，对不对？” \n 你满腹狐疑地打量着他，开始思考应该怎么做……",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "给他药水",
+          "description_zh": "失去 。 获得一件遗物。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Give Potion] Lose a Potion. Obtain a Relic.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "给他金币",
+          "description_zh": "失去 金币 。 获得一件遗物。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Give Gold] Lose Gold. Obtain a Relic.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "给他卡牌",
+          "description_zh": "失去 。 获得一件遗物。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Give Card] Lose a Card. Obtain a Relic.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "攻击",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Attack] Fight the thief.",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "WEMEETAGAIN",
+        "name": "We Meet Again!",
+        "act": "shrines",
+        "description": "\"We meet again!\" \n A cheery disheveled fellow approaches you gleefully. You do not know this man. \n \n \"It's me, Ranwid! Have any goods for me today? The usual? A fella like me can't make it alone, you know?\" \n You eye him suspiciously and consider your options...",
+        "choices": [
+          {
+            "option": "[Give Potion] Lose a Potion. Obtain a Relic.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Give Gold] Lose Gold. Obtain a Relic.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Give Card] Lose a Card. Obtain a Relic.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Attack] Fight the thief.",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "WHEEL_OF_CHANGE",
+      "name_zh": "变化大转盘",
+      "name_en": "Wheel of Change",
+      "category": "event",
+      "act": null,
+      "pool": "shrine",
+      "description_zh": "你见到一位穿着帅气、满面笑容的地精。 \n “是时候转动转盘了！ 你准备好了吗？ 你当然准备好了！”",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "玩小游戏",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "Spin the wheel! Random result.",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "WHEEL_OF_CHANGE",
+        "name": "Wheel of Change",
+        "act": "shrines",
+        "description": "You come upon a dapper looking, cheery gremlin. \n \"It's time to spin the wheel! Are you R E A D Y ? Of course you are!\"",
+        "choices": [
+          {
+            "option": "Spin the wheel! Random result.",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "WINDING_HALLS",
+      "name_zh": "蜿蜒走廊",
+      "name_en": "Winding Halls",
+      "category": "event",
+      "act": 3,
+      "pool": "act_specific",
+      "description_zh": "你沿着弯曲的道路慢慢前进，却多次发现自己迷失了方向，仿佛墙壁和地面就在你的眼前突然移动了位置。 \n \n 更糟糕的是，你的脑中似乎还有许多声音在对你轻声低语。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "寻找来路",
+          "description_zh": "失去 点最大生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Retrace Your Steps] Lose Max HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "拥抱疯狂",
+          "description_zh": "获得2张 疯狂 。 失去 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Push Forward] Heal HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "集中精神",
+          "description_zh": "被诅咒——苦恼。 获得 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Focus] Become Cursed - Writhe. Heal HP.",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "WINDING_HALLS",
+        "name": "Winding Halls",
+        "act": "beyond",
+        "description": "As you slowly make your way up the twisting pathways, you constantly find yourself losing your way as the walls and ground seem to inexplicably shift before your eyes. \n \n The constant whispering voices in the back of your head aren't helping things either.",
+        "choices": [
+          {
+            "option": "[Retrace Your Steps] Lose Max HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Push Forward] Heal HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Focus] Become Cursed - Writhe. Heal HP.",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "GOLDEN_WING",
+      "name_zh": "翅膀雕像",
+      "name_en": "Wing Statue",
+      "category": "event",
+      "act": 1,
+      "pool": "act_specific",
+      "description_zh": "在形状不同的巨石之间，你看见一尊做工精细的翅膀形状的蓝色雕像。 \n 你可以看见雕像的裂缝中有 金币 掉出来。或许里面还有更多……",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "祈祷",
+          "description_zh": "从你的牌组中移除一张牌。 失去 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Pray] Remove a card from your deck. Lose 25% HP.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "摧毁",
+          "description_zh": "获得 ～ 金币。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Destroy] Gain 50-80 Gold.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "离开",
+          "description_zh": null,
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "GOLDEN_WING",
+        "name": "Wing Statue",
+        "act": "exordium",
+        "description": "Among the stone and boulders, you notice an intricate large blue statue resembling a wing. \n You find gold spilling from its cracks. Maybe there is more inside...",
+        "choices": [
+          {
+            "option": "[Pray] Remove a card from your deck. Lose 25% HP.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Destroy] Gain 50-80 Gold.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave]",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    },
+    {
+      "game": "sts1",
+      "id": "WORLD_OF_GOOP",
+      "name_zh": "黏液世界",
+      "name_en": "World of Goop",
+      "category": "event",
+      "act": 1,
+      "pool": "act_specific",
+      "description_zh": "你掉进了一个水坑里。 \n 可是坑里 全是 史莱姆黏液 ！ \n 你感觉到这黏液似乎会灼伤你，便拼命想要从坑中脱身。 \n 你的耳朵、鼻子和全身都被黏液给浸透了。 \n \n 爬出来后，你发现自己的 金币 似乎变少了。你回头一看，发现水坑里不但有你掉落的钱，还有不少其他不幸的冒险者们落下的 金币 。",
+      "choices": [
+        {
+          "id": null,
+          "text_zh": "收集金币",
+          "description_zh": "获得 75 金币。 失去 11 生命。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Gather Gold] Gain 75 Gold. Take 11 damage.",
+            "description": "",
+            "outcome": ""
+          }
+        },
+        {
+          "id": null,
+          "text_zh": "放手吧",
+          "description_zh": "失去 金币。",
+          "result_zh": null,
+          "locked_zh": null,
+          "raw": {
+            "option": "[Leave It] Lose some Gold.",
+            "description": "",
+            "outcome": ""
+          }
+        }
+      ],
+      "raw": {
+        "id": "WORLD_OF_GOOP",
+        "name": "World of Goop",
+        "act": "exordium",
+        "description": "You fall into a puddle. \n IT'S MADE OF SLIME GOOP!! \n Frantically, you claw yourself out over several minutes as you feel the goop starting to burn. \n You can feel goop in your ears, goop in your nose, goop everywhere. \n \n Climbing out, you notice that some of your gold is missing. Looking back to the puddle you see your missing coins combined with gold from unfortunate adventurers mixed together in the puddle.",
+        "choices": [
+          {
+            "option": "[Gather Gold] Gain 75 Gold. Take 11 damage.",
+            "description": "",
+            "outcome": ""
+          },
+          {
+            "option": "[Leave It] Lose some Gold.",
+            "description": "",
+            "outcome": ""
+          }
+        ],
+        "image_url": null
+      }
+    }
+  ]
+}

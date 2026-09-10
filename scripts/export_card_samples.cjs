@@ -134,6 +134,81 @@ function parseArgs(argv) {
   return options;
 }
 
+function parseCardIds(value) {
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+  const ids = Array.isArray(value) ? value : String(value).split(',');
+  const cardIds = new Set();
+  for (const id of ids) {
+    const trimmed = String(id).trim().toUpperCase();
+    if (trimmed) {
+      cardIds.add(trimmed);
+    }
+  }
+  return cardIds.size > 0 ? cardIds : null;
+}
+
+function maxInputMtimeMs(inputMtimes) {
+  if (!inputMtimes) return null;
+  const values = Array.isArray(inputMtimes)
+    ? inputMtimes
+    : Object.values(inputMtimes);
+  const finite = values.map(Number).filter(Number.isFinite);
+  return finite.length > 0 ? Math.max(...finite) : null;
+}
+
+function defaultRendererRoot(projectRoot) {
+  const sibling = path.resolve(projectRoot, '..', 'spire-archive');
+  return fs.existsSync(path.join(sibling, 'data', 'sts2', 'cards.json'))
+    ? sibling
+    : null;
+}
+
+function newestFileMtimeMs(dir) {
+  if (!fs.existsSync(dir)) return NaN;
+  let newest = NaN;
+  const visit = (current) => {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        visit(full);
+      } else if (entry.isFile()) {
+        const mtimeMs = fs.statSync(full).mtimeMs;
+        if (!Number.isFinite(newest) || mtimeMs > newest) newest = mtimeMs;
+      }
+    }
+  };
+  visit(dir);
+  return newest;
+}
+
+function rendererDependencyMtimes(rendererRoot, game) {
+  if (!rendererRoot) return [];
+  const filePaths = [
+    path.join(rendererRoot, 'data', game, 'cards.json'),
+    path.join(rendererRoot, 'data', game, 'localization', 'zh.json'),
+    path.join(rendererRoot, 'src', 'components', 'react', 'CssCardRenderer.tsx'),
+    path.join(rendererRoot, 'src', 'components', 'react', 'CssCardRenderer.css'),
+    path.join(rendererRoot, 'src', 'components', 'react', 'CardImageToggle.tsx'),
+    path.join(rendererRoot, 'src', 'components', 'react', 'DescriptionText.tsx'),
+    path.join(rendererRoot, 'src', 'lib', 'data.ts'),
+    path.join(rendererRoot, 'src', 'lib', 'energy-icons.ts'),
+    path.join(rendererRoot, 'src', 'lib', 'sts2-upgrade.js'),
+    path.join(rendererRoot, 'src', 'lib', 'ui-strings.ts'),
+    path.join(rendererRoot, 'src', 'pages', '[game]', 'cards', '[id].astro'),
+    path.join(rendererRoot, 'src', 'components', 'CardDetail.astro'),
+  ];
+  const mtimes = filePaths
+    .filter((filePath) => fs.existsSync(filePath))
+    .map((filePath) => fs.statSync(filePath).mtimeMs);
+  const cardUiMtime = newestFileMtimeMs(path.join(rendererRoot, 'public', 'images', 'sts2', 'cardui'));
+  if (Number.isFinite(cardUiMtime)) mtimes.push(cardUiMtime);
+  const portraitMtime = newestFileMtimeMs(path.join(rendererRoot, 'public', 'images', game, 'cards'));
+  if (Number.isFinite(portraitMtime)) mtimes.push(portraitMtime);
+  return mtimes;
+}
+
 function loadPlaywright(spireRoot) {
   if (spireRoot) {
     const packageRequire = createRequire(path.join(path.resolve(spireRoot), 'package.json'));
@@ -432,7 +507,9 @@ async function exportAllCards(options = {}) {
   const outputRoot = path.resolve(options['output-root'] ?? path.join(projectRoot, 'data', 'images'));
   const baseUrl = String(options['base-url'] ?? 'http://127.0.0.1:4324').replace(/\/$/, '');
   const spireRoot = options['spire-root'] ? path.resolve(options['spire-root']) : null;
+  const rendererRoot = spireRoot || defaultRendererRoot(projectRoot);
   const upgraded = Boolean(options.upgraded);
+  const cardIds = parseCardIds(options.ids);
 
   await checkRendererAvailability(baseUrl);
 
@@ -450,6 +527,7 @@ async function exportAllCards(options = {}) {
     for (const game of ['sts1', 'sts2']) {
       const cards = JSON.parse(fs.readFileSync(path.join(projectRoot, 'data', 'raw', `${game}_cards.json`), 'utf8'));
       const existing = new Set();
+      const imageMtimes = {};
       const targetDir = path.join(outputRoot, game);
       if (fs.existsSync(targetDir)) {
         const collect = (dir) => {
@@ -458,14 +536,28 @@ async function exportAllCards(options = {}) {
             if (entry.isDirectory()) {
               collect(full);
             } else {
-              existing.add(path.relative(projectRoot, full).replace(/\\/g, '/'));
+              const relativePath = path.relative(projectRoot, full).replace(/\\/g, '/');
+              existing.add(relativePath);
+              imageMtimes[relativePath] = fs.statSync(full).mtimeMs;
             }
           }
         };
         collect(targetDir);
       }
 
-      const plan = collectCardsForExport(game, cards, existing, { upgraded });
+      const rawPath = path.join(projectRoot, 'data', 'raw', `${game}_cards.json`);
+      const rawMtimeMs = fs.statSync(rawPath).mtimeMs;
+      const inputMtimes = [
+        rawMtimeMs,
+        fs.statSync(__filename).mtimeMs,
+        ...rendererDependencyMtimes(rendererRoot, game),
+      ];
+      const plan = collectCardsForExport(game, cards, existing, {
+        upgraded,
+        inputMtimes,
+        imageMtimes,
+        cardIds,
+      });
       results[game].total = plan.length;
 
       for (const item of plan) {
@@ -558,6 +650,10 @@ async function main() {
 function collectCardsForExport(game, cards, existingFiles = new Set(), options = {}) {
   const normalizedGame = String(game || '').trim().toLowerCase();
   const upgraded = Boolean(options && options.upgraded);
+  const rawCardIds = options && options.cardIds;
+  const cardIds = rawCardIds instanceof Set
+    ? (rawCardIds.size > 0 ? rawCardIds : null)
+    : parseCardIds(rawCardIds);
   const safeExisting = new Set(Array.from(existingFiles || []).map((value) => String(value).replace(/\\/g, '/')));
   const plan = [];
 
@@ -567,6 +663,9 @@ function collectCardsForExport(game, cards, existingFiles = new Set(), options =
     }
 
     const cardId = String(card.id).trim();
+    if (cardIds && !cardIds.has(cardId.toUpperCase())) {
+      continue;
+    }
     const outputPath = path.join('data', 'images', normalizedGame, upgraded ? 'upgraded' : '', `${cardId}.png`);
     const normalizedOutputPath = outputPath.replace(/\\/g, '/');
     const mappedPortrait = normalizedGame === 'sts1' && cardId === 'CURSEOFTHEBELL'
@@ -607,7 +706,31 @@ function collectCardsForExport(game, cards, existingFiles = new Set(), options =
       continue;
     }
 
-    if (safeExisting.has(normalizedOutputPath) || safeExisting.has(normalizedAbsoluteOutputPath)) {
+    const exists = safeExisting.has(normalizedOutputPath) || safeExisting.has(normalizedAbsoluteOutputPath);
+    if (exists) {
+      const imageMtimes = (options && options.imageMtimes) || {};
+      const existingMtimeMs = Number(imageMtimes[normalizedOutputPath] ?? imageMtimes[normalizedAbsoluteOutputPath]);
+      const inputMtimeMs = maxInputMtimeMs([
+        options && options.rawMtimeMs,
+        ...(options && options.inputMtimes
+          ? (Array.isArray(options.inputMtimes) ? options.inputMtimes : Object.values(options.inputMtimes))
+          : []),
+      ]);
+      if (inputMtimeMs !== null && (!Number.isFinite(existingMtimeMs) || existingMtimeMs < inputMtimeMs)) {
+        plan.push({
+          game: normalizedGame,
+          cardId,
+          card,
+          selector: selectorForGame(normalizedGame),
+          outputPath,
+          mappedPortrait,
+          upgraded,
+          status: 'pending',
+          reason: 'stale',
+          detail: `Output is older than a renderer input: ${outputPath}`,
+        });
+        continue;
+      }
       plan.push({
         game: normalizedGame,
         cardId,

@@ -7,8 +7,10 @@ __pycache__/
 .venv/
 venv/
 
-# Raw downloaded card data
-data/raw/
+# Raw downloaded card data (large run dumps stay ignored; frozen event catalogs are tracked)
+data/raw/*
+!data/raw/sts1_events.json
+!data/raw/sts2_events.json
 
 # Downloaded card images
 data/images/
