@@ -1,4 +1,4 @@
-# card-guess-bot
+# Spire QQ Bot
 
 一个运行在 QQ 群和私聊里的《杀戮尖塔 1 / 杀戮尖塔 2》查询与互动机器人，通过 OneBot WebSocket 连接 NapCat。
 
